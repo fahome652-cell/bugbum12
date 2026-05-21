@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>BUGBUM v0.95 – شخصية مكبرة</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-tap-highlight-color: transparent; }
+        body { background: #0a0a2a; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Courier New', monospace; touch-action: manipulation; overflow: hidden; position: fixed; width: 100%; height: 100%; }
+        .game-wrapper { display: flex; justify-content: center; align-items: center; width: 100%; height: 100%; }
+        .game-container { background: #000; padding: 10px; border-radius: 16px; box-shadow: 0 0 30px cyan; display: inline-block; }
+        canvas { display: block; margin: 0 auto; image-rendering: crisp-edges; image-rendering: pixelated; cursor: pointer; touch-action: none; width: 100%; height: auto; }
+        .game-container:fullscreen { width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: #000; padding: 0; border-radius: 0; }
+        .game-container:fullscreen canvas { width: auto; height: 100%; max-width: 100%; object-fit: contain; }
+        .start-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(5px); }
+        .start-box { background: linear-gradient(135deg, #1a1a3a, #0a0a2a); border: 3px solid cyan; border-radius: 30px; padding: 50px; text-align: center; box-shadow: 0 0 50px cyan; animation: glow 2s infinite; min-width: 350px; }
+        @keyframes glow { 0% { box-shadow: 0 0 20px cyan; } 100% { box-shadow: 0 0 60px cyan; } }
+        .start-box h1 { color: cyan; font-size: 52px; text-shadow: 0 0 10px cyan; }
+        .start-box .version { color: #FFD700; font-size: 14px; margin: 10px 0 30px; }
+        .start-box p { color: #fff; margin: 8px 0; font-size: 14px; }
+        .btn { background: #8B5A2B; border: none; padding: 12px 30px; font-size: 20px; font-weight: bold; border-radius: 8px; cursor: pointer; font-family: monospace; color: #FFD700; text-shadow: 1px 1px 0 #4A2A0A; box-shadow: inset -2px -2px 0 #4A2A0A, inset 2px 2px 0 #C88A3A, 3px 3px 0 black; margin: 10px; width: 200px; }
+        .btn:active { transform: translate(2px, 2px); }
+        .settings-menu { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 200; }
+        .settings-box { background: linear-gradient(135deg, #1a1a3a, #0a0a2a); border: 3px solid cyan; border-radius: 30px; padding: 40px; text-align: center; min-width: 400px; max-height: 80vh; overflow-y: auto; }
+        .settings-box h2 { color: cyan; font-size: 32px; margin-bottom: 25px; }
+        .settings-row { display: flex; justify-content: space-between; align-items: center; margin: 15px 0; padding: 10px; background: rgba(0,0,0,0.5); border-radius: 8px; }
+        .settings-row span { color: #fff; font-size: 14px; }
+        .toggle-switch { width: 50px; height: 26px; background: #333; border-radius: 13px; cursor: pointer; position: relative; }
+        .toggle-switch.active { background: #3399FF; }
+        .toggle-switch::after { content: ''; width: 22px; height: 22px; background: #FFD700; border-radius: 50%; position: absolute; top: 2px; left: 3px; transition: 0.2s; }
+        .toggle-switch.active::after { left: 25px; }
+        .resolution-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin: 15px 0; }
+        .res-btn { background: #8B5A2B; border: none; padding: 8px; color: #FFD700; border-radius: 8px; cursor: pointer; font-family: monospace; font-size: 12px; }
+        .mobile-controls { position: fixed; bottom: 20px; left: 0; right: 0; display: none; justify-content: center; gap: 20px; z-index: 60; padding: 10px; background: rgba(0,0,0,0.5); backdrop-filter: blur(5px); }
+        .mobile-btn { width: 70px; height: 70px; background: rgba(139,90,43,0.9); border: 2px solid #FFD700; border-radius: 40px; display: flex; justify-content: center; align-items: center; font-size: 35px; font-weight: bold; color: #FFD700; cursor: pointer; box-shadow: 0 5px 0 #4A2A0A; transition: 0.05s linear; }
+        .mobile-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #4A2A0A; }
+        .mobile-esc { position: fixed; top: 20px; right: 20px; width: 55px; height: 55px; background: #8B5A2B; border: 2px solid #FFD700; border-radius: 30px; display: none; justify-content: center; align-items: center; font-size: 20px; color: #FFD700; cursor: pointer; z-index: 70; font-family: monospace; box-shadow: 0 4px 0 #4A2A0A; }
+        .mobile-esc:active { transform: translateY(2px); box-shadow: 0 2px 0 #4A2A0A; }
+        .version-badge { position: fixed; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: #FFD700; padding: 4px 10px; border-radius: 8px; font-size: 11px; z-index: 50; pointer-events: none; border-left: 2px solid cyan; }
+        @media (max-width: 900px) { .mobile-controls { display: flex !important; } .mobile-esc { display: flex !important; } }
+        @media (min-width: 901px) { .mobile-controls, .mobile-esc { display: none !important; } }
+    </style>
+</head>
+<body>
+<div class="game-wrapper">
+    <div class="game-container" id="gameContainer">
+        <canvas id="gameCanvas" width="1024" height="576"></canvas>
+    </div>
+</div>
+<div class="start-screen" id="startScreen">
+    <div class="start-box">
+        <h1>🐞 BUGBUM</h1>
+        <div class="version">version 0.95</div>
+        <p>⭐ 9 مستويات | شخصية مكبرة | قفزة مزدوجة</p>
+        <p>🕹️ [A][D] حركة | [W] قفز</p>
+        <button class="btn" id="startBtn">▶ بدء اللعبة</button>
+        <button class="btn" id="openSettingsBtn">⚙️ إعدادات</button>
+    </div>
+</div>
+<div class="settings-menu" id="settingsMenu">
+    <div class="settings-box">
+        <h2>⚙️ الإعدادات</h2>
+        <div class="settings-row"><span>📺 الدقة</span><div class="resolution-grid" id="resolutionGrid"><button class="res-btn" data-w="854" data-h="480">HD (854×480)</button><button class="res-btn" data-w="1024" data-h="576">HD+ (1024×576)</button><button class="res-btn" data-w="1280" data-h="720">Full HD (1280×720)</button><button class="res-btn" data-w="1920" data-h="1080">FHD (1920×1080)</button><button class="res-btn" data-w="2560" data-h="1440">2K (2560×1440)</button><button class="res-btn" data-w="3840" data-h="2160">4K (3840×2160)</button></div></div>
+        <div class="settings-row"><span>🎵 الموسيقى</span><div id="musicToggle" class="toggle-switch active"></div></div>
+        <div class="settings-row"><span>🔊 المؤثرات</span><div id="sfxToggle" class="toggle-switch active"></div></div>
+        <div class="settings-row"><span>🖥️ شاشة كاملة</span><button id="fullscreenBtn" class="res-btn" style="width: auto; padding: 5px 15px;">⛶ فول سكرين</button></div>
+        <button class="btn" id="closeSettingsBtn" style="width: 100%;">▶ رجوع</button>
+    </div>
+</div>
+<div class="mobile-controls" id="mobileControls"><div class="mobile-btn" id="mobileLeft">←</div><div class="mobile-btn" id="mobileRight">→</div><div class="mobile-btn" id="mobileJump">↑</div></div>
+<div class="mobile-esc" id="mobileEscBtn">ESC</div>
+<div class="version-badge">🐞 BUGBUM | v0.95</div>
+<script>
+    let gameRunning=false,ctx=document.getElementById('gameCanvas').getContext('2d'),canvas=document.getElementById('gameCanvas'),gameContainer=document.getElementById('gameContainer'),frame=0,animationId=null;
+    let musicEnabled=true,sfxEnabled=true,audioCtx=null,musicInterval=null;
+    let player={x:200,y:400,width:40,height:60,vx:0,vy:0,onGround:true,direction:1,maxJumps:1,jumpsLeft:1};
+    let platforms=[],coins=[],enemies=[],blueCubes=[],boss={active:false,x:0,y:0,health:100,maxHealth:100,cooldown:0,width:48,height:48},bossProjectiles=[],orbs=[];
+    let score=0,currentLevel=1,cameraX=0,lastBlueCubeSpawn=0;
+    let keys={KeyA:false,KeyD:false,KeyW:false,jumpCd:false};
+    const GRAVITY=0.8,JUMP=-12,SPEED=5;
+    let currentWidth=1024,currentHeight=576,mobileLeft=false,mobileRight=false,mobileJump=false;
+    const levelColors={1:{top:'#1a3a1a',bottom:'#2a5a2a',name:'🌳 الغابة'},2:{top:'#1a3a4a',bottom:'#2a5a6a',name:'❄️ الجليد'},3:{top:'#3a1a1a',bottom:'#5a2a2a',name:'🔥 النار'},4:{top:'#1a1a2a',bottom:'#2a2a3a',name:'🪨 الكهف'},5:{top:'#0a0a2a',bottom:'#1a1a4a',name:'✨ الفضاء'},6:{top:'#4a4a6a',bottom:'#6a6a8a',name:'☁️ السحاب'},7:{top:'#4a1a0a',bottom:'#6a2a1a',name:'🌋 البركان'},8:{top:'#2a1a4a',bottom:'#3a2a6a',name:'👑 النهائي'},9:{top:'#4a0a0a',bottom:'#6a1a1a',name:'🔥 معركة الملك'}};
+    
+    // تصميم الشخصية مكبر (كل بكسل أصبح 2x2)
+    const playerPixels = [
+        ['','','','','','','hair','hair','hair','hair','hair','hair','','','','','','','',''],
+        ['','','','','','hair','hair','hair','hair','hair','hair','hair','hair','','','','','','',''],
+        ['','','','','skin','skin','skin','skin','skin','skin','skin','skin','skin','skin','','','','','',''],
+        ['','','','','skin','skin2','skin2','skin2','skin2','skin2','skin2','skin2','skin2','skin','','','','','',''],
+        ['','','','','skin','skin2','eyeWhite','eyeWhite','skin2','skin2','eyeWhite','eyeWhite','skin2','skin','','','','','',''],
+        ['','','','','skin','skin2','eye','eyeWhite','skin2','skin2','eye','eyeWhite','skin2','skin','','','','','',''],
+        ['','','','','skin','skin2','skin2','skin2','skin2','skin2','skin2','skin2','skin2','skin','','','','','',''],
+        ['','','','','skin','skin2','skin2','mouth','mouth','mouth','mouth','skin2','skin2','skin','','','','','',''],
+        ['','','','','','skin','skin','skin','skin','skin','skin','skin','skin','','','','','','',''],
+        ['','','','','','','','skin','skin','skin','skin','','','','','','','','',''],
+        ['','','','','shirt','shirt','shirt','shirt','shirt','shirt','shirt','shirt','shirt','shirt','','','','','',''],
+        ['','','','','shirt2','shirt2','shirt2','shirt2','shirt2','shirt2','shirt2','shirt2','shirt2','shirt2','','','','','',''],
+        ['','','skin','skin','shirt','shirt','shirt','shirt','shirt','shirt','shirt','shirt','shirt','shirt','skin','skin','','','',''],
+        ['','','skin','skin','shirt2','shirt2','shirt2','shirt2','shirt2','shirt2','
