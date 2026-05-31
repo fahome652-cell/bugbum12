@@ -2,627 +2,193 @@
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>BUGBUM v0.93 - مدينة البكسل الليلية مع الثعلب الماكر</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تم إغلاق اللعبة - BUGBUM</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background: #030712;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             min-height: 100vh;
-            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0f1a, #0a1a1a);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', 'Courier New', monospace;
+            padding: 20px;
+            position: relative;
             overflow: hidden;
-            position: fixed;
+        }
+
+        /* خلفية متحركة نجوم */
+        body::before {
+            content: '';
+            position: absolute;
             width: 100%;
             height: 100%;
-        }
-
-        .game-wrapper {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            height: 100%;
-        }
-
-        .game-container {
-            background: #000;
-            padding: 10px;
-            border-radius: 16px;
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
-            display: inline-block;
-            position: relative;
-        }
-
-        canvas {
-            display: block;
-            margin: 0 auto;
-            image-rendering: crisp-edges;
-            image-rendering: pixelated;
-            cursor: pointer;
-            width: 100%;
-            height: auto;
-        }
-
-        .game-container:fullscreen {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #000;
-            padding: 0;
-            border-radius: 0;
-        }
-
-            .game-container:fullscreen canvas {
-                width: auto;
-                height: 100%;
-                max-width: 100%;
-                object-fit: contain;
-            }
-
-        .start-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            backdrop-filter: blur(5px);
-        }
-
-        .start-box {
-            background: linear-gradient(135deg, #0f172a, #020712);
-            border: 3px solid cyan;
-            border-radius: 30px;
-            padding: 50px;
-            text-align: center;
-            box-shadow: 0 0 50px cyan;
-            animation: glow 2s infinite;
-            min-width: 350px;
-        }
-
-        @keyframes glow {
-            0% {
-                box-shadow: 0 0 20px cyan;
-            }
-
-            100% {
-                box-shadow: 0 0 60px cyan;
-            }
-        }
-
-        .start-box h1 {
-            color: cyan;
-            font-size: 52px;
-            text-shadow: 0 0 10px cyan;
-        }
-
-        .start-box .version {
-            color: #FFD700;
-            font-size: 14px;
-            margin: 10px 0 30px;
-        }
-
-        .start-box p {
-            color: #fff;
-            margin: 8px 0;
-            font-size: 14px;
-        }
-
-        .btn {
-            background: #8B5A2B;
-            border: none;
-            padding: 12px 30px;
-            font-size: 20px;
-            font-weight: bold;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: monospace;
-            color: #FFD700;
-            text-shadow: 1px 1px 0 #4A2A0A;
-            box-shadow: inset -2px -2px 0 #4A2A0A, inset 2px 2px 0 #C88A3A, 3px 3px 0 black;
-            margin: 10px;
-            width: 200px;
-            transition: 0.05s linear;
-        }
-
-            .btn:active {
-                transform: translate(2px, 2px);
-            }
-
-        .settings-menu {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 200;
-        }
-
-        .settings-box {
-            background: linear-gradient(135deg, #0f172a, #020712);
-            border: 3px solid cyan;
-            border-radius: 30px;
-            padding: 40px;
-            text-align: center;
-            min-width: 400px;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-            .settings-box h2 {
-                color: cyan;
-                font-size: 32px;
-                margin-bottom: 25px;
-            }
-
-        .settings-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 15px 0;
-            padding: 10px;
-            background: rgba(0,0,0,0.5);
-            border-radius: 8px;
-        }
-
-            .settings-row span {
-                color: #fff;
-                font-size: 14px;
-            }
-
-        .toggle-switch {
-            width: 50px;
-            height: 26px;
-            background: #333;
-            border-radius: 13px;
-            cursor: pointer;
-            position: relative;
-        }
-
-            .toggle-switch.active {
-                background: #3399FF;
-            }
-
-            .toggle-switch::after {
-                content: '';
-                width: 22px;
-                height: 22px;
-                background: #FFD700;
-                border-radius: 50%;
-                position: absolute;
-                top: 2px;
-                left: 3px;
-                transition: 0.2s;
-            }
-
-            .toggle-switch.active::after {
-                left: 25px;
-            }
-
-        .resolution-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin: 15px 0;
-        }
-
-        .res-btn {
-            background: #8B5A2B;
-            border: none;
-            padding: 8px;
-            color: #FFD700;
-            border-radius: 8px;
-            cursor: pointer;
-            font-family: monospace;
-            font-size: 12px;
-        }
-
-        .mobile-controls {
-            position: fixed;
-            bottom: 20px;
-            left: 0;
-            right: 0;
-            display: none;
-            justify-content: center;
-            gap: 20px;
-            z-index: 60;
-            padding: 10px;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(5px);
-        }
-
-        .mobile-btn {
-            width: 70px;
-            height: 70px;
-            background: rgba(139,90,43,0.9);
-            border: 2px solid #FFD700;
-            border-radius: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 35px;
-            font-weight: bold;
-            color: #FFD700;
-            cursor: pointer;
-            box-shadow: 0 5px 0 #4A2A0A;
-            transition: 0.05s linear;
-        }
-
-            .mobile-btn:active {
-                transform: translateY(3px);
-                box-shadow: 0 2px 0 #4A2A0A;
-            }
-
-        .mobile-esc {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            width: 55px;
-            height: 55px;
-            background: #8B5A2B;
-            border: 2px solid #FFD700;
-            border-radius: 30px;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            color: #FFD700;
-            cursor: pointer;
-            z-index: 70;
-            font-family: monospace;
-            box-shadow: 0 4px 0 #4A2A0A;
-        }
-
-            .mobile-esc:active {
-                transform: translateY(2px);
-                box-shadow: 0 2px 0 #4A2A0A;
-            }
-
-        .version-badge {
-            position: fixed;
-            bottom: 10px;
-            right: 10px;
-            background: rgba(0,0,0,0.7);
-            color: #FFD700;
-            padding: 4px 10px;
-            border-radius: 8px;
-            font-size: 11px;
-            z-index: 50;
+            background-image: radial-gradient(white 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.3;
             pointer-events: none;
-            border-left: 2px solid cyan;
         }
 
-        @media (max-width: 900px) {
-            .mobile-controls {
-                display: flex !important;
-            }
+        .card {
+            background: rgba(10, 20, 30, 0.85);
+            backdrop-filter: blur(16px);
+            border-radius: 48px;
+            padding: 50px 40px;
+            text-align: center;
+            max-width: 550px;
+            width: 100%;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5), 0 0 0 1px rgba(0,255,255,0.2);
+            animation: fadeInScale 0.5s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            border: 1px solid rgba(0, 255, 255, 0.4);
+        }
 
-            .mobile-esc {
-                display: flex !important;
+        @keyframes fadeInScale {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
             }
         }
 
-        @media (min-width: 901px) {
-            .mobile-controls, .mobile-esc {
-                display: none !important;
-            }
+        .icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            filter: drop-shadow(0 0 15px cyan);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+            100% { transform: translateY(0px); }
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFD966, #FF9966);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            letter-spacing: 1px;
+        }
+
+        .message {
+            font-size: 18px;
+            color: #ccddee;
+            margin-bottom: 35px;
+            line-height: 1.6;
+            background: rgba(0,0,0,0.4);
+            padding: 15px;
+            border-radius: 30px;
+            backdrop-filter: blur(4px);
+        }
+
+        .btn-return {
+            background: linear-gradient(90deg, #1E3A5F, #0D2B45);
+            border: none;
+            padding: 14px 30px;
+            font-size: 20px;
+            font-weight: bold;
+            border-radius: 60px;
+            cursor: pointer;
+            font-family: monospace;
+            color: #FFD966;
+            text-shadow: 0 1px 2px black;
+            box-shadow: 0 8px 0 #0A1A2A;
+            transition: 0.08s linear;
+            width: 80%;
+            max-width: 280px;
+            margin-top: 10px;
+            letter-spacing: 1px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-return:active {
+            transform: translateY(4px);
+            box-shadow: 0 3px 0 #0A1A2A;
+        }
+
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #88aaff;
+            opacity: 0.7;
+        }
+
+        /* تأثيرات سحرية */
+        .glow {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(0,255,255,0.2), transparent);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        @media (max-width: 550px) {
+            .card { padding: 35px 25px; }
+            h1 { font-size: 32px; }
+            .message { font-size: 16px; }
+            .btn-return { font-size: 18px; padding: 12px 20px; }
         }
     </style>
 </head>
 <body>
-    <div class="game-wrapper">
-        <div class="game-container" id="gameContainer">
-            <canvas id="gameCanvas" width="1024" height="576"></canvas>
-        </div>
+
+<div class="card">
+    <div class="icon">🎮🚫</div>
+    <h1>تم إغلاق اللعبة</h1>
+    <div class="message">
+        لقد قمت بإغلاق BUGBUM. نشكرك على وقتك الجميل.<br>
+        نتمنى رؤيتك قريبًا في مغامرة جديدة.
     </div>
-    <div class="start-screen" id="startScreen">
-        <div class="start-box">
-            <h1>🐞 BUGBUM</h1>
-            <div class="version">version 0.93</div>
-            <p>⭐ 9 مستويات | قفزة مزدوجة | شخصية الشماغ الاحترافية</p>
-            <p>🦊 احذر! الثعلب الماكر قد يظهر كل دقيقة ليسرق أموالك!</p>
-            <p>🕹️ [A][D] حركة | [W] قفز</p>
-            <button class="btn" id="startBtn">▶ بدء اللعبة</button>
-            <button class="btn" id="openSettingsBtn">⚙️ إعدادات</button>
-        </div>
-    </div>
-    <div class="settings-menu" id="settingsMenu">
-        <div class="settings-box">
-            <h2>⚙️ الإعدادات</h2>
-            <div class="settings-row"><span>📺 الدقة</span><div class="resolution-grid" id="resolutionGrid"><button class="res-btn" data-w="854" data-h="480">HD (854×480)</button><button class="res-btn" data-w="1024" data-h="576">HD+ (1024×576)</button><button class="res-btn" data-w="1280" data-h="720">Full HD (1280×720)</button><button class="res-btn" data-w="1920" data-h="1080">FHD (1920×1080)</button><button class="res-btn" data-w="2560" data-h="1440">2K (2560×1440)</button><button class="res-btn" data-w="3840" data-h="2160">4K (3840×2160)</button></div></div>
-            <div class="settings-row"><span>🎵 الموسيقى</span><div id="musicToggle" class="toggle-switch active"></div></div>
-            <div class="settings-row"><span>🔊 المؤثرات</span><div id="sfxToggle" class="toggle-switch active"></div></div>
-            <div class="settings-row"><span>🖥️ شاشة كاملة</span><button id="fullscreenBtn" class="res-btn" style="width: auto; padding: 5px 15px;">⛶ فول سكرين</button></div>
-            <button class="btn" id="closeSettingsBtn" style="width: 100%;">▶ رجوع</button>
-        </div>
-    </div>
-    <div class="mobile-controls" id="mobileControls"><div class="mobile-btn" id="mobileLeft">←</div><div class="mobile-btn" id="mobileRight">→</div><div class="mobile-btn" id="mobileJump">↑</div></div>
-    <div class="mobile-esc" id="mobileEscBtn">ESC</div>
-    <div class="version-badge">🐞 BUGBUM | v0.93</div>
+    <button class="btn-return" id="returnBtn">↩️ رجوع</button>
+    <div class="footer">BUGBUM ❤️ — كل التوفيق</div>
+</div>
 
-    <script>
-        let gameRunning = false, ctx = document.getElementById('gameCanvas').getContext('2d'), canvas = document.getElementById('gameCanvas'), gameContainer = document.getElementById('gameContainer'), frame = 0, animationId = null;
-        let musicEnabled = true, sfxEnabled = true, audioCtx = null, musicInterval = null;
-        let player = { x: 200, y: 400, width: 32, height: 32, vx: 0, vy: 0, onGround: true, direction: 1, maxJumps: 1, jumpsLeft: 1 };
-        let platforms = [], coins = [], enemies = [], blueCubes = [], boss = { active: false, x: 0, y: 0, health: 100, maxHealth: 100, cooldown: 0, width: 48, height: 48 }, bossProjectiles = [], orbs = [];
-        let score = 0, currentLevel = 1, cameraX = 0, lastBlueCubeSpawn = 0;
-        let keys = { KeyA: false, KeyD: false, KeyW: false, jumpCd: false };
-        const GRAVITY = 0.8, JUMP = -12, SPEED = 5;
-        let currentWidth = 1024, currentHeight = 576, mobileLeft = false, mobileRight = false, mobileJump = false;
-
-        // إعدادات ومؤقتات الثعلب الاحترافي الجديد
-        let fox = { active: false, x: 0, y: 0, width: 40, height: 28, vx: 3.5, direction: 1, timer: 0, flashEffect: 0 };
-        let lastFoxSpawnTime = Date.now();
-
-        const levelColors = {
-            1: { top: '#040814', bottom: '#0f172a', name: '🏙️ المدينة الليلية' },
-            2: { top: '#1a3a4a', bottom: '#2a5a6a', name: '❄️ الجليد' },
-            3: { top: '#3a1a1a', bottom: '#5a2a2a', name: '🔥 النار' },
-            4: { top: '#1a1a2a', bottom: '#2a2a3a', name: '🪨 الكهف' },
-            5: { top: '#0a0a2a', bottom: '#1a1a4a', name: '✨ الفضاء' },
-            6: { top: '#4a4a6a', bottom: '#6a6a8a', name: '☁️ السحاب' },
-            7: { top: '#4a1a0a', bottom: '#6a2a1a', name: '🌋 البركان' },
-            8: { top: '#2a1a4a', bottom: '#3a2a6a', name: '👑 النهائي' },
-            9: { top: '#4a0a0a', bottom: '#6a1a1a', name: '🔥 معركة الملك' }
-        };
-
-        function drawPlayer() {
-            let x = player.x - cameraX;
-            let y = player.y;
-            let w = player.width;
-            let h = player.height;
-            let legOffset = 0;
-            if (!player.onGround) { legOffset = 3; } else if (Math.abs(player.vx) > 0.5) { legOffset = Math.sin(frame * 0.25) * 3; }
-            ctx.save();
-            if (player.direction === -1) { ctx.translate(x + w, y); ctx.scale(-1, 1); } else { ctx.translate(x, y); }
-            ctx.fillStyle = '#d32f2f'; ctx.fillRect(2, 10, 6, 12); ctx.fillStyle = '#ffffff'; ctx.fillRect(4, 12, 2, 2); ctx.fillRect(2, 16, 2, 2);
-            ctx.fillStyle = '#ffffff'; ctx.fillRect(8, 14, 16, 13); ctx.fillStyle = '#ffdbac'; ctx.fillRect(10, 4, 14, 10);
-            ctx.fillStyle = '#d32f2f'; ctx.fillRect(8, 0, 16, 4); ctx.fillStyle = '#ffffff'; ctx.fillRect(10, 2, 3, 2); ctx.fillRect(18, 0, 3, 2);
-            ctx.fillStyle = '#111111'; ctx.fillRect(8, 4, 16, 2); ctx.fillStyle = '#222222'; ctx.fillRect(18, 7, 2, 2); ctx.fillRect(22, 7, 2, 2);
-            ctx.fillStyle = '#3a2e2b'; ctx.fillRect(16, 11, 8, 3); ctx.fillRect(20, 13, 4, 1); ctx.fillStyle = '#4a3525'; ctx.fillRect(8, 17, 16, 2);
-            ctx.fillStyle = '#ffd700'; ctx.fillRect(17, 16, 3, 2); ctx.fillStyle = '#b0b0b0'; ctx.fillRect(16, 18, 3, 4); ctx.fillRect(15, 21, 2, 2);
-            ctx.fillStyle = '#3a2e2b'; ctx.fillRect(10, 27 + legOffset, 4, 5); ctx.fillRect(18, 27 - legOffset, 4, 5);
-            ctx.restore();
-            if (player.maxJumps > 1) { ctx.fillStyle = '#3399FF'; ctx.font = 'bold 12px monospace'; ctx.fillText(`x${player.maxJumps}`, player.x - cameraX + 8, player.y - 8); }
-            if (Math.abs(player.vx) > 0.1) player.direction = player.vx > 0 ? 1 : -1;
+<script>
+    // زر الرجوع: يودي للصفحة السابقة إذا وجدت، وإلا يغلق النافذة (في تطبيقات الويب المخصصة)
+    document.getElementById('returnBtn').addEventListener('click', () => {
+        if (document.referrer && document.referrer !== "") {
+            window.location.href = document.referrer;
+        } else if (window.history.length > 1) {
+            window.history.back();
+        } else {
+            // رسالة تنبيه لطيفة
+            alert("لا توجد صفحة سابقة للعودة إليها.\nيمكنك إغلاق هذه الصفحة يدويًا.");
         }
+    });
 
-        function drawGrassTexture(x, y, w, h) { ctx.fillStyle = '#1e293b'; ctx.fillRect(x, y, w, h); for (let i = 0; i < w; i += 8) { ctx.fillStyle = '#334155'; ctx.fillRect(x + i, y, 4, 6); } ctx.fillStyle = '#0ea5e9'; ctx.fillRect(x, y, w, 2); ctx.fillStyle = 'rgba(0,0,0,0.4)'; ctx.fillRect(x, y + h - 4, w, 4); }
-        function drawWoodTexture(x, y, w, h) { ctx.fillStyle = '#334155'; ctx.fillRect(x, y, w, h); for (let i = 0; i < h; i += 8) { ctx.fillStyle = '#1e293b'; ctx.fillRect(x, y + i, w, 2); } ctx.fillStyle = '#38bdf8'; ctx.fillRect(x, y, w, 2); }
-        function drawStoneTexture(x, y, w, h) { ctx.fillStyle = '#475569'; ctx.fillRect(x, y, w, h); for (let i = 0; i < w; i += 16) { ctx.fillStyle = '#334155'; ctx.fillRect(x + i + 2, y + 4, 6, 6); } ctx.fillStyle = '#94a3b8'; ctx.fillRect(x, y, w, 2); }
-        function drawBrickTexture(x, y, w, h) { ctx.fillStyle = '#1e1b4b'; ctx.fillRect(x, y, w, h); for (let i = 0; i < w; i += 20) { ctx.fillStyle = '#312e81'; ctx.fillRect(x + i, y + 6, 15, 3); } ctx.fillStyle = '#818cf8'; ctx.fillRect(x, y, w, 2); }
-        function drawPlatform(p) { if (p.type === 'wood') drawWoodTexture(p.x - cameraX, p.y, p.width, p.height); else if (p.type === 'stone') drawStoneTexture(p.x - cameraX, p.y, p.width, p.height); else if (p.type === 'brick') drawBrickTexture(p.x - cameraX, p.y, p.width, p.height); else drawGrassTexture(p.x - cameraX, p.y, p.width, p.height); }
-        function buildWorld() { platforms = []; let groundY = currentHeight - 60; for (let i = 0; i < 40; i++) { platforms.push({ x: i * 300, y: groundY, width: 300, height: 40, type: 'grass' }); if (i % 2 === 0) platforms.push({ x: 150 + i * 300, y: groundY - 100 - (i % 3) * 50, width: 80, height: 25, type: 'wood' }); else platforms.push({ x: 400 + i * 300, y: groundY - 150 - (i % 2) * 60, width: 80, height: 25, type: 'stone' }); if (i % 4 === 0) platforms.push({ x: i * 300 + 100, y: groundY - 250, width: 60, height: 20, type: 'brick' }); } }
-        function spawnCoins() { coins = []; for (let i = 0; i < 60; i++) coins.push({ x: 100 + Math.random() * 8000, y: 100 + Math.random() * 350 }); }
-        function drawCoin(c) { let angle = (frame * 0.05) % (Math.PI * 2); ctx.save(); ctx.translate(c.x - cameraX + 12, c.y + 12); ctx.rotate(angle); ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.beginPath(); ctx.arc(4, 4, 10, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#FFD700'; ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#FFA500'; ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI * 2); ctx.fill(); ctx.restore(); }
-        function spawnEnemies() { enemies = []; for (let i = 0; i < 12; i++) enemies.push({ x: 300 + Math.random() * 7000, y: 150 + Math.random() * 350, w: 32, h: 24, vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 1.2 }); }
-
-        function drawEnemy(e) {
-            let x = e.x - cameraX, y = e.y, wingFlap = Math.sin(frame * 0.2) * 8, lookDirection = e.vx > 0 ? 1 : -1;
-            ctx.save(); ctx.translate(x + e.w / 2, y + e.h / 2); if (lookDirection === -1) { ctx.scale(-1, 1); }
-            ctx.fillStyle = 'rgba(0,0,0,0.2)'; ctx.fillRect(-12, e.h / 2 + 2, 24, 4); ctx.fillStyle = '#A0A5B5'; ctx.save(); ctx.translate(-2, -4); ctx.rotate(-wingFlap * 0.08); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-14, -10 + wingFlap); ctx.lineTo(-6, 2); ctx.closePath(); ctx.fill(); ctx.restore();
-            ctx.fillStyle = '#DCE2EE'; ctx.beginPath(); ctx.moveTo(-10, -2); ctx.lineTo(-16, -6); ctx.lineTo(-14, 4); ctx.closePath(); ctx.fill(); ctx.fillStyle = '#FFFFFF'; ctx.beginPath(); ctx.arc(-2, 0, 7, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = '#FFFFFF'; ctx.beginPath(); ctx.arc(6, -5, 5, 0, Math.PI * 2); ctx.fill(); ctx.fillStyle = '#111111'; ctx.fillRect(6, -6, 2, 2);
-            ctx.fillStyle = '#FF9800'; ctx.beginPath(); ctx.moveTo(10, -6); ctx.lineTo(16, -4); ctx.lineTo(10, -2); ctx.closePath(); ctx.fill(); ctx.restore();
+    // تأثير متابعة الماوس (سحري)
+    document.addEventListener('mousemove', (e) => {
+        const glow = document.querySelector('.glow');
+        if (!glow) {
+            const newGlow = document.createElement('div');
+            newGlow.classList.add('glow');
+            document.body.appendChild(newGlow);
         }
-
-        function spawnBlueCube() { blueCubes.push({ x: player.x + 400 + Math.random() * 500, y: 80 + Math.random() * 100, w: 28, h: 28 }); }
-        function drawBlueCube(b) { let angle = (frame * 0.08) % (Math.PI * 2); ctx.save(); ctx.translate(b.x - cameraX + 14, b.y + 14); ctx.rotate(angle); ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(-16, -16, 32, 32); ctx.fillStyle = '#3399FF'; ctx.fillRect(-14, -14, 28, 28); ctx.fillStyle = '#FFF'; ctx.font = 'bold 14px monospace'; ctx.fillText('+' + (player.maxJumps + 1), -8, 6); ctx.restore(); }
-
-        function drawBoss() {
-            if (!boss.active) return;
-            ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(boss.x - cameraX, boss.y + 5, boss.width, boss.height);
-            ctx.fillStyle = '#8B0000'; ctx.fillRect(boss.x - cameraX, boss.y, boss.width, boss.height);
-            ctx.fillStyle = '#FFD700'; ctx.fillRect(boss.x - cameraX + 10, boss.y - 10, 28, 10);
-            ctx.fillStyle = '#FFF'; ctx.fillRect(boss.x - cameraX + 10, boss.y + 10, 8, 8); ctx.fillRect(boss.x - cameraX + 30, boss.y + 10, 8, 8);
-            ctx.fillRect(boss.x - cameraX + 12, boss.y + 12, 4, 4); ctx.fillRect(boss.x - cameraX + 32, boss.y + 12, 4, 4);
-            let hp = boss.health / boss.maxHealth; ctx.fillStyle = '#0F0'; ctx.fillRect(boss.x - cameraX, boss.y - 10, boss.width * hp, 6);
-            ctx.fillStyle = '#F00'; ctx.fillRect(boss.x - cameraX + boss.width * hp, boss.y - 10, boss.width * (1 - hp), 6);
+        const glowDiv = document.querySelector('.glow');
+        if (glowDiv) {
+            glowDiv.style.left = e.clientX - 100 + 'px';
+            glowDiv.style.top = e.clientY - 100 + 'px';
         }
-
-        function updateBoss() { if (currentLevel === 9 && !boss.active && enemies.length === 0) { boss.active = true; boss.health = 100; boss.x = player.x + 300; boss.y = currentHeight - 150; } if (boss.active) { if (boss.cooldown <= 0) { bossProjectiles.push({ x: boss.x, y: boss.y + 20, w: 12, h: 12, vx: -4 }); boss.cooldown = 40; } boss.cooldown--; for (let i = 0; i < bossProjectiles.length; i++) { let p = bossProjectiles[i]; p.x += p.vx; if (player.x < p.x + p.w && player.x + player.width > p.x && player.y < p.y + p.h && player.y + player.height > p.y) { score = Math.max(0, score - 15); bossProjectiles.splice(i, 1); i--; } if (p.x < cameraX - 100) bossProjectiles.splice(i, 1); } if (player.x < boss.x + boss.width && player.x + player.width > boss.x && player.y < boss.y + boss.height && player.y + player.height > boss.y && player.vy > 0 && player.y + player.height - player.vy <= boss.y + 15) { boss.health -= 20; player.vy = -8; if (boss.health <= 0) { boss.active = false; score += 1000; orbs.push({ x: boss.x + 20, y: boss.y + 20, w: 24, h: 24 }); } } } }
-        function drawOrb(o) { ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(o.x - cameraX, o.y + 3, o.w, o.h); ctx.fillStyle = '#FF69B4'; ctx.fillRect(o.x - cameraX, o.y, o.w, o.h); ctx.fillStyle = '#FFF'; ctx.font = 'bold 14px monospace'; ctx.fillText('+20', o.x - cameraX + 4, o.y + 17); }
-
-        // دالة رسم الثعلب البكسلي الاحترافي
-        function drawFox() {
-            if (!fox.active) return;
-            let fx = fox.x - cameraX;
-            let fy = fox.y;
-            let legMov = Math.sin(frame * 0.4) * 4;
-
-            ctx.save();
-            if (fox.direction === -1) { ctx.translate(fx + fox.width, fy); ctx.scale(-1, 1); } else { ctx.translate(fx, fy); }
-
-            // الظل السفلي
-            ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.fillRect(0, fox.height - 2, fox.width, 3);
-            // الذيل البكسلي الكبير
-            ctx.fillStyle = '#E65100'; ctx.fillRect(0, 6, 12, 12); ctx.fillStyle = '#FFF'; ctx.fillRect(0, 10, 4, 4);
-            // الجسم الأساسي
-            ctx.fillStyle = '#F57C00'; ctx.fillRect(10, 8, 22, 14); ctx.fillStyle = '#FFF'; ctx.fillRect(14, 14, 14, 8);
-            // الرأس والرقبة
-            ctx.fillStyle = '#F57C00'; ctx.fillRect(26, 2, 10, 10); ctx.fillRect(32, 6, 8, 6);
-            // الأذنين
-            ctx.fillStyle = '#E65100'; ctx.fillRect(28, 0, 3, 3); ctx.fillRect(32, 0, 3, 3);
-            // الأنف والشارب
-            ctx.fillStyle = '#212121'; ctx.fillRect(39, 7, 2, 2);
-            // العين البيضاء البكسلية
-            ctx.fillStyle = '#FFF'; ctx.fillRect(32, 4, 3, 3); ctx.fillStyle = '#000'; ctx.fillRect(34, 4, 1, 2);
-            // الأرجل التفاعلية مع الحركة
-            ctx.fillStyle = '#E65100';
-            ctx.fillRect(12, 22 + legMov, 4, 6); ctx.fillRect(18, 22 - legMov, 4, 6);
-            ctx.fillRect(24, 22 - legMov, 4, 6); ctx.fillRect(28, 22 + legMov, 4, 6);
-
-            ctx.restore();
-        }
-
-        function drawBackground() {
-            let c = levelColors[currentLevel] || levelColors[1];
-            let grad = ctx.createLinearGradient(0, 0, 0, currentHeight);
-            grad.addColorStop(0, c.top);
-            grad.addColorStop(1, c.bottom);
-            ctx.fillStyle = grad;
-            ctx.fillRect(0, 0, currentWidth, currentHeight);
-
-            let paraX = (cameraX * 0.3) % currentWidth;
-            ctx.save();
-            switch (currentLevel) {
-                case 1:
-                    let moonX = (currentWidth - 150 - cameraX * 0.05) % currentWidth;
-                    ctx.fillStyle = '#fef08a'; ctx.fillRect(moonX, 50, 40, 40);
-                    ctx.fillStyle = '#fde047'; ctx.fillRect(moonX + 8, 58, 12, 12); ctx.fillRect(moonX + 24, 70, 8, 8);
-                    ctx.fillStyle = '#0f172a';
-                    for (let i = 0; i < currentWidth + 400; i += 90) {
-                        let cx = i - (cameraX * 0.1) % currentWidth; let bHeight = 220 + (Math.sin(i) * 50) + (i % 4) * 20; ctx.fillRect(cx, currentHeight - bHeight, 70, bHeight);
-                    }
-                    for (let i = 0; i < currentWidth + 300; i += 140) {
-                        let cx = i - paraX; let bHeight = 280 + (i % 3) * 50; ctx.fillStyle = '#1e293b'; ctx.fillRect(cx, currentHeight - bHeight, 100, bHeight);
-                        ctx.fillStyle = '#111827'; ctx.fillRect(cx, currentHeight - bHeight, 4, bHeight); ctx.fillRect(cx + 96, currentHeight - bHeight, 4, bHeight); ctx.fillRect(cx, currentHeight - bHeight, 100, 6);
-                        for (let wx = cx + 15; wx < cx + 90; wx += 16) {
-                            for (let wy = currentHeight - bHeight + 25; wy < currentHeight - 70; wy += 25) {
-                                let rand = Math.abs(Math.sin(wx * 12 + wy * 37));
-                                if (rand > 0.45) {
-                                    if (rand > 0.8) ctx.fillStyle = '#38bdf8'; else if (rand > 0.6) ctx.fillStyle = '#fef08a'; else ctx.fillStyle = '#f8fafc';
-                                    ctx.fillRect(wx, wy, 5, 7);
-                                }
-                            }
-                        }
-                    }
-                    break;
-                case 2:
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.2)'; for (let i = 0; i < currentWidth + 300; i += 120) { let cx = i - paraX; ctx.beginPath(); ctx.moveTo(cx, currentHeight - 60); ctx.lineTo(cx + 60, currentHeight - 250); ctx.lineTo(cx + 120, currentHeight - 60); ctx.fill(); }
-                    ctx.fillStyle = '#FFFFFF'; for (let i = 0; i < 30; i++) { let sx = (i * 77 + frame * 0.5) % currentWidth; let sy = (i * 33 + frame * 1.5) % (currentHeight - 60); ctx.fillRect(sx, sy, 3, 3); }
-                    break;
-                case 3:
-                    ctx.fillStyle = 'rgba(255, 69, 0, 0.15)'; ctx.fillRect(0, currentHeight - 140, currentWidth, 80);
-                    ctx.fillStyle = 'rgba(255, 140, 0, 0.25)'; for (let i = 0; i < currentWidth; i += 40) { let waveH = Math.sin(frame * 0.05 + i) * 10; ctx.fillRect(i, currentHeight - 100 + waveH, 40, 40); }
-                    ctx.fillStyle = '#2A1010'; for (let i = 0; i < currentWidth + 200; i += 100) { ctx.fillRect(i - paraX, currentHeight - 160, 50, 100); }
-                    break;
-                case 4:
-                    ctx.fillStyle = '#151522'; for (let i = 0; i < currentWidth + 100; i += 60) { let cx = i - paraX; ctx.beginPath(); ctx.moveTo(cx, 0); ctx.lineTo(cx + 30, 80 + Math.sin(i) * 20); ctx.lineTo(cx + 60, 0); ctx.fill(); }
-                    for (let i = 0; i < 15; i++) { ctx.fillStyle = (frame % 20 > 10) ? '#00FFFF' : '#008B8B'; ctx.fillRect((i * 120 - cameraX * 0.1) % currentWidth, 100 + (i % 3) * 40, 6, 8); }
-                    break;
-                case 5:
-                    for (let i = 0; i < 40; i++) { let sz = (i % 3 === 0) ? 3 : 1; ctx.fillStyle = (frame + i * 10) % 30 < 15 ? '#FFF' : '#FFD700'; ctx.fillRect((i * 65 - cameraX * 0.05) % currentWidth, (i * 37) % (currentHeight - 80), sz, sz); }
-                    let spaceGrad = ctx.createRadialGradient(currentWidth / 2, currentHeight / 3, 10, currentWidth / 2, currentHeight / 3, 150); spaceGrad.addColorStop(0, 'rgba(128, 0, 128, 0.3)'); spaceGrad.addColorStop(1, 'rgba(0,0,0,0)'); ctx.fillStyle = spaceGrad; ctx.fillRect(0, 0, currentWidth, currentHeight);
-                    break;
-                case 6:
-                    ctx.fillStyle = 'rgba(255, 255, 255, 0.4)'; for (let i = 0; i < 4; i++) { let cx = (i * 300 - cameraX * 0.1 + frame * 0.2) % (currentWidth + 200) - 100; let cy = 80 + i * 40; ctx.fillRect(cx, cy, 120, 30); ctx.fillRect(cx + 20, cy - 15, 80, 15); }
-                    break;
-                case 7:
-                    ctx.fillStyle = '#301510'; for (let i = 0; i < currentWidth + 400; i += 250) { let cx = i - paraX; ctx.beginPath(); ctx.moveTo(cx, currentHeight - 60); ctx.lineTo(cx + 120, 150); ctx.lineTo(cx + 250, currentHeight - 60); ctx.fill(); ctx.fillStyle = '#FF4500'; ctx.fillRect(cx + 115, 150, 10, currentHeight); }
-                    break;
-                case 8:
-                    ctx.fillStyle = 'rgba(20, 20, 35, 0.6)'; for (let i = 0; i < currentWidth + 160; i += 160) { let cx = i - paraX; ctx.fillRect(cx, 40, 50, currentHeight); ctx.fillStyle = 'rgba(40, 40, 60, 0.8)'; ctx.fillRect(cx, 120, 50, 10); ctx.fillRect(cx, 280, 50, 10); }
-                    break;
-                case 9:
-                    if (Math.random() < 0.03) { ctx.fillStyle = 'rgba(255, 255, 255, 0.7)'; ctx.fillRect(0, 0, currentWidth, currentHeight); ctx.strokeStyle = '#00FFFF'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(currentWidth / 2 + (Math.random() - 0.5) * 200, 0); ctx.lineTo(currentWidth / 2 - 50, 150); ctx.lineTo(currentWidth / 2 + 50, 300); ctx.lineTo(player.x - cameraX, player.y); ctx.stroke(); }
-                    ctx.fillStyle = 'rgba(255, 0, 0, 0.1)'; for (let i = 0; i < currentWidth; i += 80) { ctx.fillRect(i - (frame % 80), 0, 4, currentHeight); }
-                    break;
-            }
-            ctx.restore();
-
-            ctx.fillStyle = 'rgba(0,0,0,0.6)'; ctx.fillRect(currentWidth - 180, 10, 170, 28); ctx.fillStyle = '#FFD700'; ctx.font = '10px monospace'; ctx.fillText(c.name, currentWidth - 170, 30);
-
-            // تأثير الوميض الشاشي عند السرقة
-            if (fox.flashEffect > 0) { ctx.fillStyle = `rgba(255, 0, 0, ${fox.flashEffect})`; ctx.fillRect(0, 0, currentWidth, currentHeight); fox.flashEffect -= 0.05; }
-        }
-
-        function drawUI() {
-            ctx.fillStyle = 'rgba(0,0,0,0.7)'; ctx.fillRect(10, 10, 300, 140); ctx.fillStyle = '#FFD700'; ctx.font = 'bold 26px monospace'; ctx.fillText(`💰 ${Math.floor(score)}`, 20, 48); ctx.fillStyle = '#0ff'; ctx.font = 'bold 18px monospace'; ctx.fillText(`⭐ ${currentLevel}/9`, 20, 82); ctx.fillStyle = '#39F'; ctx.font = '12px monospace'; ctx.fillText(`🦘 قفزات: ${player.maxJumps}`, 20, 112);
-
-            // عداد الهروب من الثعلب الماكر
-            if (fox.active) {
-                ctx.fillStyle = 'rgba(230, 81, 0, 0.8)'; ctx.fillRect(currentWidth / 2 - 120, 15, 240, 35);
-                ctx.fillStyle = '#FFF'; ctx.font = 'bold 14px monospace'; ctx.textAlign = 'center';
-                ctx.fillText(`🦊 اهرررب! الثعلب يطاردك: ${Math.ceil(fox.timer / 60)}ث`, currentWidth / 2, 37);
-                ctx.textAlign = 'left';
-            }
-        }
-        function handleCollisions() { player.onGround = false; for (let p of platforms) { if (player.x + player.width > p.x && player.x < p.x + p.width && player.y + player.height > p.y && player.y < p.y + p.height) { if (player.vy >= 0 && player.y + player.height - player.vy <= p.y + 15) { player.y = p.y - player.height; player.vy = 0; player.onGround = true; player.jumpsLeft = player.maxJumps; } else if (player.vy < 0) { player.y = p.y + p.height; player.vy = 0; } } } if (player.y > currentHeight + 74) { player.x = 200; player.y = currentHeight - 176; player.vy = 0; score = Math.max(0, score - 10); } }
-
-        function update() {
-            if (!gameRunning) return;
-            let left = mobileLeft || keys.KeyA, right = mobileRight || keys.KeyD, jump = mobileJump || keys.KeyW;
-            if (left) player.vx = -SPEED; else if (right) player.vx = SPEED; else player.vx *= 0.95;
-            if (jump && !keys.jumpCd) { if (player.onGround) { player.vy = JUMP; player.onGround = false; player.jumpsLeft = player.maxJumps - 1; keys.jumpCd = true; setTimeout(() => keys.jumpCd = false, 150); } else if (player.jumpsLeft > 0) { player.vy = JUMP; player.jumpsLeft--; keys.jumpCd = true; setTimeout(() => keys.jumpCd = false, 150); } }
-            player.x += player.vx; player.vy += GRAVITY; player.y += player.vy; handleCollisions();
-            let targetX = player.x + 16 - currentWidth / 2; cameraX = cameraX * 0.92 + targetX * 0.08; if (cameraX < 0) cameraX = 0;
-
-            for (let i = 0; i < coins.length; i++) { let c = coins[i]; if (player.x < c.x + 24 && player.x + player.width > c.x && player.y < c.y + 24 && player.y + player.height > c.y) { coins.splice(i, 1); score += 10; i--; } }
-            for (let i = 0; i < enemies.length; i++) { let e = enemies[i]; e.x += e.vx; e.y += e.vy; if (e.x < 50 || e.x > 10000) e.vx *= -1; if (e.y < 80 || e.y > currentHeight - 100) e.vy *= -1; if (player.x < e.x + e.w && player.x + player.width > e.x && player.y < e.y + e.h && player.y + player.height > e.y) { enemies.splice(i, 1); score = Math.max(0, score - 10); player.x = 200; player.y = currentHeight - 176; player.vy = -8; i--; } }
-
-            // ميكانيكية حساب توقيت ظهور الثعلب (كل دقيقة بنسبة 50%)
-            let currentTime = Date.now();
-            if (currentTime - lastFoxSpawnTime >= 60000) {
-                lastFoxSpawnTime = currentTime;
-                if (Math.random() <= 0.50) { // نسبة الـ 50% المطلوبة
-                    fox.active = true;
-                    fox.timer = 15 * 60; // 15 ثانية كاملة للهروب
-                    fox.x = player.x + (Math.random() > 0.5 ? 500 : -500); // يترسبن بالقرب من اللاعب بطريقة فجائية
-                    fox.y = currentHeight - 88;
-                }
-            }
-
-            // تحديث حركة وذكاء الثعلب الماكر أثناء الهجوم
-            if (fox.active) {
-                fox.timer--;
-                if (fox.x < player.x) { fox.x += fox.vx; fox.direction = 1; }
-                else { fox.x -= fox.vx; fox.direction = -1; }
-
-                // تحقق من اصطدامه باللاعب لسرقة الفلوس
-                if (player.x < fox.x + fox.width && player.x + player.width > fox.x && player.y < fox.y + fox.height && player.y + player.height > fox.y) {
-                    if (score >= 10) { score -= 10; } else { score = 0; } // يسرق 10 فلوس بالتمام والكمال
-                    fox.flashEffect = 0.4; // فلاش أحمر سريع
-                    fox.active = false; // يهرب ويختفي بعد السرقة الناجحة
-                }
-
-                // إذا انتهت الـ 15 ثانية ونجحت في الهروب
-                if (fox.timer <= 0) { fox.active = false; }
-            }
-
-            let now = Date.now(); if (now - lastBlueCubeSpawn >= 12000 && blueCubes.length < 2) { spawnBlueCube(); lastBlueCubeSpawn = now; } for (let i = 0; i < blueCubes.length; i++) { let b = blueCubes[i]; if (player.x < b.x + 28 && player.x + player.width > b.x && player.y < b.y + 28 && player.y + player.height > b.y) { blueCubes.splice(i, 1); player.maxJumps = Math.min(player.maxJumps + 1, 10); player.jumpsLeft = player.maxJumps; i--; } }
-            let newLevel = Math.floor(score / 500) + 1; if (newLevel > currentLevel && newLevel <= 9) { currentLevel = newLevel; buildWorld(); } updateBoss(); for (let i = 0; i < orbs.length; i++) { let o = orbs[i]; if (player.x < o.x + 24 && player.x + player.width > o.x && player.y < o.y + 24 && player.y + player.height > o.y) { orbs.splice(i, 1); score += 20; i--; } }
-            if (coins.length < 60 && Math.random() < 0.025) coins.push({ x: player.x + 400 + Math.random() * 600, y: 100 + Math.random() * 350 }); if (enemies.length < 12 && Math.random() < 0.008) enemies.push({ x: player.x + 500 + Math.random() * 600, y: 150 + Math.random() * 300, w: 32, h: 24, vx: (Math.random() - 0.5) * 2, vy: (Math.random() - 0.5) * 1.2 }); frame++;
-        }
-
-        function draw() { drawBackground(); platforms.forEach(drawPlatform); coins.forEach(drawCoin); enemies.forEach(drawEnemy); blueCubes.forEach(drawBlueCube); bossProjectiles.forEach(p => { ctx.fillStyle = '#FF6600'; ctx.fillRect(p.x - cameraX, p.y, p.w, p.h); }); drawBoss(); orbs.forEach(drawOrb); drawFox(); drawPlayer(); drawUI(); }
-        function gameLoop() { if (gameRunning) { update(); draw(); } animationId = requestAnimationFrame(gameLoop); }
-        function restart() { score = 0; currentLevel = 1; player.maxJumps = 1; player.jumpsLeft = 1; player.x = 200; player.y = currentHeight - 176; player.vx = 0; player.vy = 0; cameraX = 0; frame = 0; boss.active = false; bossProjectiles = []; orbs = []; buildWorld(); spawnCoins(); spawnEnemies(); blueCubes = []; lastBlueCubeSpawn = Date.now(); fox.active = false; lastFoxSpawnTime = Date.now(); }
-        function setResolution(w, h) { currentWidth = w; currentHeight = h; canvas.width = w; canvas.height = h; if (gameRunning) restart(); }
-        function setFullscreen() { if (!document.fullscreenElement) gameContainer.requestFullscreen(); else document.exitFullscreen(); }
-        function initMobile() { let left = document.getElementById('mobileLeft'), right = document.getElementById('mobileRight'), jump = document.getElementById('mobileJump'); left.addEventListener('touchstart', e => { e.preventDefault(); mobileLeft = true; }); left.addEventListener('touchend', () => mobileLeft = false); right.addEventListener('touchstart', e => { e.preventDefault(); mobileRight = true; }); right.addEventListener('touchend', () => mobileRight = false); jump.addEventListener('touchstart', e => { e.preventDefault(); mobileJump = true; }); jump.addEventListener('touchend', () => mobileJump = false); }
-        document.getElementById('startBtn').onclick = () => { document.getElementById('startScreen').style.display = 'none'; gameRunning = true; restart(); if (!animationId) gameLoop(); };
-        document.getElementById('openSettingsBtn').onclick = () => { document.getElementById('settingsMenu').style.display = 'flex'; gameRunning = false; };
-        document.getElementById('closeSettingsBtn').onclick = () => { document.getElementById('settingsMenu').style.display = 'none'; gameRunning = true; };
-        document.getElementById('fullscreenBtn').onclick = setFullscreen;
-        document.querySelectorAll('.res-btn').forEach(btn => { btn.onclick = () => setResolution(parseInt(btn.dataset.w), parseInt(btn.dataset.h)); });
-        document.getElementById('musicToggle').onclick = function () { musicEnabled = !musicEnabled; this.classList.toggle('active', musicEnabled); };
-        document.getElementById('sfxToggle').onclick = function () { sfxEnabled = !sfxEnabled; this.classList.toggle('active', sfxEnabled); };
-        document.getElementById('mobileEscBtn').onclick = () => { if (document.getElementById('startScreen').style.display !== 'none') return; let menu = document.getElementById('settingsMenu'); if (menu.style.display === 'flex') { menu.style.display = 'none'; gameRunning = true; } else { menu.style.display = 'flex'; gameRunning = false; } };
-        document.addEventListener('keydown', e => { if (e.code === 'Escape') { e.preventDefault(); if (document.getElementById('startScreen').style.display !== 'none') return; let menu = document.getElementById('settingsMenu'); if (menu.style.display === 'flex') { menu.style.display = 'none'; gameRunning = true; } else { menu.style.display = 'flex'; gameRunning = false; } } if (keys.hasOwnProperty(e.code)) { keys[e.code] = true; e.preventDefault(); } });
-        document.addEventListener('keyup', e => { if (keys.hasOwnProperty(e.code)) keys[e.code] = false; });
-        window.addEventListener('keydown', e => { if (e.code === 'KeyW' || e.code === 'KeyA' || e.code === 'KeyD' || e.code === 'Escape') e.preventDefault(); });
-        buildWorld(); spawnCoins(); spawnEnemies(); initMobile();
-    </script>
+    });
+</script>
 </body>
 </html>
