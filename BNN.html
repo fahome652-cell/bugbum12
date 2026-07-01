@@ -1,15 +1,14 @@
 
-html_code = f'''<!DOCTYPE html>
+html_code = '''<!DOCTYPE html>
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
     <title>BNN</title>
-    <link rel="icon" type="image/png" href="{favicon_uri}">
     <style>
         /* ======== Reset & Base ======== */
-        * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        body {{ 
+        body { 
             background: #050510;
             color: #eee; 
             font-family: 'Segoe UI', Arial, sans-serif; 
@@ -19,10 +18,10 @@ html_code = f'''<!DOCTYPE html>
             min-height: 100vh;
             overflow-x: hidden;
             position: relative;
-        }}
+        }
 
         /* ======== Animated Glass Background ======== */
-        body::before {{
+        body::before {
             content: '';
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -32,9 +31,9 @@ html_code = f'''<!DOCTYPE html>
                 radial-gradient(circle at 50% 50%, rgba(0, 200, 255, 0.08) 0%, transparent 60%);
             animation: bgPulse 8s ease-in-out infinite alternate;
             z-index: -2;
-        }}
+        }
 
-        body::after {{
+        body::after {
             content: '';
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -44,66 +43,66 @@ html_code = f'''<!DOCTYPE html>
             background-size: 50px 50px;
             z-index: -2;
             pointer-events: none;
-        }}
+        }
 
-        @keyframes bgPulse {{
-            0% {{ transform: scale(1) rotate(0deg); opacity: 0.8; }}
-            50% {{ transform: scale(1.1) rotate(2deg); opacity: 1; }}
-            100% {{ transform: scale(1) rotate(0deg); opacity: 0.8; }}
-        }}
+        @keyframes bgPulse {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+            50% { transform: scale(1.1) rotate(2deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+        }
 
         /* Floating particles */
-        .particles {{
+        .particles {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             pointer-events: none;
             z-index: -1;
             overflow: hidden;
-        }}
-        .particle {{
+        }
+        .particle {
             position: absolute;
             width: 4px; height: 4px;
             background: rgba(255, 210, 0, 0.3);
             border-radius: 50%;
             animation: floatUp linear infinite;
-        }}
-        @keyframes floatUp {{
-            0% {{ transform: translateY(100vh) scale(0); opacity: 0; }}
-            10% {{ opacity: 1; }}
-            90% {{ opacity: 1; }}
-            100% {{ transform: translateY(-10vh) scale(1.5); opacity: 0; }}
-        }}
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
 
-        /* ======== Logo Text (Original Style) ======== */
-        .logo {{
+        /* ======== Logo ======== */
+        .logo {
             position: absolute;
             top: 20px;
             right: 30px;
             font-size: 80px;
             font-weight: 900;
-            color: #ffffff;
+            color: rgba(255,255,255,0.9);
             letter-spacing: 5px;
             margin: 0;
             line-height: 1;
-            text-shadow: none;
+            text-shadow: 0 0 30px rgba(255,210,0,0.3);
             animation: logoGlow 3s ease-in-out infinite alternate;
-        }}
-        @keyframes logoGlow {{
-            from {{ text-shadow: 0 0 20px rgba(255,210,0,0.2); }}
-            to {{ text-shadow: 0 0 40px rgba(255,210,0,0.5), 0 0 80px rgba(255,210,0,0.2); }}
-        }}
+        }
+        @keyframes logoGlow {
+            from { text-shadow: 0 0 20px rgba(255,210,0,0.2); }
+            to { text-shadow: 0 0 40px rgba(255,210,0,0.5), 0 0 80px rgba(255,210,0,0.2); }
+        }
 
         /* ======== Container ======== */
-        .container {{
+        .container {
             max-width: 900px;
             margin: 0 auto;
             padding-top: 120px;
             position: relative;
             z-index: 1;
-        }}
+        }
 
         /* ======== Glass Card ======== */
-        .glass-card {{
+        .glass-card {
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -115,24 +114,24 @@ html_code = f'''<!DOCTYPE html>
                 0 8px 32px rgba(0, 0, 0, 0.3),
                 inset 0 1px 0 rgba(255, 255, 255, 0.05);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }}
-        .glass-card:hover {{
+        }
+        .glass-card:hover {
             transform: translateY(-2px);
             box-shadow: 
                 0 12px 40px rgba(0, 0, 0, 0.4),
                 inset 0 1px 0 rgba(255, 255, 255, 0.08);
-        }}
+        }
 
         /* ======== Tabs ======== */
-        .tabs {{ 
+        .tabs { 
             display: flex; 
             justify-content: center; 
             gap: 12px; 
             margin: 20px 0 30px; 
             flex-wrap: wrap;
-        }}
+        }
         
-        .tab-btn {{ 
+        .tab-btn { 
             padding: 12px 28px; 
             background: rgba(255, 255, 255, 0.03);
             backdrop-filter: blur(10px);
@@ -145,47 +144,47 @@ html_code = f'''<!DOCTYPE html>
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
-        }}
-        .tab-btn::before {{
+        }
+        .tab-btn::before {
             content: '';
             position: absolute;
             top: 0; left: -100%;
             width: 100%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,210,0,0.1), transparent);
             transition: left 0.5s ease;
-        }}
-        .tab-btn:hover::before {{
+        }
+        .tab-btn:hover::before {
             left: 100%;
-        }}
-        .tab-btn:hover {{
+        }
+        .tab-btn:hover {
             background: rgba(255, 255, 255, 0.06);
             border-color: rgba(255, 210, 0, 0.3);
             color: #ffd200;
             transform: translateY(-2px);
             box-shadow: 0 4px 20px rgba(255, 210, 0, 0.1);
-        }}
-        .tab-btn.active {{ 
+        }
+        .tab-btn.active { 
             background: rgba(255, 210, 0, 0.1);
             border-color: rgba(255, 210, 0, 0.4);
             color: #ffd200;
             box-shadow: 0 0 20px rgba(255, 210, 0, 0.15), inset 0 1px 0 rgba(255, 210, 0, 0.1);
-        }}
+        }
 
         /* ======== Tab Content ======== */
-        .tab-content {{ 
+        .tab-content { 
             display: none; 
             animation: fadeInUp 0.5s ease;
-        }}
-        .tab-content.active {{ 
+        }
+        .tab-content.active { 
             display: block; 
-        }}
-        @keyframes fadeInUp {{
-            from {{ opacity: 0; transform: translateY(20px); }}
-            to {{ opacity: 1; transform: translateY(0); }}
-        }}
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
         /* ======== Typography ======== */
-        h2 {{ 
+        h2 { 
             margin: 0 0 25px; 
             font-size: 26px;
             font-weight: 700;
@@ -193,16 +192,16 @@ html_code = f'''<!DOCTYPE html>
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-        }}
-        h3 {{
+        }
+        h3 {
             margin: 20px 0 10px;
             font-size: 18px;
             color: #ccc;
             font-weight: 600;
-        }}
+        }
 
         /* ======== Inputs & Textareas ======== */
-        textarea, input, select {{ 
+        textarea, input, select { 
             width: 100%; 
             padding: 14px 18px; 
             margin: 10px 0; 
@@ -214,22 +213,22 @@ html_code = f'''<!DOCTYPE html>
             transition: all 0.3s ease;
             outline: none;
             font-family: 'Segoe UI', Arial, sans-serif;
-        }}
-        textarea {{
+        }
+        textarea {
             min-height: 120px;
             resize: vertical;
-        }}
-        textarea:focus, input:focus, select:focus {{
+        }
+        textarea:focus, input:focus, select:focus {
             border-color: rgba(255, 210, 0, 0.5);
             box-shadow: 0 0 20px rgba(255, 210, 0, 0.1);
             background: rgba(0, 0, 0, 0.3);
-        }}
-        textarea::placeholder, input::placeholder {{
+        }
+        textarea::placeholder, input::placeholder {
             color: #666;
-        }}
+        }
 
         /* ======== Buttons ======== */
-        button {{ 
+        button { 
             padding: 12px 28px; 
             margin: 8px; 
             cursor: pointer; 
@@ -243,8 +242,8 @@ html_code = f'''<!DOCTYPE html>
             position: relative;
             overflow: hidden;
             font-family: 'Segoe UI', Arial, sans-serif;
-        }}
-        button::after {{
+        }
+        button::after {
             content: '';
             position: absolute;
             top: 50%; left: 50%;
@@ -253,23 +252,23 @@ html_code = f'''<!DOCTYPE html>
             border-radius: 50%;
             transform: translate(-50%, -50%);
             transition: width 0.6s ease, height 0.6s ease;
-        }}
-        button:hover::after {{
+        }
+        button:hover::after {
             width: 300px; height: 300px;
-        }}
-        button:hover {{ 
+        }
+        button:hover { 
             background: rgba(255, 210, 0, 0.1);
             border-color: rgba(255, 210, 0, 0.4);
             color: #ffd200;
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(255, 210, 0, 0.15);
-        }}
-        button:active {{
+        }
+        button:active {
             transform: translateY(0);
-        }}
+        }
 
         /* ======== Result Box ======== */
-        .result-box {{ 
+        .result-box { 
             background: rgba(0, 0, 0, 0.2);
             padding: 25px; 
             margin: 15px auto; 
@@ -279,14 +278,14 @@ html_code = f'''<!DOCTYPE html>
             font-size: 20px;
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
-        }}
-        .result-box:hover {{
+        }
+        .result-box:hover {
             border-color: rgba(255, 210, 0, 0.2);
             box-shadow: 0 0 30px rgba(255, 210, 0, 0.05);
-        }}
+        }
         
         /* ======== Status ======== */
-        .status {{ 
+        .status { 
             margin-top: 15px; 
             padding: 12px 20px; 
             border-radius: 10px;
@@ -294,20 +293,20 @@ html_code = f'''<!DOCTYPE html>
             font-size: 14px;
             transition: all 0.3s ease;
             backdrop-filter: blur(10px);
-        }}
-        .success {{ 
+        }
+        .success { 
             color: #51cf66; 
             background: rgba(81, 207, 102, 0.1);
             border: 1px solid rgba(81, 207, 102, 0.2);
-        }}
-        .error {{ 
+        }
+        .error { 
             color: #ff6b6b; 
             background: rgba(255, 107, 107, 0.1);
             border: 1px solid rgba(255, 107, 107, 0.2);
-        }}
+        }
 
         /* ======== External Link Button ======== */
-        .external-link-btn {{
+        .external-link-btn {
             display: inline-flex;
             align-items: center;
             gap: 8px;
@@ -325,45 +324,45 @@ html_code = f'''<!DOCTYPE html>
             position: relative;
             overflow: hidden;
             backdrop-filter: blur(10px);
-        }}
-        .external-link-btn::before {{
+        }
+        .external-link-btn::before {
             content: '';
             position: absolute;
             top: 0; left: -100%;
             width: 100%; height: 100%;
             background: linear-gradient(90deg, transparent, rgba(255,210,0,0.2), transparent);
             transition: left 0.6s ease;
-        }}
-        .external-link-btn:hover::before {{
+        }
+        .external-link-btn:hover::before {
             left: 100%;
-        }}
-        .external-link-btn:hover {{
+        }
+        .external-link-btn:hover {
             transform: translateY(-3px) scale(1.02);
             box-shadow: 0 10px 40px rgba(255, 210, 0, 0.2), 0 0 60px rgba(255, 210, 0, 0.1);
             border-color: rgba(255, 210, 0, 0.6);
             background: linear-gradient(135deg, rgba(255,210,0,0.2) 0%, rgba(255,160,0,0.15) 100%);
-        }}
-        .external-link-btn:active {{
+        }
+        .external-link-btn:active {
             transform: translateY(-1px) scale(0.98);
-        }}
-        .external-link-btn .icon {{
+        }
+        .external-link-btn .icon {
             font-size: 20px;
             animation: bounce 2s infinite;
-        }}
-        @keyframes bounce {{
-            0%, 100% {{ transform: translateY(0); }}
-            50% {{ transform: translateY(-4px); }}
-        }}
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
 
         /* ======== Responsive ======== */
-        @media (max-width: 768px) {{
-            .logo {{ font-size: 50px; right: 15px; top: 10px; }}
-            .container {{ padding-top: 90px; padding-left: 10px; padding-right: 10px; }}
-            .tabs {{ gap: 8px; }}
-            .tab-btn {{ padding: 10px 18px; font-size: 13px; }}
-            .glass-card {{ padding: 20px; }}
-            h2 {{ font-size: 22px; }}
-        }}
+        @media (max-width: 768px) {
+            .logo { font-size: 50px; right: 15px; top: 10px; }
+            .container { padding-top: 90px; padding-left: 10px; padding-right: 10px; }
+            .tabs { gap: 8px; }
+            .tab-btn { padding: 10px 18px; font-size: 13px; }
+            .glass-card { padding: 20px; }
+            h2 { font-size: 22px; }
+        }
     </style>
 </head>
 <body>
@@ -371,7 +370,7 @@ html_code = f'''<!DOCTYPE html>
     <!-- Floating Particles -->
     <div class="particles" id="particles"></div>
 
-    <!-- شعار BNN نصي - زاوية يمين فوق -->
+    <!-- Logo -->
     <div class="logo">BNN</div>
 
     <div class="container">
@@ -492,10 +491,10 @@ html_code = f'''<!DOCTYPE html>
 
     <script>
         // ======== Floating Particles Generator ========
-        function createParticles(){{
+        function createParticles() {
             const container = document.getElementById('particles');
             const particleCount = 30;
-            for (let i = 0; i < particleCount; i++){{
+            for (let i = 0; i < particleCount; i++) {
                 const p = document.createElement('div');
                 p.className = 'particle';
                 p.style.left = Math.random() * 100 + '%';
@@ -506,152 +505,154 @@ html_code = f'''<!DOCTYPE html>
                 p.style.width = size + 'px';
                 p.style.height = size + 'px';
                 container.appendChild(p);
-            }}
-        }}
+            }
+        }
         createParticles();
 
         // ======== Tabs ========
-        function showTab(tabId){{
-            document.querySelectorAll('.tab-content').forEach(el =>{{
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => {
                 el.classList.remove('active');
                 el.style.animation = 'none';
-            }});
+            });
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
             
             const target = document.getElementById(tabId);
             target.classList.add('active');
             target.style.animation = 'fadeInUp 0.5s ease';
             
+            // Find the button that was clicked
             const btns = document.querySelectorAll('.tab-btn');
-            for (let btn of btns){{
-                if (btn.getAttribute('onclick').includes(tabId)){{
+            for (let btn of btns) {
+                if (btn.getAttribute('onclick').includes(tabId)) {
                     btn.classList.add('active');
-                }}
-            }}
-        }}
+                }
+            }
+        }
 
         // ======== Encryption Map ========
-        const map ={{
+        const map = {
             'ا':'A1','ب':'B2','ت':'C3','ث':'D4','ج':'E5','ح':'F6','خ':'G7',
             'د':'H8','ذ':'I9','ر':'J1','ز':'K2','س':'L3','ش':'M4','ص':'N5',
             'ض':'O6','ط':'P7','ظ':'Q8','ع':'R9','غ':'S1','ف':'T2','ق':'U3',
             'ك':'V4','ل':'W5','م':'X6','ن':'Y7','ه':'Z8','و':'@9','ي':'#0'
-        }};
+        };
 
-        const reverseMap ={{}};
-        for (let key in map){{
+        const reverseMap = {};
+        for (let key in map) {
             reverseMap[map[key]] = key;
-        }}
+        }
 
         // ======== Encrypt ========
-        function encrypt(){{
+        function encrypt() {
             const input = document.getElementById('inputText');
             const output = document.getElementById('outputText');
             const status = document.getElementById('encryptStatus');
             const text = input.value;
             
-            if (!text.trim()){{
+            if (!text.trim()) {
                 status.className = 'status error';
                 status.textContent = '⚠️ الرجاء إدخال نص للتشفير';
                 output.value = '';
                 return;
-            }}
+            }
 
             let result = '';
             let encryptedCount = 0;
 
-            for (let ch of text){{
-                if (map[ch]){{
+            for (let ch of text) {
+                if (map[ch]) {
                     result += map[ch];
                     encryptedCount++;
-                }} else {{
+                } else {
                     result += ch;
-                }}
-            }}
+                }
+            }
 
             output.value = result;
             status.className = 'status success';
-            status.textContent = `✅ تم تشفير ${{encryptedCount}} حرف بنجاح`;
+            status.textContent = `✅ تم تشفير ${encryptedCount} حرف بنجاح`;
             
+            // Animate output
             output.style.transform = 'scale(0.98)';
             setTimeout(() => output.style.transform = 'scale(1)', 200);
-        }}
+        }
 
-        function decrypt(){{
+        function decrypt() {
             const input = document.getElementById('inputText');
             const output = document.getElementById('outputText');
             const status = document.getElementById('encryptStatus');
             const text = input.value;
             
-            if (!text.trim()){{
+            if (!text.trim()) {
                 status.className = 'status error';
                 status.textContent = '⚠️ الرجاء إدخال نص لفك التشفير';
                 output.value = '';
                 return;
-            }}
+            }
 
             let result = '';
             let decryptedCount = 0;
             let i = 0;
 
-            while (i < text.length){{
-                if (i + 1 < text.length){{
+            while (i < text.length) {
+                if (i + 1 < text.length) {
                     const firstChar = text[i];
                     const secondChar = text[i + 1];
                     
-                    if ((firstChar >= 'A' && firstChar <= 'Z') || firstChar === '@' || firstChar === '#'){{
-                        if (secondChar >= '0' && secondChar <= '9'){{
+                    if ((firstChar >= 'A' && firstChar <= 'Z') || firstChar === '@' || firstChar === '#') {
+                        if (secondChar >= '0' && secondChar <= '9') {
                             const code = firstChar + secondChar;
-                            if (reverseMap[code]){{
+                            if (reverseMap[code]) {
                                 result += reverseMap[code];
                                 decryptedCount++;
                                 i += 2;
                                 continue;
-                            }}
-                        }}
-                    }}
-                }}
+                            }
+                        }
+                    }
+                }
                 
-                if (text[i] === ' '){{
+                if (text[i] === ' ') {
                     result += ' ';
                     i++;
                     continue;
-                }}
+                }
                 
                 result += text[i];
                 i++;
-            }}
+            }
 
             output.value = result;
             status.className = 'status success';
-            status.textContent = `✅ تم فك تشفير ${{decryptedCount}} رمز بنجاح`;
+            status.textContent = `✅ تم فك تشفير ${decryptedCount} رمز بنجاح`;
             
             output.style.transform = 'scale(0.98)';
             setTimeout(() => output.style.transform = 'scale(1)', 200);
-        }}
+        }
 
         // ======== Currency Rates ========
-        const rates ={{
+        const rates = {
             USD: 1, EUR: 0.85, GBP: 0.73, SAR: 3.75, AED: 3.67,
             KWD: 0.305, EGP: 47.5, JOD: 0.71, QAR: 3.64, BHD: 0.376,
             OMR: 0.384, TRY: 32.5, INR: 83.5, CNY: 7.25, JPY: 148.5,
             CAD: 1.36, AUD: 1.52
-        }};
+        };
 
         // ======== Currency Conversion ========
-        function convertCurrency(){{
+        function convertCurrency() {
             const from = document.getElementById('fromCurrency').value;
             const to = document.getElementById('toCurrency').value;
             const amount = parseFloat(document.getElementById('amount').value);
             const resultDiv = document.getElementById('currencyResult');
             const status = document.getElementById('currencyStatus');
 
-            if (!amount || amount <= 0){{
+            if (!amount || amount <= 0) {
                 status.className = 'status error';
                 status.textContent = '⚠️ الرجاء إدخال مبلغ صحيح';
                 resultDiv.textContent = 'أدخل مبلغاً صحيحاً';
                 return;
-            }}
+            }
 
             const fromRate = rates[from];
             const toRate = rates[to];
@@ -662,49 +663,49 @@ html_code = f'''<!DOCTYPE html>
 
             resultDiv.innerHTML = `
                 <div style="animation: fadeInUp 0.4s ease;">
-                    ${{amount.toFixed(2)}} ${{fromName}}<br>
+                    ${amount.toFixed(2)} ${fromName}<br>
                     <span style="font-size:30px; display:inline-block; margin:10px 0; animation: bounce 1s infinite;">🔄</span><br>
-                    <span style="font-size:28px; color:#ffd200; font-weight:700;">${{converted.toFixed(2)}} ${{toName}}</span><br>
-                    <span style="font-size:14px; color:#888; margin-top:10px; display:block;">1 ${{from}} = ${{(toRate / fromRate).toFixed(4)}} ${{to}}</span>
+                    <span style="font-size:28px; color:#ffd200; font-weight:700;">${converted.toFixed(2)} ${toName}</span><br>
+                    <span style="font-size:14px; color:#888; margin-top:10px; display:block;">1 ${from} = ${(toRate / fromRate).toFixed(4)} ${to}</span>
                 </div>
             `;
 
             status.className = 'status success';
             status.textContent = '✅ تم التحويل بنجاح';
-        }}
+        }
 
         // ======== Translator ========
-        function translateText(){{
+        function translateText() {
             const direction = document.getElementById('translateDirection').value;
             const input = document.getElementById('translateInput');
             const output = document.getElementById('translateOutput');
             const status = document.getElementById('translateStatus');
             const text = input.value.trim();
 
-            if (!text){{
+            if (!text) {
                 status.className = 'status error';
                 status.textContent = '⚠️ الرجاء إدخال نص للترجمة';
                 output.value = '';
                 return;
-            }}
+            }
 
-            const url = `https://api.mymemory.translated.net/get?q=${{encodeURIComponent(text)}}&langpair=${{direction === 'ar-en' ? 'ar|en' : 'en|ar'}}`;
+            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${direction === 'ar-en' ? 'ar|en' : 'en|ar'}`;
 
             fetch(url)
                 .then(res => res.json())
-                .then(data =>{{
-                    if (data.responseData && data.responseData.translatedText){{
+                .then(data => {
+                    if (data.responseData && data.responseData.translatedText) {
                         output.value = data.responseData.translatedText;
                         status.className = 'status success';
                         status.textContent = '✅ تمت الترجمة بنجاح';
                         output.style.transform = 'scale(0.98)';
                         setTimeout(() => output.style.transform = 'scale(1)', 200);
-                    }} else {{
+                    } else {
                         throw new Error('فشل الترجمة');
-                    }}
-                }})
-                .catch(() =>{{
-                    const dict ={{
+                    }
+                })
+                .catch(() => {
+                    const dict = {
                         'مرحبا': 'Hello',
                         'كيف حالك': 'How are you',
                         'شكرا': 'Thank you',
@@ -713,34 +714,34 @@ html_code = f'''<!DOCTYPE html>
                         'How are you': 'كيف حالك',
                         'Thank you': 'شكرا',
                         'Peace be upon you': 'السلام عليكم'
-                    }};
+                    };
                     const lowerText = text.toLowerCase();
-                    if (dict[lowerText]){{
+                    if (dict[lowerText]) {
                         output.value = dict[lowerText];
                         status.className = 'status success';
                         status.textContent = '✅ تمت الترجمة (قاموس محلي)';
                         output.style.transform = 'scale(0.98)';
                         setTimeout(() => output.style.transform = 'scale(1)', 200);
-                    }} else {{
+                    } else {
                         output.value = '⚠️ تعذرت الترجمة، تأكد من اتصال الإنترنت';
                         status.className = 'status error';
                         status.textContent = '❌ فشل الترجمة';
-                    }}
-                }});
-        }}
+                    }
+                });
+        }
 
         // ======== Enter to Convert ========
-        document.addEventListener('DOMContentLoaded', function(){{
-            document.getElementById('amount').addEventListener('keypress', function(e){{
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('amount').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') convertCurrency();
-            }});
-        }});
+            });
+        });
     </script>
 </body>
 </html>'''
 
-with open('/mnt/agents/output/BNN_final.html', 'w', encoding='utf-8') as f:
+with open('/mnt/agents/output/BNN_glass_style.html', 'w', encoding='utf-8') as f:
     f.write(html_code)
 
-print("✅ تم حفظ الملف بنجاح!")
-print(f"📊 عدد أحرف الكود: {len(html_code):,}")
+print("تم حفظ الملف بنجاح!")
+print(f"عدد أحرف الكود: {len(html_code)}")
