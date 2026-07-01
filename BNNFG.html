@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة BNN الخدمية</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #111214; /* خلفية رمادية غامقة جداً وفخمة */
+            color: #dbdee1;
+            margin: 0;
+            padding: 40px; 
+        }
+
+        /* أنميشن ظهور واختفاء كلمة BNN بشكل تدريجي ولانهائي */
+        @keyframes fadePulse {
+            0% { opacity: 0.1; }
+            50% { opacity: 1; }
+            100% { opacity: 0.1; }
+        }
+
+        h1 {
+            color: #ffffff;
+            font-size: 2.3rem;
+            margin: 0 0 20px 0;
+            animation: fadePulse 4.5s ease-in-out infinite; 
+            letter-spacing: 2px;
+            display: inline-block; /* لضمان تأثير التكبير على الكلمة فقط */
+            transition: transform 0.4s ease; /* تأثير تكبير تدريجي ناعم */
+            cursor: default;
+        }
+
+        /* تكبير العنوان عند مرور الماوس */
+        h1:hover {
+            transform: scale(1.1); /* يكبر بنسبة 10% تدريجياً */
+        }
+
+        p {
+            font-size: 0.95rem; /* نصوص مصغرة وأنيقة */
+            line-height: 1.7;
+            color: #949ba4;
+            max-width: 100%; 
+            margin-bottom: 35px;
+            text-align: justify;
+            transition: transform 0.4s ease, color 0.4s ease; /* تأثير تدريجي للنصوص */
+            cursor: default;
+        }
+
+        /* تكبير النص الرئيسي وتفتيح لونه عند مرور الماوس */
+        p:hover {
+            transform: scale(1.02); /* تكبير خفيف ومناسب للنصوص الطويلة */
+            color: #ffffff;
+        }
+
+        .full-page-text {
+            font-size: 0.9rem; /* نصوص الأدوات مصغرة ومكثفة */
+            line-height: 1.9;
+            color: #f2f3f5;
+        }
+
+        .line-item {
+            margin-bottom: 25px;
+            display: flex;
+            align-items: flex-start; /* محاذاة الدائرة مع بداية السطور الطويلة */
+            gap: 12px;
+            text-align: justify;
+            transition: transform 0.4s ease; /* تأثير تدريجي للسطور */
+            cursor: default;
+        }
+
+        /* تكبير السطر بالكامل بشكل تدريجي عند مرور الماوس */
+        .line-item:hover {
+            transform: scale(1.03); /* تكبير السطر بنسبة 3% بشكل ناعم */
+        }
+
+        /* دائرة بيضاء صغيرة جداً ومنسقة */
+        .circle-bullet {
+            width: 5px;
+            height: 5px;
+            background-color: #ffffff; 
+            border-radius: 50%;
+            flex-shrink: 0; 
+            margin-top: 8px; /* موازنة مكان الدائرة مع السطر الأول */
+        }
+        
+        strong {
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>BNN</h1>
+    
+    <p>
+        تُمثّل منصة BNN بيئة عمل رقمية وهندسية متكاملة، جرى تصميمها وبناؤها برؤية برمجية ترتكز على معمارية الواجهات الخفيفة وسرعة الاستجابة اللحظية الفائقة. تعتمد المنصة على دمج عدة خوارزميات خدمية أساسية في ملف واحد، مما يضمن معالجة البيانات محلياً وبشكل فوري دون الحاجة لاستنزاف موارد الشبكة أو إرسال طلبات متكررة للخوادم الخارجية، مما يجعلها الأداة المثالية للاستخدام السريع والآمن تحت مختلف ظروف الاتصال.
+    </p>
+
+    <div class="full-page-text">
+        <div class="line-item">
+            <span class="circle-bullet"></span>
+            <span><strong>خوارزمية التشفير وفك التشفير (لغة راكان):</strong> تعتمد هذه الأداة على نظام هندسة عكسية للمحارف واستبدال تشفيري مخصص يقوم بتحويل النصوص المدخلة إلى مصفوفة معقدة من الرموز والأرقام وفق خريطة برمجية ثابتة، مما يمنع القراءة المباشرة ويحفظ سرية تبادل البيانات بشكل مبتكر، مع إمكانية إعادة معالجة الرموز المشفرة وفكها إلى نصوصها الأصلية في أجزاء من الثانية.</span>
+        </div>
+        
+        <div class="line-item">
+            <span class="circle-bullet"></span>
+            <span><strong>نظام تحويل وتكافؤ العملات:</strong> تشتمل الأداة على حاسبة مالية برمجية تدعم معايير الصرف والتحويل بين العملات العربية والإقليمية والعملات العالمية الأساسية، حيث تعتمد على واجهة رياضية دقيقة تسمح للمستخدم بإجراء العمليات الحسابية والتقييم المالي الفوري للمبالغ الكبيرة دون تعقيد، مع موازنة دقيقة لنسب الفروقات بين العملات المختلفة بشكل متزامن.</span>
+        </div>
+        
+        <div class="line-item">
+            <span class="circle-bullet"></span>
+            <span><strong>محرك الترجمة الثنائية (عربي - إنجليزي):</strong> يوفر نظاماً تفاعلياً لمعالجة اللغات الطبيعية يعتمد على قوالب ترجمة فورية مدمجة تسمح بنقل العبارات والنصوص بدقة وسلاسة بين اللغتين العربية والإنجليزية، مع التركيز على الاحتفاظ بالسياق الصحيح للجمل وتجنب الأخطاء الشائعة في الصياغة، وذلك عبر واجهة معالجة خفيفة تعمل بأقصى سرعة ممكنة.</span>
+        </div>
+    </div>
+
+</body>
+</html>
