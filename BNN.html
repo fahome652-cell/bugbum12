@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>BNN - تشفير وعملات ومترجم</title>
+    <style>
+        body { 
+            background:#111; 
+            color:#eee; 
+            font-family:Arial; 
+            text-align:center; 
+            margin:0;
+            padding:20px;
+        }
+        
+        /* شعار BNN عملاق في الزاوية اليمنى فوق */
+        .logo {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 80px;
+            font-weight: 900;
+            color: #ffffff;
+            letter-spacing: 5px;
+            margin: 0;
+            line-height: 1;
+            text-shadow: none;
+        }
+
+        textarea { 
+            width:80%; 
+            height:120px; 
+            margin:10px; 
+            background:#222; 
+            color:#eee; 
+            border:1px solid #444; 
+            font-size:16px; 
+        }
+        
+        input, select { 
+            width:80%; 
+            padding:10px; 
+            margin:10px; 
+            background:#222; 
+            color:#eee; 
+            border:1px solid #444; 
+            font-size:16px; 
+        }
+        
+        button { 
+            padding:10px 20px; 
+            margin:10px; 
+            cursor:pointer; 
+            background:#2a2a2a; 
+            color:#eee; 
+            border:1px solid #555; 
+            border-radius:5px; 
+        }
+        
+        button:hover { 
+            background:#3a3a3a; 
+        }
+        
+        h2 { 
+            margin-top:20px; 
+        }
+        
+        .result-box { 
+            background:#1a1a1a; 
+            padding:20px; 
+            margin:10px auto; 
+            width:80%; 
+            border-radius:5px; 
+            border:1px solid #444; 
+            font-size:20px; 
+        }
+        
+        .tabs { 
+            display:flex; 
+            justify-content:center; 
+            gap:10px; 
+            margin:20px; 
+            flex-wrap:wrap; 
+        }
+        
+        .tab-btn { 
+            padding:10px 30px; 
+            background:#1a1a1a; 
+            border:1px solid #444; 
+            border-radius:5px; 
+            color:#aaa; 
+            cursor:pointer; 
+        }
+        
+        .tab-btn.active { 
+            background:#2a2a2a; 
+            border-color:#ffd200; 
+            color:#ffd200; 
+        }
+        
+        .tab-content { 
+            display:none; 
+        }
+        
+        .tab-content.active { 
+            display:block; 
+        }
+        
+        .status { 
+            margin-top:10px; 
+            padding:10px; 
+            border-radius:5px; 
+        }
+        
+        .success { 
+            color:#51cf66; 
+        }
+        
+        .error { 
+            color:#ff6b6b; 
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding-top: 100px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- شعار BNN عملاق - زاوية يمين فوق - لون أبيض بدون توهج -->
+    <div class="logo">BNN</div>
+
+    <div class="container">
+        <!-- التبويبات -->
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('encrypt')">🔐 تشفير راكان</button>
+            <button class="tab-btn" onclick="showTab('currency')">💰 تحويل العملات</button>
+            <button class="tab-btn" onclick="showTab('translate')">🌍 مترجم</button>
+        </div>
+
+        <!-- ======== قسم التشفير ======== -->
+        <div id="encrypt" class="tab-content active">
+            <h2>🔐 تشفير وفك تشفير لغة راكان</h2>
+            <textarea id="inputText" placeholder="اكتب نص عادي أو نص مشفّر"></textarea>
+            <br>
+            <button onclick="encrypt()">🔐 تشفير</button>
+            <button onclick="decrypt()">🔓 فك التشفير</button>
+            <h3>الناتج:</h3>
+            <textarea id="outputText" readonly></textarea>
+            <div id="encryptStatus" class="status"></div>
+        </div>
+
+        <!-- ======== قسم العملات ======== -->
+        <div id="currency" class="tab-content">
+            <h2>💰 تحويل العملات</h2>
+            
+            <select id="fromCurrency">
+                <option value="USD">🇺🇸 دولار أمريكي</option>
+                <option value="SAR" selected>🇸🇦 ريال سعودي</option>
+                <option value="EUR">🇪🇺 يورو</option>
+                <option value="GBP">🇬🇧 جنيه إسترليني</option>
+                <option value="AED">🇦🇪 درهم إماراتي</option>
+                <option value="KWD">🇰🇼 دينار كويتي</option>
+                <option value="EGP">🇪🇬 جنيه مصري</option>
+                <option value="JOD">🇯🇴 دينار أردني</option>
+                <option value="QAR">🇶🇦 ريال قطري</option>
+                <option value="BHD">🇧🇭 دينار بحريني</option>
+                <option value="OMR">🇴🇲 ريال عماني</option>
+                <option value="TRY">🇹🇷 ليرة تركية</option>
+                <option value="INR">🇮🇳 روبية هندية</option>
+                <option value="CNY">🇨🇳 يوان صيني</option>
+                <option value="JPY">🇯🇵 ين ياباني</option>
+                <option value="CAD">🇨🇦 دولار كندي</option>
+                <option value="AUD">🇦🇺 دولار أسترالي</option>
+            </select>
+
+            <select id="toCurrency">
+                <option value="USD">🇺🇸 دولار أمريكي</option>
+                <option value="SAR" selected>🇸🇦 ريال سعودي</option>
+                <option value="EUR">🇪🇺 يورو</option>
+                <option value="GBP">🇬🇧 جنيه إسترليني</option>
+                <option value="AED">🇦🇪 درهم إماراتي</option>
+                <option value="KWD">🇰🇼 دينار كويتي</option>
+                <option value="EGP">🇪🇬 جنيه مصري</option>
+                <option value="JOD">🇯🇴 دينار أردني</option>
+                <option value="QAR">🇶🇦 ريال قطري</option>
+                <option value="BHD">🇧🇭 دينار بحريني</option>
+                <option value="OMR">🇴🇲 ريال عماني</option>
+                <option value="TRY">🇹🇷 ليرة تركية</option>
+                <option value="INR">🇮🇳 روبية هندية</option>
+                <option value="CNY">🇨🇳 يوان صيني</option>
+                <option value="JPY">🇯🇵 ين ياباني</option>
+                <option value="CAD">🇨🇦 دولار كندي</option>
+                <option value="AUD">🇦🇺 دولار أسترالي</option>
+            </select>
+
+            <input type="number" id="amount" placeholder="أدخل المبلغ" step="0.01">
+            <br>
+            <button onclick="convertCurrency()">🔄 تحويل</button>
+
+            <div class="result-box" id="currencyResult">أدخل المبلغ واضغط تحويل</div>
+            <div id="currencyStatus" class="status"></div>
+        </div>
+
+        <!-- ======== قسم المترجم ======== -->
+        <div id="translate" class="tab-content">
+            <h2>🌍 مترجم عربي - إنجليزي</h2>
+            
+            <select id="translateDirection" style="width:80%; padding:10px; margin:10px; background:#222; color:#eee; border:1px solid #444;">
+                <option value="ar-en">عربي → إنجليزي</option>
+                <option value="en-ar">إنجليزي → عربي</option>
+            </select>
+
+            <textarea id="translateInput" placeholder="اكتب النص للترجمة"></textarea>
+            <br>
+            <button onclick="translateText()">🌍 ترجمة</button>
+
+            <h3>الترجمة:</h3>
+            <textarea id="translateOutput" readonly></textarea>
+            <div id="translateStatus" class="status"></div>
+        </div>
+    </div>
+
+    <script>
+        // ======== التبويبات ========
+        function showTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        // ======== جدول التشفير ========
+        const map = {
+            'ا':'A1','ب':'B2','ت':'C3','ث':'D4','ج':'E5','ح':'F6','خ':'G7',
+            'د':'H8','ذ':'I9','ر':'J1','ز':'K2','س':'L3','ش':'M4','ص':'N5',
+            'ض':'O6','ط':'P7','ظ':'Q8','ع':'R9','غ':'S1','ف':'T2','ق':'U3',
+            'ك':'V4','ل':'W5','م':'X6','ن':'Y7','ه':'Z8','و':'@9','ي':'#0'
+        };
+
+        const reverseMap = {};
+        for (let key in map) {
+            reverseMap[map[key]] = key;
+        }
+
+        // ======== التشفير ========
+        function encrypt() {
+            const input = document.getElementById('inputText');
+            const output = document.getElementById('outputText');
+            const status = document.getElementById('encryptStatus');
+            const text = input.value;
+            
+            if (!text.trim()) {
+                status.className = 'status error';
+                status.textContent = '⚠️ الرجاء إدخال نص للتشفير';
+                output.value = '';
+                return;
+            }
+
+            let result = '';
+            let encryptedCount = 0;
+
+            for (let ch of text) {
+                if (map[ch]) {
+                    result += map[ch];
+                    encryptedCount++;
+                } else {
+                    result += ch;
+                }
+            }
+
+            output.value = result;
+            status.className = 'status success';
+            status.textContent = `✅ تم تشفير ${encryptedCount} حرف بنجاح`;
+        }
+
+        function decrypt() {
+            const input = document.getElementById('inputText');
+            const output = document.getElementById('outputText');
+            const status = document.getElementById('encryptStatus');
+            const text = input.value;
+            
+            if (!text.trim()) {
+                status.className = 'status error';
+                status.textContent = '⚠️ الرجاء إدخال نص لفك التشفير';
+                output.value = '';
+                return;
+            }
+
+            let result = '';
+            let decryptedCount = 0;
+            let i = 0;
+
+            while (i < text.length) {
+                if (i + 1 < text.length) {
+                    const firstChar = text[i];
+                    const secondChar = text[i + 1];
+                    
+                    if ((firstChar >= 'A' && firstChar <= 'Z') || firstChar === '@' || firstChar === '#') {
+                        if (secondChar >= '0' && secondChar <= '9') {
+                            const code = firstChar + secondChar;
+                            if (reverseMap[code]) {
+                                result += reverseMap[code];
+                                decryptedCount++;
+                                i += 2;
+                                continue;
+                            }
+                        }
+                    }
+                }
+                
+                if (text[i] === ' ') {
+                    result += ' ';
+                    i++;
+                    continue;
+                }
+                
+                result += text[i];
+                i++;
+            }
+
+            output.value = result;
+            status.className = 'status success';
+            status.textContent = `✅ تم فك تشفير ${decryptedCount} رمز بنجاح`;
+        }
+
+        // ======== أسعار العملات ========
+        const rates = {
+            USD: 1, EUR: 0.85, GBP: 0.73, SAR: 3.75, AED: 3.67,
+            KWD: 0.305, EGP: 47.5, JOD: 0.71, QAR: 3.64, BHD: 0.376,
+            OMR: 0.384, TRY: 32.5, INR: 83.5, CNY: 7.25, JPY: 148.5,
+            CAD: 1.36, AUD: 1.52
+        };
+
+        // ======== تحويل العملات ========
+        function convertCurrency() {
+            const from = document.getElementById('fromCurrency').value;
+            const to = document.getElementById('toCurrency').value;
+            const amount = parseFloat(document.getElementById('amount').value);
+            const resultDiv = document.getElementById('currencyResult');
+            const status = document.getElementById('currencyStatus');
+
+            if (!amount || amount <= 0) {
+                status.className = 'status error';
+                status.textContent = '⚠️ الرجاء إدخال مبلغ صحيح';
+                resultDiv.textContent = 'أدخل مبلغاً صحيحاً';
+                return;
+            }
+
+            const fromRate = rates[from];
+            const toRate = rates[to];
+            const converted = (amount / fromRate) * toRate;
+
+            const fromName = document.getElementById('fromCurrency').selectedOptions[0].text;
+            const toName = document.getElementById('toCurrency').selectedOptions[0].text;
+
+            resultDiv.innerHTML = `
+                ${amount.toFixed(2)} ${fromName}<br>
+                <span style="font-size:30px;">🔄</span><br>
+                <span style="font-size:28px; color:#ffd200;">${converted.toFixed(2)} ${toName}</span><br>
+                <span style="font-size:14px; color:#888;">1 ${from} = ${(toRate / fromRate).toFixed(4)} ${to}</span>
+            `;
+
+            status.className = 'status success';
+            status.textContent = '✅ تم التحويل بنجاح';
+        }
+
+        // ======== المترجم ========
+        function translateText() {
+            const direction = document.getElementById('translateDirection').value;
+            const input = document.getElementById('translateInput');
+            const output = document.getElementById('translateOutput');
+            const status = document.getElementById('translateStatus');
+            const text = input.value.trim();
+
+            if (!text) {
+                status.className = 'status error';
+                status.textContent = '⚠️ الرجاء إدخال نص للترجمة';
+                output.value = '';
+                return;
+            }
+
+            const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${direction === 'ar-en' ? 'ar|en' : 'en|ar'}`;
+
+            fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.responseData && data.responseData.translatedText) {
+                        output.value = data.responseData.translatedText;
+                        status.className = 'status success';
+                        status.textContent = '✅ تمت الترجمة بنجاح';
+                    } else {
+                        throw new Error('فشل الترجمة');
+                    }
+                })
+                .catch(() => {
+                    const dict = {
+                        'مرحبا': 'Hello',
+                        'كيف حالك': 'How are you',
+                        'شكرا': 'Thank you',
+                        'السلام عليكم': 'Peace be upon you',
+                        'Hello': 'مرحبا',
+                        'How are you': 'كيف حالك',
+                        'Thank you': 'شكرا',
+                        'Peace be upon you': 'السلام عليكم'
+                    };
+                    const lowerText = text.toLowerCase();
+                    if (dict[lowerText]) {
+                        output.value = dict[lowerText];
+                        status.className = 'status success';
+                        status.textContent = '✅ تمت الترجمة (قاموس محلي)';
+                    } else {
+                        output.value = '⚠️ تعذرت الترجمة، تأكد من اتصال الإنترنت';
+                        status.className = 'status error';
+                        status.textContent = '❌ فشل الترجمة';
+                    }
+                });
+        }
+
+        // ======== Enter للتحويل ========
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('amount').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') convertCurrency();
+            });
+        });
+    </script>
+</body>
+</html>
