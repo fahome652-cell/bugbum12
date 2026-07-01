@@ -1,238 +1,536 @@
-<!DOCTYPE html>
+
+html_code = '''<!DOCTYPE html>
 <html lang="ar">
 <head>
     <meta charset="UTF-8">
     <title>BNN</title>
     <style>
-        body { 
-            background:#111; 
-            color:#eee; 
-            font-family:Arial; 
-            text-align:center; 
-            margin:0;
-            padding:20px;
-        }
+        /* ======== Reset & Base ======== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
-        /* شعار BNN عملاق في الزاوية اليمنى فوق */
+        body { 
+            background: #050510;
+            color: #eee; 
+            font-family: 'Segoe UI', Arial, sans-serif; 
+            text-align: center; 
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ======== Animated Glass Background ======== */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(120, 80, 255, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 70%, rgba(255, 200, 50, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 50% 50%, rgba(0, 200, 255, 0.08) 0%, transparent 60%);
+            animation: bgPulse 8s ease-in-out infinite alternate;
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -2;
+            pointer-events: none;
+        }
+
+        @keyframes bgPulse {
+            0% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+            50% { transform: scale(1.1) rotate(2deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 0.8; }
+        }
+
+        /* Floating particles */
+        .particles {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            overflow: hidden;
+        }
+        .particle {
+            position: absolute;
+            width: 4px; height: 4px;
+            background: rgba(255, 210, 0, 0.3);
+            border-radius: 50%;
+            animation: floatUp linear infinite;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(100vh) scale(0); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+
+        /* ======== Logo ======== */
         .logo {
             position: absolute;
             top: 20px;
             right: 30px;
             font-size: 80px;
             font-weight: 900;
-            color: #ffffff;
+            color: rgba(255,255,255,0.9);
             letter-spacing: 5px;
             margin: 0;
             line-height: 1;
-            text-shadow: none;
+            text-shadow: 0 0 30px rgba(255,210,0,0.3);
+            animation: logoGlow 3s ease-in-out infinite alternate;
+        }
+        @keyframes logoGlow {
+            from { text-shadow: 0 0 20px rgba(255,210,0,0.2); }
+            to { text-shadow: 0 0 40px rgba(255,210,0,0.5), 0 0 80px rgba(255,210,0,0.2); }
         }
 
-        textarea { 
-            width:80%; 
-            height:120px; 
-            margin:10px; 
-            background:#222; 
-            color:#eee; 
-            border:1px solid #444; 
-            font-size:16px; 
-        }
-        
-        input, select { 
-            width:80%; 
-            padding:10px; 
-            margin:10px; 
-            background:#222; 
-            color:#eee; 
-            border:1px solid #444; 
-            font-size:16px; 
-        }
-        
-        button { 
-            padding:10px 20px; 
-            margin:10px; 
-            cursor:pointer; 
-            background:#2a2a2a; 
-            color:#eee; 
-            border:1px solid #555; 
-            border-radius:5px; 
-        }
-        
-        button:hover { 
-            background:#3a3a3a; 
-        }
-        
-        h2 { 
-            margin-top:20px; 
-        }
-        
-        .result-box { 
-            background:#1a1a1a; 
-            padding:20px; 
-            margin:10px auto; 
-            width:80%; 
-            border-radius:5px; 
-            border:1px solid #444; 
-            font-size:20px; 
-        }
-        
-        .tabs { 
-            display:flex; 
-            justify-content:center; 
-            gap:10px; 
-            margin:20px; 
-            flex-wrap:wrap; 
-        }
-        
-        .tab-btn { 
-            padding:10px 30px; 
-            background:#1a1a1a; 
-            border:1px solid #444; 
-            border-radius:5px; 
-            color:#aaa; 
-            cursor:pointer; 
-        }
-        
-        .tab-btn.active { 
-            background:#2a2a2a; 
-            border-color:#ffd200; 
-            color:#ffd200; 
-        }
-        
-        .tab-content { 
-            display:none; 
-        }
-        
-        .tab-content.active { 
-            display:block; 
-        }
-        
-        .status { 
-            margin-top:10px; 
-            padding:10px; 
-            border-radius:5px; 
-        }
-        
-        .success { 
-            color:#51cf66; 
-        }
-        
-        .error { 
-            color:#ff6b6b; 
-        }
-
+        /* ======== Container ======== */
         .container {
             max-width: 900px;
             margin: 0 auto;
-            padding-top: 100px;
+            padding-top: 120px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ======== Glass Card ======== */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 20px auto;
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.3),
+                inset 0 1px 0 rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 
+                0 12px 40px rgba(0, 0, 0, 0.4),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+        }
+
+        /* ======== Tabs ======== */
+        .tabs { 
+            display: flex; 
+            justify-content: center; 
+            gap: 12px; 
+            margin: 20px 0 30px; 
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn { 
+            padding: 12px 28px; 
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            color: #aaa; 
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,210,0,0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        .tab-btn:hover::before {
+            left: 100%;
+        }
+        .tab-btn:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255, 210, 0, 0.3);
+            color: #ffd200;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(255, 210, 0, 0.1);
+        }
+        .tab-btn.active { 
+            background: rgba(255, 210, 0, 0.1);
+            border-color: rgba(255, 210, 0, 0.4);
+            color: #ffd200;
+            box-shadow: 0 0 20px rgba(255, 210, 0, 0.15), inset 0 1px 0 rgba(255, 210, 0, 0.1);
+        }
+
+        /* ======== Tab Content ======== */
+        .tab-content { 
+            display: none; 
+            animation: fadeInUp 0.5s ease;
+        }
+        .tab-content.active { 
+            display: block; 
+        }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ======== Typography ======== */
+        h2 { 
+            margin: 0 0 25px; 
+            font-size: 26px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #fff 0%, #ffd200 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        h3 {
+            margin: 20px 0 10px;
+            font-size: 18px;
+            color: #ccc;
+            font-weight: 600;
+        }
+
+        /* ======== Inputs & Textareas ======== */
+        textarea, input, select { 
+            width: 100%; 
+            padding: 14px 18px; 
+            margin: 10px 0; 
+            background: rgba(0, 0, 0, 0.2);
+            color: #eee; 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            outline: none;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+        textarea:focus, input:focus, select:focus {
+            border-color: rgba(255, 210, 0, 0.5);
+            box-shadow: 0 0 20px rgba(255, 210, 0, 0.1);
+            background: rgba(0, 0, 0, 0.3);
+        }
+        textarea::placeholder, input::placeholder {
+            color: #666;
+        }
+
+        /* ======== Buttons ======== */
+        button { 
+            padding: 12px 28px; 
+            margin: 8px; 
+            cursor: pointer; 
+            background: rgba(255, 255, 255, 0.05);
+            color: #eee; 
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        button::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 0; height: 0;
+            background: rgba(255, 210, 0, 0.15);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s ease, height 0.6s ease;
+        }
+        button:hover::after {
+            width: 300px; height: 300px;
+        }
+        button:hover { 
+            background: rgba(255, 210, 0, 0.1);
+            border-color: rgba(255, 210, 0, 0.4);
+            color: #ffd200;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 210, 0, 0.15);
+        }
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* ======== Result Box ======== */
+        .result-box { 
+            background: rgba(0, 0, 0, 0.2);
+            padding: 25px; 
+            margin: 15px auto; 
+            width: 100%;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            font-size: 20px;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .result-box:hover {
+            border-color: rgba(255, 210, 0, 0.2);
+            box-shadow: 0 0 30px rgba(255, 210, 0, 0.05);
+        }
+        
+        /* ======== Status ======== */
+        .status { 
+            margin-top: 15px; 
+            padding: 12px 20px; 
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .success { 
+            color: #51cf66; 
+            background: rgba(81, 207, 102, 0.1);
+            border: 1px solid rgba(81, 207, 102, 0.2);
+        }
+        .error { 
+            color: #ff6b6b; 
+            background: rgba(255, 107, 107, 0.1);
+            border: 1px solid rgba(255, 107, 107, 0.2);
+        }
+
+        /* ======== External Link Button ======== */
+        .external-link-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            margin: 20px auto;
+            background: linear-gradient(135deg, rgba(255,210,0,0.15) 0%, rgba(255,160,0,0.1) 100%);
+            color: #ffd200;
+            border: 1px solid rgba(255, 210, 0, 0.3);
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 700;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+        }
+        .external-link-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,210,0,0.2), transparent);
+            transition: left 0.6s ease;
+        }
+        .external-link-btn:hover::before {
+            left: 100%;
+        }
+        .external-link-btn:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 10px 40px rgba(255, 210, 0, 0.2), 0 0 60px rgba(255, 210, 0, 0.1);
+            border-color: rgba(255, 210, 0, 0.6);
+            background: linear-gradient(135deg, rgba(255,210,0,0.2) 0%, rgba(255,160,0,0.15) 100%);
+        }
+        .external-link-btn:active {
+            transform: translateY(-1px) scale(0.98);
+        }
+        .external-link-btn .icon {
+            font-size: 20px;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        /* ======== Responsive ======== */
+        @media (max-width: 768px) {
+            .logo { font-size: 50px; right: 15px; top: 10px; }
+            .container { padding-top: 90px; padding-left: 10px; padding-right: 10px; }
+            .tabs { gap: 8px; }
+            .tab-btn { padding: 10px 18px; font-size: 13px; }
+            .glass-card { padding: 20px; }
+            h2 { font-size: 22px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- شعار BNN عملاق - زاوية يمين فوق - لون أبيض بدون توهج -->
+    <!-- Floating Particles -->
+    <div class="particles" id="particles"></div>
+
+    <!-- Logo -->
     <div class="logo">BNN</div>
 
     <div class="container">
-        <!-- التبويبات -->
+        <!-- Tabs -->
         <div class="tabs">
             <button class="tab-btn active" onclick="showTab('encrypt')">🔐 تشفير راكان</button>
             <button class="tab-btn" onclick="showTab('currency')">💰 تحويل العملات</button>
             <button class="tab-btn" onclick="showTab('translate')">🌍 مترجم</button>
+            <button class="tab-btn" onclick="showTab('external')">🚀 منصة BNN الخدمية</button>
         </div>
 
-        <!-- ======== قسم التشفير ======== -->
+        <!-- ======== Encryption Section ======== -->
         <div id="encrypt" class="tab-content active">
-            <h2>🔐 تشفير وفك تشفير لغة راكان</h2>
-            <textarea id="inputText" placeholder="اكتب نص عادي أو نص مشفّر"></textarea>
-            <br>
-            <button onclick="encrypt()">🔐 تشفير</button>
-            <button onclick="decrypt()">🔓 فك التشفير</button>
-            <h3>الناتج:</h3>
-            <textarea id="outputText" readonly></textarea>
-            <div id="encryptStatus" class="status"></div>
+            <div class="glass-card">
+                <h2>🔐 تشفير وفك تشفير لغة راكان</h2>
+                <textarea id="inputText" placeholder="اكتب نص عادي أو نص مشفّر"></textarea>
+                <br>
+                <button onclick="encrypt()">🔐 تشفير</button>
+                <button onclick="decrypt()">🔓 فك التشفير</button>
+                <h3>الناتج:</h3>
+                <textarea id="outputText" readonly></textarea>
+                <div id="encryptStatus" class="status"></div>
+            </div>
         </div>
 
-        <!-- ======== قسم العملات ======== -->
+        <!-- ======== Currency Section ======== -->
         <div id="currency" class="tab-content">
-            <h2>💰 تحويل العملات</h2>
-            
-            <select id="fromCurrency">
-                <option value="USD">🇺🇸 دولار أمريكي</option>
-                <option value="SAR" selected>🇸🇦 ريال سعودي</option>
-                <option value="EUR">🇪🇺 يورو</option>
-                <option value="GBP">🇬🇧 جنيه إسترليني</option>
-                <option value="AED">🇦🇪 درهم إماراتي</option>
-                <option value="KWD">🇰🇼 دينار كويتي</option>
-                <option value="EGP">🇪🇬 جنيه مصري</option>
-                <option value="JOD">🇯🇴 دينار أردني</option>
-                <option value="QAR">🇶🇦 ريال قطري</option>
-                <option value="BHD">🇧🇭 دينار بحريني</option>
-                <option value="OMR">🇴🇲 ريال عماني</option>
-                <option value="TRY">🇹🇷 ليرة تركية</option>
-                <option value="INR">🇮🇳 روبية هندية</option>
-                <option value="CNY">🇨🇳 يوان صيني</option>
-                <option value="JPY">🇯🇵 ين ياباني</option>
-                <option value="CAD">🇨🇦 دولار كندي</option>
-                <option value="AUD">🇦🇺 دولار أسترالي</option>
-            </select>
+            <div class="glass-card">
+                <h2>💰 تحويل العملات</h2>
+                
+                <select id="fromCurrency">
+                    <option value="USD">🇺🇸 دولار أمريكي</option>
+                    <option value="SAR" selected>🇸🇦 ريال سعودي</option>
+                    <option value="EUR">🇪🇺 يورو</option>
+                    <option value="GBP">🇬🇧 جنيه إسترليني</option>
+                    <option value="AED">🇦🇪 درهم إماراتي</option>
+                    <option value="KWD">🇰🇼 دينار كويتي</option>
+                    <option value="EGP">🇪🇬 جنيه مصري</option>
+                    <option value="JOD">🇯🇴 دينار أردني</option>
+                    <option value="QAR">🇶🇦 ريال قطري</option>
+                    <option value="BHD">🇧🇭 دينار بحريني</option>
+                    <option value="OMR">🇴🇲 ريال عماني</option>
+                    <option value="TRY">🇹🇷 ليرة تركية</option>
+                    <option value="INR">🇮🇳 روبية هندية</option>
+                    <option value="CNY">🇨🇳 يوان صيني</option>
+                    <option value="JPY">🇯🇵 ين ياباني</option>
+                    <option value="CAD">🇨🇦 دولار كندي</option>
+                    <option value="AUD">🇦🇺 دولار أسترالي</option>
+                </select>
 
-            <select id="toCurrency">
-                <option value="USD">🇺🇸 دولار أمريكي</option>
-                <option value="SAR" selected>🇸🇦 ريال سعودي</option>
-                <option value="EUR">🇪🇺 يورو</option>
-                <option value="GBP">🇬🇧 جنيه إسترليني</option>
-                <option value="AED">🇦🇪 درهم إماراتي</option>
-                <option value="KWD">🇰🇼 دينار كويتي</option>
-                <option value="EGP">🇪🇬 جنيه مصري</option>
-                <option value="JOD">🇯🇴 دينار أردني</option>
-                <option value="QAR">🇶🇦 ريال قطري</option>
-                <option value="BHD">🇧🇭 دينار بحريني</option>
-                <option value="OMR">🇴🇲 ريال عماني</option>
-                <option value="TRY">🇹🇷 ليرة تركية</option>
-                <option value="INR">🇮🇳 روبية هندية</option>
-                <option value="CNY">🇨🇳 يوان صيني</option>
-                <option value="JPY">🇯🇵 ين ياباني</option>
-                <option value="CAD">🇨🇦 دولار كندي</option>
-                <option value="AUD">🇦🇺 دولار أسترالي</option>
-            </select>
+                <select id="toCurrency">
+                    <option value="USD">🇺🇸 دولار أمريكي</option>
+                    <option value="SAR" selected>🇸🇦 ريال سعودي</option>
+                    <option value="EUR">🇪🇺 يورو</option>
+                    <option value="GBP">🇬🇧 جنيه إسترليني</option>
+                    <option value="AED">🇦🇪 درهم إماراتي</option>
+                    <option value="KWD">🇰🇼 دينار كويتي</option>
+                    <option value="EGP">🇪🇬 جنيه مصري</option>
+                    <option value="JOD">🇯🇴 دينار أردني</option>
+                    <option value="QAR">🇶🇦 ريال قطري</option>
+                    <option value="BHD">🇧🇭 دينار بحريني</option>
+                    <option value="OMR">🇴🇲 ريال عماني</option>
+                    <option value="TRY">🇹🇷 ليرة تركية</option>
+                    <option value="INR">🇮🇳 روبية هندية</option>
+                    <option value="CNY">🇨🇳 يوان صيني</option>
+                    <option value="JPY">🇯🇵 ين ياباني</option>
+                    <option value="CAD">🇨🇦 دولار كندي</option>
+                    <option value="AUD">🇦🇺 دولار أسترالي</option>
+                </select>
 
-            <input type="number" id="amount" placeholder="أدخل المبلغ" step="0.01">
-            <br>
-            <button onclick="convertCurrency()">🔄 تحويل</button>
+                <input type="number" id="amount" placeholder="أدخل المبلغ" step="0.01">
+                <br>
+                <button onclick="convertCurrency()">🔄 تحويل</button>
 
-            <div class="result-box" id="currencyResult">أدخل المبلغ واضغط تحويل</div>
-            <div id="currencyStatus" class="status"></div>
+                <div class="result-box" id="currencyResult">أدخل المبلغ واضغط تحويل</div>
+                <div id="currencyStatus" class="status"></div>
+            </div>
         </div>
 
-        <!-- ======== قسم المترجم ======== -->
+        <!-- ======== Translator Section ======== -->
         <div id="translate" class="tab-content">
-            <h2>🌍 مترجم عربي - إنجليزي</h2>
-            
-            <select id="translateDirection" style="width:80%; padding:10px; margin:10px; background:#222; color:#eee; border:1px solid #444;">
-                <option value="ar-en">عربي → إنجليزي</option>
-                <option value="en-ar">إنجليزي → عربي</option>
-            </select>
+            <div class="glass-card">
+                <h2>🌍 مترجم عربي - إنجليزي</h2>
+                
+                <select id="translateDirection">
+                    <option value="ar-en">عربي → إنجليزي</option>
+                    <option value="en-ar">إنجليزي → عربي</option>
+                </select>
 
-            <textarea id="translateInput" placeholder="اكتب النص للترجمة"></textarea>
-            <br>
-            <button onclick="translateText()">🌍 ترجمة</button>
+                <textarea id="translateInput" placeholder="اكتب النص للترجمة"></textarea>
+                <br>
+                <button onclick="translateText()">🌍 ترجمة</button>
 
-            <h3>الترجمة:</h3>
-            <textarea id="translateOutput" readonly></textarea>
-            <div id="translateStatus" class="status"></div>
+                <h3>الترجمة:</h3>
+                <textarea id="translateOutput" readonly></textarea>
+                <div id="translateStatus" class="status"></div>
+            </div>
+        </div>
+
+        <!-- ======== External Link Section ======== -->
+        <div id="external" class="tab-content">
+            <div class="glass-card" style="padding: 60px 30px;">
+                <h2 style="font-size: 32px; margin-bottom: 15px;">🚀 منصة BNN الخدمية</h2>
+                <p style="color: #aaa; font-size: 17px; margin-bottom: 30px; line-height: 1.8;">
+                    اضغط الزر أدناه للانتقال إلى المنصة الخدمية الشاملة لـ BNN<br>
+                    حيث تجد أدوات متقدمة وخدمات متكاملة
+                </p>
+                <a href="https://fahome652-cell.github.io/bugbum12/BNNFG.html" target="_blank" class="external-link-btn">
+                    <span class="icon">🚀</span>
+                    <span>الذهاب إلى المنصة</span>
+                </a>
+                <p style="color: #666; font-size: 13px; margin-top: 25px;">
+                    سيتم فتح الرابط في نافذة جديدة
+                </p>
+            </div>
         </div>
     </div>
 
     <script>
-        // ======== التبويبات ========
+        // ======== Floating Particles Generator ========
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 30;
+            for (let i = 0; i < particleCount; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                p.style.animationDelay = (Math.random() * 10) + 's';
+                p.style.opacity = Math.random() * 0.5 + 0.2;
+                const size = Math.random() * 4 + 2;
+                p.style.width = size + 'px';
+                p.style.height = size + 'px';
+                container.appendChild(p);
+            }
+        }
+        createParticles();
+
+        // ======== Tabs ========
         function showTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(el => {
+                el.classList.remove('active');
+                el.style.animation = 'none';
+            });
             document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            event.target.classList.add('active');
+            
+            const target = document.getElementById(tabId);
+            target.classList.add('active');
+            target.style.animation = 'fadeInUp 0.5s ease';
+            
+            // Find the button that was clicked
+            const btns = document.querySelectorAll('.tab-btn');
+            for (let btn of btns) {
+                if (btn.getAttribute('onclick').includes(tabId)) {
+                    btn.classList.add('active');
+                }
+            }
         }
 
-        // ======== جدول التشفير ========
+        // ======== Encryption Map ========
         const map = {
             'ا':'A1','ب':'B2','ت':'C3','ث':'D4','ج':'E5','ح':'F6','خ':'G7',
             'د':'H8','ذ':'I9','ر':'J1','ز':'K2','س':'L3','ش':'M4','ص':'N5',
@@ -245,7 +543,7 @@
             reverseMap[map[key]] = key;
         }
 
-        // ======== التشفير ========
+        // ======== Encrypt ========
         function encrypt() {
             const input = document.getElementById('inputText');
             const output = document.getElementById('outputText');
@@ -274,6 +572,10 @@
             output.value = result;
             status.className = 'status success';
             status.textContent = `✅ تم تشفير ${encryptedCount} حرف بنجاح`;
+            
+            // Animate output
+            output.style.transform = 'scale(0.98)';
+            setTimeout(() => output.style.transform = 'scale(1)', 200);
         }
 
         function decrypt() {
@@ -324,9 +626,12 @@
             output.value = result;
             status.className = 'status success';
             status.textContent = `✅ تم فك تشفير ${decryptedCount} رمز بنجاح`;
+            
+            output.style.transform = 'scale(0.98)';
+            setTimeout(() => output.style.transform = 'scale(1)', 200);
         }
 
-        // ======== أسعار العملات ========
+        // ======== Currency Rates ========
         const rates = {
             USD: 1, EUR: 0.85, GBP: 0.73, SAR: 3.75, AED: 3.67,
             KWD: 0.305, EGP: 47.5, JOD: 0.71, QAR: 3.64, BHD: 0.376,
@@ -334,7 +639,7 @@
             CAD: 1.36, AUD: 1.52
         };
 
-        // ======== تحويل العملات ========
+        // ======== Currency Conversion ========
         function convertCurrency() {
             const from = document.getElementById('fromCurrency').value;
             const to = document.getElementById('toCurrency').value;
@@ -357,17 +662,19 @@
             const toName = document.getElementById('toCurrency').selectedOptions[0].text;
 
             resultDiv.innerHTML = `
-                ${amount.toFixed(2)} ${fromName}<br>
-                <span style="font-size:30px;">🔄</span><br>
-                <span style="font-size:28px; color:#ffd200;">${converted.toFixed(2)} ${toName}</span><br>
-                <span style="font-size:14px; color:#888;">1 ${from} = ${(toRate / fromRate).toFixed(4)} ${to}</span>
+                <div style="animation: fadeInUp 0.4s ease;">
+                    ${amount.toFixed(2)} ${fromName}<br>
+                    <span style="font-size:30px; display:inline-block; margin:10px 0; animation: bounce 1s infinite;">🔄</span><br>
+                    <span style="font-size:28px; color:#ffd200; font-weight:700;">${converted.toFixed(2)} ${toName}</span><br>
+                    <span style="font-size:14px; color:#888; margin-top:10px; display:block;">1 ${from} = ${(toRate / fromRate).toFixed(4)} ${to}</span>
+                </div>
             `;
 
             status.className = 'status success';
             status.textContent = '✅ تم التحويل بنجاح';
         }
 
-        // ======== المترجم ========
+        // ======== Translator ========
         function translateText() {
             const direction = document.getElementById('translateDirection').value;
             const input = document.getElementById('translateInput');
@@ -391,6 +698,8 @@
                         output.value = data.responseData.translatedText;
                         status.className = 'status success';
                         status.textContent = '✅ تمت الترجمة بنجاح';
+                        output.style.transform = 'scale(0.98)';
+                        setTimeout(() => output.style.transform = 'scale(1)', 200);
                     } else {
                         throw new Error('فشل الترجمة');
                     }
@@ -411,6 +720,8 @@
                         output.value = dict[lowerText];
                         status.className = 'status success';
                         status.textContent = '✅ تمت الترجمة (قاموس محلي)';
+                        output.style.transform = 'scale(0.98)';
+                        setTimeout(() => output.style.transform = 'scale(1)', 200);
                     } else {
                         output.value = '⚠️ تعذرت الترجمة، تأكد من اتصال الإنترنت';
                         status.className = 'status error';
@@ -419,7 +730,7 @@
                 });
         }
 
-        // ======== Enter للتحويل ========
+        // ======== Enter to Convert ========
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('amount').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') convertCurrency();
@@ -427,4 +738,10 @@
         });
     </script>
 </body>
-</html>
+</html>'''
+
+with open('/mnt/agents/output/BNN_glass_style.html', 'w', encoding='utf-8') as f:
+    f.write(html_code)
+
+print("تم حفظ الملف بنجاح!")
+print(f"عدد أحرف الكود: {len(html_code)}")
