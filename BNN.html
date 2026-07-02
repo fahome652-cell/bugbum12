@@ -20,7 +20,7 @@ html_code = '''<!DOCTYPE html>
             position: relative;
         }
 
-        /* ======== Animated Glass Background ======== */
+        /* ======== Animated Background ======== */
         body::before {
             content: '';
             position: fixed;
@@ -101,25 +101,18 @@ html_code = '''<!DOCTYPE html>
             z-index: 1;
         }
 
-        /* ======== Glass Card ======== */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 20px;
-            padding: 30px;
+        /* ======== Section Card (بدون إطار زجاجي) ======== */
+        .section-card {
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
             margin: 20px auto;
-            box-shadow: 
-                0 8px 32px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: none;
+            transition: transform 0.3s ease;
         }
-        .glass-card:hover {
+        .section-card:hover {
             transform: translateY(-2px);
-            box-shadow: 
-                0 12px 40px rgba(0, 0, 0, 0.4),
-                inset 0 1px 0 rgba(255, 255, 255, 0.08);
         }
 
         /* ======== Tabs ======== */
@@ -134,7 +127,6 @@ html_code = '''<!DOCTYPE html>
         .tab-btn { 
             padding: 12px 28px; 
             background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 12px;
             color: #aaa; 
@@ -144,6 +136,9 @@ html_code = '''<!DOCTYPE html>
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
         .tab-btn::before {
             content: '';
@@ -163,11 +158,27 @@ html_code = '''<!DOCTYPE html>
             transform: translateY(-2px);
             box-shadow: 0 4px 20px rgba(255, 210, 0, 0.1);
         }
+        .tab-btn:hover .tab-icon { color: #ffd200; }
         .tab-btn.active { 
             background: rgba(255, 210, 0, 0.1);
             border-color: rgba(255, 210, 0, 0.4);
             color: #ffd200;
             box-shadow: 0 0 20px rgba(255, 210, 0, 0.15), inset 0 1px 0 rgba(255, 210, 0, 0.1);
+        }
+        .tab-btn.active .tab-icon { color: #ffd200; }
+
+        /* ======== Tab Icons (Custom SVG) ======== */
+        .tab-icon {
+            width: 18px;
+            height: 18px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            transition: all 0.3s ease;
+            color: #aaa;
+            flex-shrink: 0;
         }
 
         /* ======== Tab Content ======== */
@@ -192,12 +203,30 @@ html_code = '''<!DOCTYPE html>
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
         }
         h3 {
             margin: 20px 0 10px;
             font-size: 18px;
             color: #ccc;
             font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* ======== Section Icons (Custom SVG) ======== */
+        .section-icon {
+            width: 28px;
+            height: 28px;
+            fill: none;
+            stroke: url(#goldGradient);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
         }
 
         /* ======== Inputs & Textareas ======== */
@@ -242,6 +271,9 @@ html_code = '''<!DOCTYPE html>
             position: relative;
             overflow: hidden;
             font-family: 'Segoe UI', Arial, sans-serif;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
         }
         button::after {
             content: '';
@@ -263,8 +295,23 @@ html_code = '''<!DOCTYPE html>
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(255, 210, 0, 0.15);
         }
+        button:hover .btn-icon { stroke: #ffd200; }
         button:active {
             transform: translateY(0);
+        }
+
+        /* ======== Button Icons (Custom SVG) ======== */
+        .btn-icon {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1;
         }
 
         /* ======== Result Box ======== */
@@ -276,7 +323,6 @@ html_code = '''<!DOCTYPE html>
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.08);
             font-size: 20px;
-            backdrop-filter: blur(10px);
             transition: all 0.3s ease;
         }
         .result-box:hover {
@@ -292,24 +338,37 @@ html_code = '''<!DOCTYPE html>
             font-weight: 500;
             font-size: 14px;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status-icon {
+            width: 16px;
+            height: 16px;
+            fill: none;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            flex-shrink: 0;
         }
         .success { 
             color: #51cf66; 
             background: rgba(81, 207, 102, 0.1);
             border: 1px solid rgba(81, 207, 102, 0.2);
         }
+        .success .status-icon { stroke: #51cf66; }
         .error { 
             color: #ff6b6b; 
             background: rgba(255, 107, 107, 0.1);
             border: 1px solid rgba(255, 107, 107, 0.2);
         }
+        .error .status-icon { stroke: #ff6b6b; }
 
         /* ======== External Link Button ======== */
         .external-link-btn {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: 12px;
             padding: 14px 32px;
             margin: 20px auto;
             background: linear-gradient(135deg, rgba(255,210,0,0.15) 0%, rgba(255,160,0,0.1) 100%);
@@ -323,7 +382,6 @@ html_code = '''<!DOCTYPE html>
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
-            backdrop-filter: blur(10px);
         }
         .external-link-btn::before {
             content: '';
@@ -345,13 +403,38 @@ html_code = '''<!DOCTYPE html>
         .external-link-btn:active {
             transform: translateY(-1px) scale(0.98);
         }
-        .external-link-btn .icon {
-            font-size: 20px;
+        .external-link-btn .link-icon {
+            width: 20px;
+            height: 20px;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
             animation: bounce 2s infinite;
+            flex-shrink: 0;
         }
         @keyframes bounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-4px); }
+        }
+
+        /* ======== Convert Arrow Icon ======== */
+        .convert-arrow {
+            width: 40px;
+            height: 40px;
+            fill: none;
+            stroke: #ffd200;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            margin: 10px 0;
+            display: inline-block;
+            animation: spinArrow 2s ease-in-out infinite;
+        }
+        @keyframes spinArrow {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(180deg); }
         }
 
         /* ======== Responsive ======== */
@@ -360,12 +443,22 @@ html_code = '''<!DOCTYPE html>
             .container { padding-top: 90px; padding-left: 10px; padding-right: 10px; }
             .tabs { gap: 8px; }
             .tab-btn { padding: 10px 18px; font-size: 13px; }
-            .glass-card { padding: 20px; }
+            .section-card { padding: 0; }
             h2 { font-size: 22px; }
         }
     </style>
 </head>
 <body>
+
+    <!-- SVG Definitions -->
+    <svg width="0" height="0" style="position:absolute;">
+        <defs>
+            <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" style="stop-color:#fff" />
+                <stop offset="100%" style="stop-color:#ffd200" />
+            </linearGradient>
+        </defs>
+    </svg>
 
     <!-- Floating Particles -->
     <div class="particles" id="particles"></div>
@@ -376,21 +469,75 @@ html_code = '''<!DOCTYPE html>
     <div class="container">
         <!-- Tabs -->
         <div class="tabs">
-            <button class="tab-btn active" onclick="showTab('encrypt')">🔐 تشفير راكان</button>
-            <button class="tab-btn" onclick="showTab('currency')">💰 تحويل العملات</button>
-            <button class="tab-btn" onclick="showTab('translate')">🌍 مترجم</button>
-            <button class="tab-btn" onclick="showTab('external')">🚀 منصة BNN الخدمية</button>
+            <button class="tab-btn active" onclick="showTab('encrypt')">
+                <svg class="tab-icon" viewBox="0 0 24 24">
+                    <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                    <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    <circle cx="12" cy="16" r="1" fill="currentColor" stroke="none"/>
+                </svg>
+                تشفير راكان
+            </button>
+            <button class="tab-btn" onclick="showTab('currency')">
+                <svg class="tab-icon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v12M9 9h4.5a2.5 2.5 0 0 1 0 5H9"/>
+                </svg>
+                تحويل العملات
+            </button>
+            <button class="tab-btn" onclick="showTab('translate')">
+                <svg class="tab-icon" viewBox="0 0 24 24">
+                    <path d="M5 8l6 6M11 8l-6 6"/>
+                    <path d="M21 12a9 9 0 0 1-9 9"/>
+                    <path d="M3 12a9 9 0 0 0 9 9"/>
+                    <path d="M12 3v18"/>
+                </svg>
+                مترجم
+            </button>
+            <button class="tab-btn" onclick="showTab('external')">
+                <svg class="tab-icon" viewBox="0 0 24 24">
+                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                    <polyline points="15 3 21 3 21 9"/>
+                    <line x1="10" y1="14" x2="21" y2="3"/>
+                </svg>
+                منصة BNN الخدمية
+            </button>
         </div>
 
         <!-- ======== Encryption Section ======== -->
         <div id="encrypt" class="tab-content active">
-            <div class="glass-card">
-                <h2>🔐 تشفير وفك تشفير لغة راكان</h2>
+            <div class="section-card">
+                <h2>
+                    <svg class="section-icon" viewBox="0 0 24 24">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        <circle cx="12" cy="16" r="1" fill="currentColor" stroke="none"/>
+                    </svg>
+                    تشفير وفك تشفير لغة راكان
+                </h2>
                 <textarea id="inputText" placeholder="اكتب نص عادي أو نص مشفّر"></textarea>
                 <br>
-                <button onclick="encrypt()">🔐 تشفير</button>
-                <button onclick="decrypt()">🔓 فك التشفير</button>
-                <h3>الناتج:</h3>
+                <button onclick="encrypt()">
+                    <svg class="btn-icon" viewBox="0 0 24 24">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    تشفير
+                </button>
+                <button onclick="decrypt()">
+                    <svg class="btn-icon" viewBox="0 0 24 24">
+                        <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                        <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                        <path d="M12 16v-2"/>
+                    </svg>
+                    فك التشفير
+                </button>
+                <h3>
+                    <svg class="btn-icon" viewBox="0 0 24 24" style="stroke:#ffd200;">
+                        <polyline points="9 11 12 14 22 4"/>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                    </svg>
+                    الناتج:
+                </h3>
                 <textarea id="outputText" readonly></textarea>
                 <div id="encryptStatus" class="status"></div>
             </div>
@@ -398,8 +545,14 @@ html_code = '''<!DOCTYPE html>
 
         <!-- ======== Currency Section ======== -->
         <div id="currency" class="tab-content">
-            <div class="glass-card">
-                <h2>💰 تحويل العملات</h2>
+            <div class="section-card">
+                <h2>
+                    <svg class="section-icon" viewBox="0 0 24 24">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 6v12M9 9h4.5a2.5 2.5 0 0 1 0 5H9"/>
+                    </svg>
+                    تحويل العملات
+                </h2>
                 
                 <select id="fromCurrency">
                     <option value="USD">🇺🇸 دولار أمريكي</option>
@@ -443,7 +596,14 @@ html_code = '''<!DOCTYPE html>
 
                 <input type="number" id="amount" placeholder="أدخل المبلغ" step="0.01">
                 <br>
-                <button onclick="convertCurrency()">🔄 تحويل</button>
+                <button onclick="convertCurrency()">
+                    <svg class="btn-icon" viewBox="0 0 24 24">
+                        <polyline points="23 4 23 10 17 10"/>
+                        <polyline points="1 20 1 14 7 14"/>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                    </svg>
+                    تحويل
+                </button>
 
                 <div class="result-box" id="currencyResult">أدخل المبلغ واضغط تحويل</div>
                 <div id="currencyStatus" class="status"></div>
@@ -452,8 +612,16 @@ html_code = '''<!DOCTYPE html>
 
         <!-- ======== Translator Section ======== -->
         <div id="translate" class="tab-content">
-            <div class="glass-card">
-                <h2>🌍 مترجم عربي - إنجليزي</h2>
+            <div class="section-card">
+                <h2>
+                    <svg class="section-icon" viewBox="0 0 24 24">
+                        <path d="M5 8l6 6M11 8l-6 6"/>
+                        <path d="M21 12a9 9 0 0 1-9 9"/>
+                        <path d="M3 12a9 9 0 0 0 9 9"/>
+                        <path d="M12 3v18"/>
+                    </svg>
+                    مترجم عربي - إنجليزي
+                </h2>
                 
                 <select id="translateDirection">
                     <option value="ar-en">عربي → إنجليزي</option>
@@ -462,9 +630,23 @@ html_code = '''<!DOCTYPE html>
 
                 <textarea id="translateInput" placeholder="اكتب النص للترجمة"></textarea>
                 <br>
-                <button onclick="translateText()">🌍 ترجمة</button>
+                <button onclick="translateText()">
+                    <svg class="btn-icon" viewBox="0 0 24 24">
+                        <path d="M5 8l6 6M11 8l-6 6"/>
+                        <path d="M21 12a9 9 0 0 1-9 9"/>
+                        <path d="M3 12a9 9 0 0 0 9 9"/>
+                        <path d="M12 3v18"/>
+                    </svg>
+                    ترجمة
+                </button>
 
-                <h3>الترجمة:</h3>
+                <h3>
+                    <svg class="btn-icon" viewBox="0 0 24 24" style="stroke:#ffd200;">
+                        <polyline points="9 11 12 14 22 4"/>
+                        <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                    </svg>
+                    الترجمة:
+                </h3>
                 <textarea id="translateOutput" readonly></textarea>
                 <div id="translateStatus" class="status"></div>
             </div>
@@ -472,14 +654,25 @@ html_code = '''<!DOCTYPE html>
 
         <!-- ======== External Link Section ======== -->
         <div id="external" class="tab-content">
-            <div class="glass-card" style="padding: 60px 30px;">
-                <h2 style="font-size: 32px; margin-bottom: 15px;">🚀 منصة BNN الخدمية</h2>
+            <div class="section-card" style="padding: 60px 30px;">
+                <h2 style="font-size: 32px; margin-bottom: 15px;">
+                    <svg class="section-icon" viewBox="0 0 24 24" style="width:36px;height:36px;">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                        <polyline points="15 3 21 3 21 9"/>
+                        <line x1="10" y1="14" x2="21" y2="3"/>
+                    </svg>
+                    منصة BNN الخدمية
+                </h2>
                 <p style="color: #aaa; font-size: 17px; margin-bottom: 30px; line-height: 1.8;">
                     اضغط الزر أدناه للانتقال إلى المنصة الخدمية الشاملة لـ BNN<br>
                     حيث تجد أدوات متقدمة وخدمات متكاملة
                 </p>
                 <a href="https://fahome652-cell.github.io/bugbum12/BNNFG.html" target="_blank" class="external-link-btn">
-                    <span class="icon">🚀</span>
+                    <svg class="link-icon" viewBox="0 0 24 24">
+                        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                        <polyline points="15 3 21 3 21 9"/>
+                        <line x1="10" y1="14" x2="21" y2="3"/>
+                    </svg>
                     <span>الذهاب إلى المنصة</span>
                 </a>
                 <p style="color: #666; font-size: 13px; margin-top: 25px;">
@@ -521,7 +714,6 @@ html_code = '''<!DOCTYPE html>
             target.classList.add('active');
             target.style.animation = 'fadeInUp 0.5s ease';
             
-            // Find the button that was clicked
             const btns = document.querySelectorAll('.tab-btn');
             for (let btn of btns) {
                 if (btn.getAttribute('onclick').includes(tabId)) {
@@ -543,6 +735,10 @@ html_code = '''<!DOCTYPE html>
             reverseMap[map[key]] = key;
         }
 
+        // ======== Status Icons (SVG strings) ========
+        const successIcon = `<svg class="status-icon" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>`;
+        const errorIcon = `<svg class="status-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>`;
+
         // ======== Encrypt ========
         function encrypt() {
             const input = document.getElementById('inputText');
@@ -552,7 +748,7 @@ html_code = '''<!DOCTYPE html>
             
             if (!text.trim()) {
                 status.className = 'status error';
-                status.textContent = '⚠️ الرجاء إدخال نص للتشفير';
+                status.innerHTML = errorIcon + ' الرجاء إدخال نص للتشفير';
                 output.value = '';
                 return;
             }
@@ -571,9 +767,8 @@ html_code = '''<!DOCTYPE html>
 
             output.value = result;
             status.className = 'status success';
-            status.textContent = `✅ تم تشفير ${encryptedCount} حرف بنجاح`;
+            status.innerHTML = successIcon + ` تم تشفير ${encryptedCount} حرف بنجاح`;
             
-            // Animate output
             output.style.transform = 'scale(0.98)';
             setTimeout(() => output.style.transform = 'scale(1)', 200);
         }
@@ -586,7 +781,7 @@ html_code = '''<!DOCTYPE html>
             
             if (!text.trim()) {
                 status.className = 'status error';
-                status.textContent = '⚠️ الرجاء إدخال نص لفك التشفير';
+                status.innerHTML = errorIcon + ' الرجاء إدخال نص لفك التشفير';
                 output.value = '';
                 return;
             }
@@ -625,7 +820,7 @@ html_code = '''<!DOCTYPE html>
 
             output.value = result;
             status.className = 'status success';
-            status.textContent = `✅ تم فك تشفير ${decryptedCount} رمز بنجاح`;
+            status.innerHTML = successIcon + ` تم فك تشفير ${decryptedCount} رمز بنجاح`;
             
             output.style.transform = 'scale(0.98)';
             setTimeout(() => output.style.transform = 'scale(1)', 200);
@@ -649,7 +844,7 @@ html_code = '''<!DOCTYPE html>
 
             if (!amount || amount <= 0) {
                 status.className = 'status error';
-                status.textContent = '⚠️ الرجاء إدخال مبلغ صحيح';
+                status.innerHTML = errorIcon + ' الرجاء إدخال مبلغ صحيح';
                 resultDiv.textContent = 'أدخل مبلغاً صحيحاً';
                 return;
             }
@@ -664,14 +859,18 @@ html_code = '''<!DOCTYPE html>
             resultDiv.innerHTML = `
                 <div style="animation: fadeInUp 0.4s ease;">
                     ${amount.toFixed(2)} ${fromName}<br>
-                    <span style="font-size:30px; display:inline-block; margin:10px 0; animation: bounce 1s infinite;">🔄</span><br>
+                    <svg class="convert-arrow" viewBox="0 0 24 24">
+                        <polyline points="23 4 23 10 17 10"/>
+                        <polyline points="1 20 1 14 7 14"/>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+                    </svg><br>
                     <span style="font-size:28px; color:#ffd200; font-weight:700;">${converted.toFixed(2)} ${toName}</span><br>
                     <span style="font-size:14px; color:#888; margin-top:10px; display:block;">1 ${from} = ${(toRate / fromRate).toFixed(4)} ${to}</span>
                 </div>
             `;
 
             status.className = 'status success';
-            status.textContent = '✅ تم التحويل بنجاح';
+            status.innerHTML = successIcon + ' تم التحويل بنجاح';
         }
 
         // ======== Translator ========
@@ -684,7 +883,7 @@ html_code = '''<!DOCTYPE html>
 
             if (!text) {
                 status.className = 'status error';
-                status.textContent = '⚠️ الرجاء إدخال نص للترجمة';
+                status.innerHTML = errorIcon + ' الرجاء إدخال نص للترجمة';
                 output.value = '';
                 return;
             }
@@ -697,7 +896,7 @@ html_code = '''<!DOCTYPE html>
                     if (data.responseData && data.responseData.translatedText) {
                         output.value = data.responseData.translatedText;
                         status.className = 'status success';
-                        status.textContent = '✅ تمت الترجمة بنجاح';
+                        status.innerHTML = successIcon + ' تمت الترجمة بنجاح';
                         output.style.transform = 'scale(0.98)';
                         setTimeout(() => output.style.transform = 'scale(1)', 200);
                     } else {
@@ -719,13 +918,13 @@ html_code = '''<!DOCTYPE html>
                     if (dict[lowerText]) {
                         output.value = dict[lowerText];
                         status.className = 'status success';
-                        status.textContent = '✅ تمت الترجمة (قاموس محلي)';
+                        status.innerHTML = successIcon + ' تمت الترجمة (قاموس محلي)';
                         output.style.transform = 'scale(0.98)';
                         setTimeout(() => output.style.transform = 'scale(1)', 200);
                     } else {
-                        output.value = '⚠️ تعذرت الترجمة، تأكد من اتصال الإنترنت';
+                        output.value = 'تعذرت الترجمة، تأكد من اتصال الإنترنت';
                         status.className = 'status error';
-                        status.textContent = '❌ فشل الترجمة';
+                        status.innerHTML = errorIcon + ' فشل الترجمة';
                     }
                 });
         }
@@ -740,7 +939,7 @@ html_code = '''<!DOCTYPE html>
 </body>
 </html>'''
 
-with open('/mnt/agents/output/BNN_glass_style.html', 'w', encoding='utf-8') as f:
+with open('/mnt/agents/output/BNN_custom_icons.html', 'w', encoding='utf-8') as f:
     f.write(html_code)
 
 print("تم حفظ الملف بنجاح!")
