@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>YUPLAY OS - 50Hz</title>
+<style>
+body {
+  margin: 0;
+  padding: 0;
+  background: #808080;
+  font-family: "Courier New", Courier, monospace;
+  overflow: hidden;
+  height: 100vh;
+  user-select: none;
+}
+
+#desktop {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+#logo {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 60px;
+  color: #666;
+  letter-spacing: 10px;
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.window {
+  position: absolute;
+  background: #c0c0c0;
+  border: 2px solid #000;
+  display: none;
+  flex-direction: column;
+}
+
+.window.active {
+  display: flex;
+}
+
+.titlebar {
+  background: #000080;
+  color: #fff;
+  padding: 4px 8px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: move;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #000;
+}
+
+.titlebar-left {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.win-btn {
+  background: #c0c0c0;
+  border: 2px solid #000;
+  width: 20px;
+  height: 18px;
+  font-size: 11px;
+  line-height: 14px;
+  text-align: center;
+  cursor: pointer;
+  color: #000;
+  font-family: "Courier New", monospace;
+  padding: 0;
+}
+
+.win-btn:hover {
+  background: #a0a0a0;
+}
+
+.close-btn:hover {
+  background: #ff0000;
+  color: #fff;
+}
+
+.win-body {
+  padding: 8px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+textarea {
+  width: 100%;
+  flex: 1;
+  border: 2px solid #000;
+  background: #fff;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 13px;
+  padding: 6px;
+  resize: none;
+  outline: none;
+}
+
+iframe {
+  width: 100%;
+  flex: 1;
+  border: 2px solid #000;
+  background: #fff;
+}
+
+.btn-row {
+  margin-top: 6px;
+  text-align: right;
+}
+
+button {
+  background: #c0c0c0;
+  border: 2px solid #000;
+  padding: 4px 16px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 13px;
+  cursor: pointer;
+  margin-left: 4px;
+  position: relative;
+}
+
+button:hover {
+  background: #a0a0a0;
+}
+
+button:active {
+  background: #808080;
+  transform: translateY(1px);
+}
+
+#taskbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 36px;
+  background: #c0c0c0;
+  border-top: 2px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  z-index: 100;
+}
+
+.task-btn {
+  background: #c0c0c0;
+  border: 2px solid #000;
+  padding: 4px 20px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.task-btn:hover {
+  background: #a0a0a0;
+}
+
+#save-msg {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #008000;
+  color: #fff;
+  padding: 4px 12px;
+  border: 2px solid #000;
+  font-size: 12px;
+  display: none;
+  z-index: 200;
+}
+
+.hz-display {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: #000;
+  color: #0f0;
+  padding: 4px 10px;
+  border: 2px solid #0f0;
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+}
+
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<div id="desktop">
+  <div id="logo">YUPLAY</div>
+
+  <div class="hz-display" id="hzDisplay">50Hz</div>
+  <div id="save-msg">SAVED</div>
+
+  <!-- HTML Editor Window -->
+  <div class="window active" id="win-html" style="width: 500px; height: 350px; top: 40px; left: 40px;">
+    <div class="titlebar" id="hdr-html">
+      <span>HTML Editor</span>
+      <div class="titlebar-left">
+        <button class="win-btn" onclick="maximizeWin('win-html'); play8Bit(600, 0.05);" title="Maximize">&#9633;</button>
+        <button class="win-btn close-btn" onclick="closeWin('win-html'); play8Bit(200, 0.05);" title="Close">X</button>
+      </div>
+    </div>
+    <div class="win-body">
+      <textarea id="code" placeholder="Type HTML5 code here..."></textarea>
+      <div class="btn-row">
+        <button onclick="clearCode(); play8Bit(150, 0.05);">Clear</button>
+        <button onclick="saveCode(); play8Bit(880, 0.1);">Save (SD)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result Window -->
+  <div class="window" id="win-res" style="width: 500px; height: 350px; top: 40px; right: 40px;">
+    <div class="titlebar" id="hdr-res">
+      <span>Result</span>
+      <div class="titlebar-left">
+        <button class="win-btn" onclick="maximizeWin('win-res'); play8Bit(600, 0.05);" title="Maximize">&#9633;</button>
+        <button class="win-btn close-btn" onclick="closeWin('win-res'); play8Bit(200, 0.05);" title="Close">X</button>
+      </div>
+    </div>
+    <div class="win-body">
+      <iframe id="preview" sandbox="allow-scripts allow-same-origin"></iframe>
+    </div>
+  </div>
+
+  <!-- Taskbar -->
+  <div id="taskbar">
+    <button class="task-btn" onclick="openWin('win-html'); play8Bit(440, 0.08);">HTML</button>
+    <button class="task-btn" onclick="showResult(); play8Bit(660, 0.08);">Result</button>
+  </div>
+</div>
+
+<script>
+// ===================== 8-BIT SOUND ENGINE =====================
+var audioCtx = null;
+
+function initAudio() {
+  if (!audioCtx) {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+}
+
+function play8Bit(freq, duration) {
+  initAudio();
+  if (audioCtx.state === 'suspended') {
+    audioCtx.resume();
+  }
+
+  var osc = audioCtx.createOscillator();
+  var gain = audioCtx.createGain();
+
+  osc.type = 'square';
+  osc.frequency.value = freq;
+
+  gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+
+  osc.connect(gain);
+  gain.connect(audioCtx.destination);
+
+  osc.start(audioCtx.currentTime);
+  osc.stop(audioCtx.currentTime + duration);
+}
+
+// ===================== 50Hz REFRESH LOOP =====================
+var lastFrame = 0;
+var frameInterval = 1000 / 50;
+
+function hzLoop(timestamp) {
+  if (timestamp - lastFrame >= frameInterval) {
+    lastFrame = timestamp;
+  }
+  requestAnimationFrame(hzLoop);
+}
+requestAnimationFrame(hzLoop);
+
+// ===================== WINDOW MANAGER =====================
+var savedCode = '';
+var winStates = {};
+var dragState = {
+  active: false,
+  win: null,
+  startX: 0,
+  startY: 0,
+  startLeft: 0,
+  startTop: 0
+};
+
+function openWin(id) {
+  document.getElementById(id).classList.add('active');
+  bringFront(id);
+}
+
+function closeWin(id) {
+  document.getElementById(id).classList.remove('active');
+}
+
+function maximizeWin(id) {
+  var win = document.getElementById(id);
+
+  if (!winStates[id]) {
+    winStates[id] = {};
+  }
+
+  var state = winStates[id];
+
+  if (state.maximized) {
+    // Restore
+    win.style.width = state.width;
+    win.style.height = state.height;
+    win.style.top = state.top;
+    win.style.left = state.left;
+    win.style.right = state.right;
+    win.style.bottom = state.bottom;
+    state.maximized = false;
+  } else {
+    // Save current state
+    state.width = win.style.width;
+    state.height = win.style.height;
+    state.top = win.style.top;
+    state.left = win.style.left;
+    state.right = win.style.right;
+    state.bottom = win.style.bottom;
+    state.maximized = true;
+
+    // Maximize (full screen minus taskbar)
+    var taskbarHeight = 36;
+    win.style.width = '100%';
+    win.style.height = 'calc(100% - ' + taskbarHeight + 'px)';
+    win.style.top = '0';
+    win.style.left = '0';
+    win.style.right = 'auto';
+    win.style.bottom = 'auto';
+  }
+
+  bringFront(id);
+}
+
+function saveCode() {
+  savedCode = document.getElementById('code').value;
+  var msg = document.getElementById('save-msg');
+  msg.style.display = 'block';
+  setTimeout(function() { msg.style.display = 'none'; }, 1000);
+}
+
+function clearCode() {
+  document.getElementById('code').value = '';
+  savedCode = '';
+}
+
+function showResult() {
+  openWin('win-res');
+  var iframe = document.getElementById('preview');
+  var doc = iframe.contentDocument || iframe.contentWindow.document;
+  if (savedCode.trim() === '') {
+    doc.open();
+    doc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="font-family:Courier New;text-align:center;padding:40px;color:#666;">No code saved. Write HTML in the editor and click Save.</body></html>');
+    doc.close();
+  } else {
+    doc.open();
+    doc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body>' + savedCode + '</body></html>');
+    doc.close();
+  }
+}
+
+function bringFront(id) {
+  var wins = document.querySelectorAll('.window');
+  for (var i = 0; i < wins.length; i++) {
+    wins[i].style.zIndex = '10';
+  }
+  document.getElementById(id).style.zIndex = '20';
+}
+
+// ===================== DRAGGING =====================
+function makeDraggable(hdrId, winId) {
+  var hdr = document.getElementById(hdrId);
+  var win = document.getElementById(winId);
+
+  hdr.addEventListener('mousedown', function(e) {
+    // Don't drag if maximized
+    if (winStates[winId] && winStates[winId].maximized) return;
+
+    dragState.active = true;
+    dragState.win = win;
+    dragState.startX = e.clientX;
+    dragState.startY = e.clientY;
+    dragState.startLeft = win.offsetLeft;
+    dragState.startTop = win.offsetTop;
+    bringFront(winId);
+    hdr.style.cursor = 'grabbing';
+  });
+
+  win.addEventListener('mousedown', function() {
+    bringFront(winId);
+  });
+}
+
+document.addEventListener('mousemove', function(e) {
+  if (!dragState.active || !dragState.win) return;
+  var dx = e.clientX - dragState.startX;
+  var dy = e.clientY - dragState.startY;
+  dragState.win.style.left = (dragState.startLeft + dx) + 'px';
+  dragState.win.style.top = (dragState.startTop + dy) + 'px';
+  dragState.win.style.right = 'auto';
+  dragState.win.style.bottom = 'auto';
+});
+
+document.addEventListener('mouseup', function() {
+  if (dragState.active) {
+    dragState.active = false;
+    dragState.win = null;
+    document.getElementById('hdr-html').style.cursor = 'move';
+    document.getElementById('hdr-res').style.cursor = 'move';
+  }
+});
+
+document.addEventListener('mouseleave', function() {
+  dragState.active = false;
+  dragState.win = null;
+});
+
+makeDraggable('hdr-html', 'win-html');
+makeDraggable('hdr-res', 'win-res');
+
+// Init audio on first click
+document.addEventListener('click', function() {
+  initAudio();
+}, { once: true });
+
+</script>
+
+</body>
+</html>
