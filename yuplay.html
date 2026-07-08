@@ -2,195 +2,248 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>YUPLAY OS - 50Hz</title>
+<title>YUPLAY OS - Network</title>
 <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
 body {
-  margin: 0;
-  padding: 0;
+  margin: 0; padding: 0;
   background: #808080;
   font-family: "Courier New", Courier, monospace;
-  overflow: hidden;
-  height: 100vh;
+  overflow: hidden; height: 100vh;
   user-select: none;
 }
-
-#desktop {
-  width: 100%;
-  height: 100%;
-  position: relative;
-}
-
+#desktop { width: 100%; height: 100%; position: relative; }
 #logo {
-  position: absolute;
-  top: 50%;
-  left: 50%;
+  position: absolute; top: 50%; left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 60px;
-  color: #666;
-  letter-spacing: 10px;
-  font-weight: bold;
+  font-size: 60px; color: #666;
+  letter-spacing: 10px; font-weight: bold;
   pointer-events: none;
 }
-
 .window {
-  position: absolute;
-  background: #c0c0c0;
-  border: 2px solid #000;
-  display: none;
+  position: absolute; background: #c0c0c0;
+  border: 2px solid #000; display: none;
   flex-direction: column;
 }
-
-.window.active {
-  display: flex;
-}
-
+.window.active { display: flex; }
 .titlebar {
-  background: #000080;
-  color: #fff;
-  padding: 4px 8px;
-  font-size: 14px;
-  font-weight: bold;
-  cursor: move;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 2px solid #000;
+  background: #000080; color: #fff;
+  padding: 4px 8px; font-size: 14px;
+  font-weight: bold; cursor: grab;
+  display: flex; justify-content: space-between;
+  align-items: center; border-bottom: 2px solid #000;
 }
-
-.titlebar-left {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
+.titlebar:active { cursor: grabbing; }
+.titlebar-left { display: flex; align-items: center; gap: 6px; }
 .win-btn {
-  background: #c0c0c0;
-  border: 2px solid #000;
-  width: 20px;
-  height: 18px;
-  font-size: 11px;
-  line-height: 14px;
-  text-align: center;
-  cursor: pointer;
-  color: #000;
-  font-family: "Courier New", monospace;
-  padding: 0;
+  background: #c0c0c0; border: 2px solid #000;
+  width: 20px; height: 18px; font-size: 11px;
+  line-height: 14px; text-align: center;
+  cursor: pointer; color: #000;
+  font-family: "Courier New", monospace; padding: 0;
 }
-
-.win-btn:hover {
-  background: #a0a0a0;
-}
-
-.close-btn:hover {
-  background: #ff0000;
-  color: #fff;
-}
-
+.win-btn:hover { background: #a0a0a0; }
+.close-btn:hover { background: #ff0000; color: #fff; }
 .win-body {
-  padding: 8px;
-  flex: 1;
-  display: flex;
-  flex-direction: column;
+  padding: 8px; flex: 1;
+  display: flex; flex-direction: column;
   overflow: hidden;
 }
-
 textarea {
-  width: 100%;
-  flex: 1;
-  border: 2px solid #000;
-  background: #fff;
-  font-family: "Courier New", Courier, monospace;
-  font-size: 13px;
-  padding: 6px;
-  resize: none;
-  outline: none;
+  width: 100%; flex: 1; border: 2px solid #000;
+  background: #fff; font-family: "Courier New", monospace;
+  font-size: 13px; padding: 6px; resize: none; outline: none;
 }
-
 iframe {
-  width: 100%;
-  flex: 1;
-  border: 2px solid #000;
-  background: #fff;
+  width: 100%; flex: 1; border: 2px solid #000; background: #fff;
 }
-
-.btn-row {
-  margin-top: 6px;
-  text-align: right;
-}
-
+.btn-row { margin-top: 6px; text-align: right; }
 button {
-  background: #c0c0c0;
-  border: 2px solid #000;
-  padding: 4px 16px;
-  font-family: "Courier New", Courier, monospace;
-  font-size: 13px;
-  cursor: pointer;
-  margin-left: 4px;
+  background: #c0c0c0; border: 2px solid #000;
+  padding: 4px 16px; font-family: "Courier New", monospace;
+  font-size: 13px; cursor: pointer; margin-left: 4px;
+}
+button:hover { background: #a0a0a0; }
+button:active { background: #808080; transform: translateY(1px); }
+#taskbar {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  height: 36px; background: #c0c0c0;
+  border-top: 2px solid #000;
+  display: flex; align-items: center;
+  justify-content: center; gap: 12px; z-index: 100;
+}
+.task-btn {
+  background: #c0c0c0; border: 2px solid #000;
+  padding: 4px 20px; font-family: "Courier New", monospace;
+  font-size: 13px; cursor: pointer;
+}
+.task-btn:hover { background: #a0a0a0; }
+#save-msg {
+  position: absolute; top: 10px; right: 10px;
+  background: #008000; color: #fff;
+  padding: 4px 12px; border: 2px solid #000;
+  font-size: 12px; display: none; z-index: 200;
+}
+.hz-display {
+  position: absolute; top: 10px; left: 10px;
+  background: #000; color: #0f0;
+  padding: 4px 10px; border: 2px solid #0f0;
+  font-family: "Courier New", monospace; font-size: 12px;
+}
+.net-status {
+  position: absolute; top: 10px; left: 90px;
+  background: #000; color: #0ff;
+  padding: 4px 10px; border: 2px solid #0ff;
+  font-family: "Courier New", monospace; font-size: 12px;
+}
+
+/* ===== FILE MANAGER ===== */
+.fm-toolbar {
+  background: #c0c0c0; border: 2px solid #000;
+  padding: 4px; margin-bottom: 6px;
+  display: flex; gap: 4px; align-items: center;
+}
+.fm-toolbar button { font-size: 12px; padding: 2px 8px; margin: 0; }
+.fm-path {
+  background: #fff; border: 2px solid #000;
+  padding: 2px 6px; font-size: 12px; flex: 1;
+}
+.fm-drop-zone {
+  flex: 1; border: 2px dashed #666;
+  background: #e0e0e0; overflow: auto;
+  padding: 8px; display: flex;
+  flex-wrap: wrap; align-content: flex-start;
+  gap: 8px;
+}
+.fm-drop-zone.drag-over {
+  border-color: #000080; background: #d0d0ff;
+}
+.fm-file-item {
+  width: 90px; text-align: center;
+  padding: 4px; cursor: pointer;
+  border: 1px solid transparent;
   position: relative;
 }
-
-button:hover {
-  background: #a0a0a0;
+.fm-file-item:hover {
+  background: #a0a0a0; border: 1px solid #000;
 }
-
-button:active {
-  background: #808080;
-  transform: translateY(1px);
+.fm-file-item.selected {
+  background: #000080; color: #fff;
+  border: 1px solid #000;
 }
-
-#taskbar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 36px;
-  background: #c0c0c0;
-  border-top: 2px solid #000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  z-index: 100;
-}
-
-.task-btn {
-  background: #c0c0c0;
-  border: 2px solid #000;
-  padding: 4px 20px;
-  font-family: "Courier New", Courier, monospace;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.task-btn:hover {
-  background: #a0a0a0;
-}
-
-#save-msg {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: #008000;
-  color: #fff;
-  padding: 4px 12px;
-  border: 2px solid #000;
-  font-size: 12px;
+.fm-file-item .fm-actions {
   display: none;
-  z-index: 200;
+  position: absolute; top: 0; right: 0;
+  background: #c0c0c0; border: 1px solid #000;
 }
-
-.hz-display {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: #000;
-  color: #0f0;
-  padding: 4px 10px;
-  border: 2px solid #0f0;
+.fm-file-item:hover .fm-actions { display: block; }
+.fm-actions button {
+  font-size: 10px; padding: 1px 4px;
+  margin: 0; border: none;
+  background: transparent; cursor: pointer;
+}
+.fm-actions button:hover { background: #ff0000; color: #fff; }
+.fm-icon { font-size: 32px; line-height: 1; }
+.fm-name {
+  font-size: 11px; word-break: break-all;
+  margin-top: 2px;
+}
+.fm-preview {
+  max-width: 64px; max-height: 48px;
+  border: 1px solid #999; background: #fff;
+}
+.fm-status {
+  background: #c0c0c0; border-top: 2px solid #000;
+  padding: 2px 6px; font-size: 11px; color: #333;
+}
+.fm-empty {
+  width: 100%; text-align: center;
+  color: #666; padding: 40px; font-size: 13px;
+}
+.fm-rename-input {
+  width: 80px; font-size: 10px;
   font-family: "Courier New", monospace;
-  font-size: 12px;
+  border: 1px solid #000; padding: 2px;
 }
 
+/* ===== VIDEO PLAYER ===== */
+.vp-container {
+  flex: 1; display: flex; flex-direction: column;
+  background: #000; border: 2px solid #000;
+  position: relative;
+}
+.vp-screen {
+  flex: 1; display: flex;
+  align-items: center; justify-content: center;
+  background: #000; position: relative; overflow: hidden;
+}
+.vp-video {
+  max-width: 100%; max-height: 100%; display: none;
+}
+.vp-video.active { display: block; }
+.vp-no-video {
+  color: #666; font-size: 14px; text-align: center;
+}
+.vp-controls {
+  background: #c0c0c0; border-top: 2px solid #000;
+  padding: 6px 8px; display: flex;
+  align-items: center; gap: 8px; height: 44px;
+}
+.vp-play-btn {
+  background: #c0c0c0; border: 2px solid #000;
+  width: 32px; height: 28px; font-size: 14px;
+  cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  font-family: "Courier New", monospace; padding: 0;
+  flex-shrink: 0;
+}
+.vp-play-btn:hover { background: #a0a0a0; }
+.vp-progress-container {
+  flex: 1; height: 20px; background: #fff;
+  border: 2px solid #000; position: relative;
+  cursor: pointer; overflow: hidden;
+}
+.vp-progress-bar {
+  height: 100%; width: 0%; background: #000080;
+  position: absolute; left: 0; top: 0;
+}
+.vp-progress-handle {
+  width: 8px; height: 100%; background: #000;
+  position: absolute; left: 0; top: 0;
+  cursor: ew-resize;
+}
+.vp-time {
+  font-size: 12px; color: #000;
+  font-family: "Courier New", monospace;
+  white-space: nowrap; min-width: 90px; text-align: center;
+}
+.vp-volume-container { display: flex; align-items: center; gap: 4px; }
+.vp-volume-slider {
+  width: 60px; height: 16px;
+  -webkit-appearance: none; appearance: none;
+  background: #fff; border: 2px solid #000; outline: none;
+}
+.vp-volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none; width: 8px; height: 14px;
+  background: #000; cursor: pointer; border: none;
+}
+.vp-fullscreen-btn {
+  background: #c0c0c0; border: 2px solid #000;
+  width: 28px; height: 28px; font-size: 12px;
+  cursor: pointer; display: flex;
+  align-items: center; justify-content: center;
+  font-family: "Courier New", monospace; padding: 0;
+  flex-shrink: 0;
+}
+.vp-fullscreen-btn:hover { background: #a0a0a0; }
+.vp-drop-overlay {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.7); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; pointer-events: none;
+  opacity: 0; transition: opacity 0.2s;
+}
+.vp-drop-overlay.active { opacity: 1; }
 </style>
 <base target="_blank">
 </head>
@@ -198,35 +251,35 @@ button:active {
 
 <div id="desktop">
   <div id="logo">YUPLAY</div>
-
-  <div class="hz-display" id="hzDisplay">50Hz</div>
+  <div class="hz-display">50Hz</div>
+  <div class="net-status" id="netStatus">NET: OFF</div>
   <div id="save-msg">SAVED</div>
 
-  <!-- HTML Editor Window -->
-  <div class="window active" id="win-html" style="width: 500px; height: 350px; top: 40px; left: 40px;">
+  <!-- HTML Editor -->
+  <div class="window active" id="win-html" style="width:500px;height:350px;top:40px;left:40px;">
     <div class="titlebar" id="hdr-html">
       <span>HTML Editor</span>
       <div class="titlebar-left">
-        <button class="win-btn" onclick="maximizeWin('win-html'); play8Bit(600, 0.05);" title="Maximize">&#9633;</button>
-        <button class="win-btn close-btn" onclick="closeWin('win-html'); play8Bit(200, 0.05);" title="Close">X</button>
+        <button class="win-btn" onclick="maximizeWin('win-html');play8Bit(600,0.05);">&#9633;</button>
+        <button class="win-btn close-btn" onclick="closeWin('win-html');play8Bit(200,0.05);">X</button>
       </div>
     </div>
     <div class="win-body">
       <textarea id="code" placeholder="Type HTML5 code here..."></textarea>
       <div class="btn-row">
-        <button onclick="clearCode(); play8Bit(150, 0.05);">Clear</button>
-        <button onclick="saveCode(); play8Bit(880, 0.1);">Save (SD)</button>
+        <button onclick="clearCode();play8Bit(150,0.05);">Clear</button>
+        <button onclick="saveCode();play8Bit(880,0.1);">Save (SD)</button>
       </div>
     </div>
   </div>
 
-  <!-- Result Window -->
-  <div class="window" id="win-res" style="width: 500px; height: 350px; top: 40px; right: 40px;">
+  <!-- Result -->
+  <div class="window" id="win-res" style="width:500px;height:350px;top:40px;right:40px;">
     <div class="titlebar" id="hdr-res">
       <span>Result</span>
       <div class="titlebar-left">
-        <button class="win-btn" onclick="maximizeWin('win-res'); play8Bit(600, 0.05);" title="Maximize">&#9633;</button>
-        <button class="win-btn close-btn" onclick="closeWin('win-res'); play8Bit(200, 0.05);" title="Close">X</button>
+        <button class="win-btn" onclick="maximizeWin('win-res');play8Bit(600,0.05);">&#9633;</button>
+        <button class="win-btn close-btn" onclick="closeWin('win-res');play8Bit(200,0.05);">X</button>
       </div>
     </div>
     <div class="win-body">
@@ -234,53 +287,108 @@ button:active {
     </div>
   </div>
 
+  <!-- File Manager -->
+  <div class="window" id="win-fm" style="width:640px;height:440px;top:80px;left:200px;">
+    <div class="titlebar" id="hdr-fm">
+      <span>File Manager - C:\</span>
+      <div class="titlebar-left">
+        <button class="win-btn" onclick="maximizeWin('win-fm');play8Bit(600,0.05);">&#9633;</button>
+        <button class="win-btn close-btn" onclick="closeWin('win-fm');play8Bit(200,0.05);">X</button>
+      </div>
+    </div>
+    <div class="win-body" id="fm-body">
+      <div class="fm-toolbar">
+        <button onclick="fmRefresh();play8Bit(350,0.05);">Refresh</button>
+        <button onclick="fmClear();play8Bit(250,0.05);">Clear All</button>
+        <button onclick="exportFiles();play8Bit(700,0.1);">Export</button>
+        <div class="fm-path">C:\YUPLAY\Files\</div>
+      </div>
+      <div class="fm-drop-zone" id="fmDropZone">
+        <div class="fm-empty">Drag & Drop files here<br>Images, Videos, Music, ZIP, HTML Games<br>Files saved to YUPLAY Network (LocalStorage)</div>
+      </div>
+      <div class="fm-status" id="fmStatus">0 items | YUPLAY Network</div>
+    </div>
+  </div>
+
+  <!-- Video Player -->
+  <div class="window" id="win-vp" style="width:560px;height:420px;top:60px;left:300px;">
+    <div class="titlebar" id="hdr-vp">
+      <span>YUPLAY Video Player</span>
+      <div class="titlebar-left">
+        <button class="win-btn" onclick="maximizeWin('win-vp');play8Bit(600,0.05);">&#9633;</button>
+        <button class="win-btn close-btn" onclick="closeWin('win-vp');vpStop();play8Bit(200,0.05);">X</button>
+      </div>
+    </div>
+    <div class="win-body" style="padding:0;">
+      <div class="vp-container" id="vpContainer">
+        <div class="vp-screen" id="vpScreen">
+          <div class="vp-no-video" id="vpNoVideo">Drag & Drop a video file here<br>or open from File Manager</div>
+          <video class="vp-video" id="vpVideo" preload="metadata"></video>
+          <div class="vp-drop-overlay" id="vpDropOverlay">Drop video here</div>
+        </div>
+        <div class="vp-controls">
+          <button class="vp-play-btn" id="vpPlayBtn" onclick="vpTogglePlay();">&#9654;</button>
+          <div class="vp-progress-container" id="vpProgressContainer">
+            <div class="vp-progress-bar" id="vpProgressBar"></div>
+            <div class="vp-progress-handle" id="vpProgressHandle"></div>
+          </div>
+          <div class="vp-time" id="vpTime">00:00 / 00:00</div>
+          <div class="vp-volume-container">
+            <span style="font-size:12px;">Vol</span>
+            <input type="range" class="vp-volume-slider" id="vpVolume" min="0" max="100" value="100" oninput="vpSetVolume(this.value);">
+          </div>
+          <button class="vp-fullscreen-btn" onclick="vpFullscreen();play8Bit(400,0.05);">&#9974;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Window -->
+  <div class="window" id="win-game" style="width:640px;height:480px;top:50px;left:250px;">
+    <div class="titlebar" id="hdr-game">
+      <span id="gameTitle">Game</span>
+      <div class="titlebar-left">
+        <button class="win-btn" onclick="maximizeWin('win-game');play8Bit(600,0.05);">&#9633;</button>
+        <button class="win-btn close-btn" onclick="closeWin('win-game');play8Bit(200,0.05);">X</button>
+      </div>
+    </div>
+    <div class="win-body" style="padding:0;">
+      <iframe id="gameFrame" sandbox="allow-scripts allow-same-origin" style="width:100%;height:100%;border:none;"></iframe>
+    </div>
+  </div>
+
   <!-- Taskbar -->
   <div id="taskbar">
-    <button class="task-btn" onclick="openWin('win-html'); play8Bit(440, 0.08);">HTML</button>
-    <button class="task-btn" onclick="showResult(); play8Bit(660, 0.08);">Result</button>
+    <button class="task-btn" onclick="openWin('win-html');play8Bit(440,0.08);">HTML</button>
+    <button class="task-btn" onclick="showResult();play8Bit(660,0.08);">Result</button>
+    <button class="task-btn" onclick="openWin('win-fm');play8Bit(520,0.08);">Files</button>
+    <button class="task-btn" onclick="openWin('win-vp');play8Bit(480,0.08);">Video</button>
   </div>
 </div>
 
 <script>
-// ===================== 8-BIT SOUND ENGINE =====================
+// ===================== 8-BIT SOUND =====================
 var audioCtx = null;
-
 function initAudio() {
-  if (!audioCtx) {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 }
-
 function play8Bit(freq, duration) {
   initAudio();
-  if (audioCtx.state === 'suspended') {
-    audioCtx.resume();
-  }
-
+  if (audioCtx.state === 'suspended') audioCtx.resume();
   var osc = audioCtx.createOscillator();
   var gain = audioCtx.createGain();
-
-  osc.type = 'square';
-  osc.frequency.value = freq;
-
+  osc.type = 'square'; osc.frequency.value = freq;
   gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
-
-  osc.connect(gain);
-  gain.connect(audioCtx.destination);
-
-  osc.start(audioCtx.currentTime);
-  osc.stop(audioCtx.currentTime + duration);
+  osc.connect(gain); gain.connect(audioCtx.destination);
+  osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime + duration);
 }
 
-// ===================== 50Hz REFRESH LOOP =====================
+// ===================== 50Hz LOOP =====================
 var lastFrame = 0;
 var frameInterval = 1000 / 50;
-
-function hzLoop(timestamp) {
-  if (timestamp - lastFrame >= frameInterval) {
-    lastFrame = timestamp;
-  }
+function hzLoop(ts) {
+  if (ts - lastFrame >= frameInterval) { lastFrame = ts; vpUpdateProgress(); }
   requestAnimationFrame(hzLoop);
 }
 requestAnimationFrame(hzLoop);
@@ -288,156 +396,383 @@ requestAnimationFrame(hzLoop);
 // ===================== WINDOW MANAGER =====================
 var savedCode = '';
 var winStates = {};
-var dragState = {
-  active: false,
-  win: null,
-  startX: 0,
-  startY: 0,
-  startLeft: 0,
-  startTop: 0
-};
-
 function openWin(id) {
   document.getElementById(id).classList.add('active');
   bringFront(id);
 }
-
 function closeWin(id) {
   document.getElementById(id).classList.remove('active');
 }
-
 function maximizeWin(id) {
   var win = document.getElementById(id);
-
-  if (!winStates[id]) {
-    winStates[id] = {};
-  }
-
-  var state = winStates[id];
-
-  if (state.maximized) {
-    // Restore
-    win.style.width = state.width;
-    win.style.height = state.height;
-    win.style.top = state.top;
-    win.style.left = state.left;
-    win.style.right = state.right;
-    win.style.bottom = state.bottom;
-    state.maximized = false;
+  if (!winStates[id]) winStates[id] = {};
+  var s = winStates[id];
+  if (s.maximized) {
+    win.style.width = s.width; win.style.height = s.height;
+    win.style.top = s.top; win.style.left = s.left;
+    win.style.right = s.right; win.style.bottom = s.bottom;
+    s.maximized = false;
   } else {
-    // Save current state
-    state.width = win.style.width;
-    state.height = win.style.height;
-    state.top = win.style.top;
-    state.left = win.style.left;
-    state.right = win.style.right;
-    state.bottom = win.style.bottom;
-    state.maximized = true;
-
-    // Maximize (full screen minus taskbar)
-    var taskbarHeight = 36;
+    s.width = win.style.width; s.height = win.style.height;
+    s.top = win.style.top; s.left = win.style.left;
+    s.right = win.style.right; s.bottom = win.style.bottom;
+    s.maximized = true;
     win.style.width = '100%';
-    win.style.height = 'calc(100% - ' + taskbarHeight + 'px)';
-    win.style.top = '0';
-    win.style.left = '0';
-    win.style.right = 'auto';
-    win.style.bottom = 'auto';
+    win.style.height = 'calc(100% - 36px)';
+    win.style.top = '0'; win.style.left = '0';
+    win.style.right = 'auto'; win.style.bottom = 'auto';
   }
-
   bringFront(id);
 }
-
 function saveCode() {
   savedCode = document.getElementById('code').value;
   var msg = document.getElementById('save-msg');
   msg.style.display = 'block';
-  setTimeout(function() { msg.style.display = 'none'; }, 1000);
+  setTimeout(function(){ msg.style.display = 'none'; }, 1000);
 }
-
 function clearCode() {
   document.getElementById('code').value = '';
   savedCode = '';
 }
-
 function showResult() {
   openWin('win-res');
   var iframe = document.getElementById('preview');
   var doc = iframe.contentDocument || iframe.contentWindow.document;
   if (savedCode.trim() === '') {
     doc.open();
-    doc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="font-family:Courier New;text-align:center;padding:40px;color:#666;">No code saved. Write HTML in the editor and click Save.</body></html>');
+    doc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body style="font-family:Courier New;text-align:center;padding:40px;color:#666;">No code saved.</body></html>');
     doc.close();
   } else {
     doc.open();
-    doc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head><body>' + savedCode + '</body></html>');
+    doc.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head><body>' + savedCode + '</body></html>');
     doc.close();
   }
 }
-
 function bringFront(id) {
   var wins = document.querySelectorAll('.window');
-  for (var i = 0; i < wins.length; i++) {
-    wins[i].style.zIndex = '10';
-  }
+  for (var i = 0; i < wins.length; i++) wins[i].style.zIndex = '10';
   document.getElementById(id).style.zIndex = '20';
 }
 
-// ===================== DRAGGING =====================
+// ===================== FIXED DRAGGING =====================
+var dragWin = null;
+var dragOffsetX = 0;
+var dragOffsetY = 0;
 function makeDraggable(hdrId, winId) {
   var hdr = document.getElementById(hdrId);
   var win = document.getElementById(winId);
-
   hdr.addEventListener('mousedown', function(e) {
-    // Don't drag if maximized
     if (winStates[winId] && winStates[winId].maximized) return;
-
-    dragState.active = true;
-    dragState.win = win;
-    dragState.startX = e.clientX;
-    dragState.startY = e.clientY;
-    dragState.startLeft = win.offsetLeft;
-    dragState.startTop = win.offsetTop;
+    dragWin = win;
+    var rect = win.getBoundingClientRect();
+    dragOffsetX = e.clientX - rect.left;
+    dragOffsetY = e.clientY - rect.top;
     bringFront(winId);
-    hdr.style.cursor = 'grabbing';
+    e.preventDefault();
   });
-
-  win.addEventListener('mousedown', function() {
-    bringFront(winId);
-  });
+  win.addEventListener('mousedown', function() { bringFront(winId); });
 }
-
 document.addEventListener('mousemove', function(e) {
-  if (!dragState.active || !dragState.win) return;
-  var dx = e.clientX - dragState.startX;
-  var dy = e.clientY - dragState.startY;
-  dragState.win.style.left = (dragState.startLeft + dx) + 'px';
-  dragState.win.style.top = (dragState.startTop + dy) + 'px';
-  dragState.win.style.right = 'auto';
-  dragState.win.style.bottom = 'auto';
+  if (!dragWin) return;
+  dragWin.style.left = (e.clientX - dragOffsetX) + 'px';
+  dragWin.style.top = (e.clientY - dragOffsetY) + 'px';
+  dragWin.style.right = 'auto';
+  dragWin.style.bottom = 'auto';
 });
-
-document.addEventListener('mouseup', function() {
-  if (dragState.active) {
-    dragState.active = false;
-    dragState.win = null;
-    document.getElementById('hdr-html').style.cursor = 'move';
-    document.getElementById('hdr-res').style.cursor = 'move';
-  }
-});
-
-document.addEventListener('mouseleave', function() {
-  dragState.active = false;
-  dragState.win = null;
-});
-
+document.addEventListener('mouseup', function() { dragWin = null; });
 makeDraggable('hdr-html', 'win-html');
 makeDraggable('hdr-res', 'win-res');
+makeDraggable('hdr-fm', 'win-fm');
+makeDraggable('hdr-vp', 'win-vp');
+makeDraggable('hdr-game', 'win-game');
 
-// Init audio on first click
-document.addEventListener('click', function() {
-  initAudio();
-}, { once: true });
+// ===================== NETWORK / STORAGE =====================
+var fmFiles = [];
+var NET_KEY = 'yuplay_files_v1';
 
+function saveToNetwork() {
+  try {
+    var data = JSON.stringify(fmFiles);
+    localStorage.setItem(NET_KEY, data);
+    document.getElementById('netStatus').innerText = 'NET: ON';
+    document.getElementById('netStatus').style.color = '#0f0';
+    document.getElementById('netStatus').style.borderColor = '#0f0';
+  } catch(e) {
+    document.getElementById('netStatus').innerText = 'NET: ERR';
+    document.getElementById('netStatus').style.color = '#ff0';
+  }
+}
+
+function loadFromNetwork() {
+  try {
+    var data = localStorage.getItem(NET_KEY);
+    if (data) {
+      fmFiles = JSON.parse(data);
+      document.getElementById('netStatus').innerText = 'NET: ON';
+      document.getElementById('netStatus').style.color = '#0f0';
+      document.getElementById('netStatus').style.borderColor = '#0f0';
+    } else {
+      document.getElementById('netStatus').innerText = 'NET: OFF';
+    }
+  } catch(e) {
+    document.getElementById('netStatus').innerText = 'NET: ERR';
+  }
+  renderFiles();
+}
+
+function exportFiles() {
+  var data = JSON.stringify(fmFiles, null, 2);
+  var blob = new Blob([data], {type: 'application/json'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'yuplay_backup.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ===================== FILE MANAGER =====================
+function getFileIcon(type, name) {
+  var lower = name.toLowerCase();
+  if (type.startsWith('image/')) return '&#127748;';
+  if (type.startsWith('video/')) return '&#127909;';
+  if (type.startsWith('audio/')) return '&#127925;';
+  if (lower.endsWith('.zip') || lower.endsWith('.rar')) return '&#128230;';
+  if (lower.endsWith('.txt')) return '&#128196;';
+  if (lower.endsWith('.html') || lower.endsWith('.htm')) return '&#127918;';
+  return '&#128193;';
+}
+
+function renderFiles() {
+  var zone = document.getElementById('fmDropZone');
+  var status = document.getElementById('fmStatus');
+  if (fmFiles.length === 0) {
+    zone.innerHTML = '<div class="fm-empty">Drag & Drop files here<br>Images, Videos, Music, ZIP, HTML Games<br>Files saved to YUPLAY Network (LocalStorage)</div>';
+    status.innerText = '0 items | YUPLAY Network';
+    return;
+  }
+  zone.innerHTML = '';
+  for (var i = 0; i < fmFiles.length; i++) {
+    var f = fmFiles[i];
+    var item = document.createElement('div');
+    item.className = 'fm-file-item';
+    item.dataset.index = i;
+    var iconHtml = f.type.startsWith('image/') 
+      ? '<div class="fm-icon"><img class="fm-preview" src="' + f.data + '"></div>'
+      : '<div class="fm-icon">' + getFileIcon(f.type, f.name) + '</div>';
+    item.innerHTML = iconHtml + 
+      '<div class="fm-name" id="fname-' + i + '">' + f.name + '</div>' +
+      '<div class="fm-actions">' +
+      '<button onclick="event.stopPropagation();renameFile(' + i + ');" title="Rename">R</button>' +
+      '<button onclick="event.stopPropagation();deleteFile(' + i + ');" title="Delete">X</button>' +
+      '</div>';
+    item.onclick = (function(idx){ return function(e){ e.stopPropagation(); selectFile(idx); }; })(i);
+    item.ondblclick = (function(idx){ return function(){ openFile(idx); }; })(i);
+    zone.appendChild(item);
+  }
+  var totalSize = fmFiles.reduce(function(s, f){ return s + (f.size || 0); }, 0);
+  status.innerText = fmFiles.length + ' items | ' + (totalSize/1024).toFixed(1) + ' KB | YUPLAY Network';
+}
+
+function selectFile(idx) {
+  var items = document.querySelectorAll('.fm-file-item');
+  for (var i = 0; i < items.length; i++) items[i].classList.remove('selected');
+  if (items[idx]) { items[idx].classList.add('selected'); play8Bit(400, 0.03); }
+}
+
+function deleteFile(idx) {
+  if (!confirm('Delete "' + fmFiles[idx].name + '" ?')) return;
+  fmFiles.splice(idx, 1);
+  saveToNetwork();
+  renderFiles();
+  play8Bit(200, 0.1);
+}
+
+function renameFile(idx) {
+  var oldName = fmFiles[idx].name;
+  var newName = prompt('New name:', oldName);
+  if (newName && newName.trim() !== '' && newName !== oldName) {
+    fmFiles[idx].name = newName.trim();
+    saveToNetwork();
+    renderFiles();
+    play8Bit(500, 0.05);
+  }
+}
+
+function openFile(idx) {
+  var f = fmFiles[idx];
+  if (!f) return;
+  var lower = f.name.toLowerCase();
+  if (lower.endsWith('.html') || lower.endsWith('.htm')) {
+    openWin('win-game');
+    document.getElementById('gameTitle').innerText = 'Game: ' + f.name;
+    document.getElementById('gameFrame').src = f.data;
+    play8Bit(1000, 0.15);
+  } else if (f.type.startsWith('video/')) {
+    vpLoadVideo(f.data, f.name);
+    openWin('win-vp');
+  } else if (f.type.startsWith('image/')) {
+    openWin('win-res');
+    var iframe = document.getElementById('preview');
+    var doc = iframe.contentDocument || iframe.contentWindow.document;
+    doc.open();
+    doc.write('<!DOCTYPE html><html><body style="margin:0;display:flex;align-items:center;justify-content:center;background:#000;height:100vh;"><img src="' + f.data + '" style="max-width:100%;max-height:100%;"></body></html>');
+    doc.close();
+  } else if (f.type.startsWith('audio/')) {
+    openWin('win-res');
+    var iframe = document.getElementById('preview');
+    var doc = iframe.contentDocument || iframe.contentWindow.document;
+    doc.open();
+    doc.write('<!DOCTYPE html><html><body style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#000;color:#0f0;font-family:Courier New;"><div style="margin-bottom:20px;">' + f.name + '</div><audio controls autoplay src="' + f.data + '"></audio></body></html>');
+    doc.close();
+  }
+  play8Bit(700, 0.08);
+}
+
+function fmRefresh() { renderFiles(); play8Bit(350, 0.05); }
+function fmClear() {
+  if (!confirm('Delete ALL files from YUPLAY Network?')) return;
+  fmFiles = [];
+  saveToNetwork();
+  renderFiles();
+  play8Bit(250, 0.05);
+}
+
+// Drag & Drop File Manager
+var fmDropZone = document.getElementById('fmDropZone');
+fmDropZone.addEventListener('dragover', function(e) { e.preventDefault(); fmDropZone.classList.add('drag-over'); });
+fmDropZone.addEventListener('dragleave', function(e) { e.preventDefault(); fmDropZone.classList.remove('drag-over'); });
+fmDropZone.addEventListener('drop', function(e) {
+  e.preventDefault(); e.stopPropagation();
+  fmDropZone.classList.remove('drag-over');
+  var files = e.dataTransfer.files;
+  var pending = files.length;
+  if (pending === 0) return;
+  for (var i = 0; i < files.length; i++) {
+    (function(file) {
+      var reader = new FileReader();
+      reader.onload = function(ev) {
+        fmFiles.push({
+          name: file.name,
+          type: file.type || 'application/octet-stream',
+          size: file.size,
+          data: ev.target.result
+        });
+        pending--;
+        if (pending === 0) {
+          saveToNetwork();
+          renderFiles();
+        }
+      };
+      reader.readAsDataURL(file);
+    })(files[i]);
+  }
+  play8Bit(500, 0.1);
+});
+
+// ===================== VIDEO PLAYER =====================
+var vpVideo = document.getElementById('vpVideo');
+var vpPlayBtn = document.getElementById('vpPlayBtn');
+var vpProgressBar = document.getElementById('vpProgressBar');
+var vpProgressHandle = document.getElementById('vpProgressHandle');
+var vpProgressContainer = document.getElementById('vpProgressContainer');
+var vpTime = document.getElementById('vpTime');
+var vpNoVideo = document.getElementById('vpNoVideo');
+var vpDropOverlay = document.getElementById('vpDropOverlay');
+var vpScreen = document.getElementById('vpScreen');
+var vpIsDragging = false;
+
+function vpLoadVideo(data, name) {
+  vpVideo.src = data;
+  vpVideo.classList.add('active');
+  vpNoVideo.style.display = 'none';
+  vpPlayBtn.innerHTML = '&#9654;';
+  vpTime.innerText = '00:00 / 00:00';
+  vpProgressBar.style.width = '0%';
+  vpProgressHandle.style.left = '0%';
+}
+function vpTogglePlay() {
+  if (!vpVideo.src) return;
+  if (vpVideo.paused) { vpVideo.play(); vpPlayBtn.innerHTML = '&#10074;&#10074;'; play8Bit(600, 0.05); }
+  else { vpVideo.pause(); vpPlayBtn.innerHTML = '&#9654;'; play8Bit(500, 0.05); }
+}
+function vpStop() { vpVideo.pause(); vpVideo.currentTime = 0; vpPlayBtn.innerHTML = '&#9654;'; }
+function vpSetVolume(val) { vpVideo.volume = val / 100; }
+function vpUpdateProgress() {
+  if (!vpVideo.duration || vpVideo.paused) return;
+  var pct = (vpVideo.currentTime / vpVideo.duration) * 100;
+  vpProgressBar.style.width = pct + '%';
+  vpProgressHandle.style.left = pct + '%';
+  vpTime.innerText = vpFormatTime(vpVideo.currentTime) + ' / ' + vpFormatTime(vpVideo.duration);
+}
+function vpFormatTime(sec) {
+  if (isNaN(sec)) return '00:00';
+  var m = Math.floor(sec / 60);
+  var s = Math.floor(sec % 60);
+  return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+}
+vpVideo.addEventListener('ended', function() {
+  vpPlayBtn.innerHTML = '&#9654;';
+  vpProgressBar.style.width = '100%';
+  vpProgressHandle.style.left = '100%';
+});
+vpVideo.addEventListener('timeupdate', function() {
+  if (!vpIsDragging) {
+    var pct = vpVideo.duration ? (vpVideo.currentTime / vpVideo.duration) * 100 : 0;
+    vpProgressBar.style.width = pct + '%';
+    vpProgressHandle.style.left = pct + '%';
+    vpTime.innerText = vpFormatTime(vpVideo.currentTime) + ' / ' + vpFormatTime(vpVideo.duration);
+  }
+});
+vpProgressContainer.addEventListener('click', function(e) {
+  if (!vpVideo.duration) return;
+  var rect = vpProgressContainer.getBoundingClientRect();
+  var pct = (e.clientX - rect.left) / rect.width;
+  vpVideo.currentTime = pct * vpVideo.duration;
+  play8Bit(350, 0.03);
+});
+vpProgressHandle.addEventListener('mousedown', function(e) { vpIsDragging = true; e.stopPropagation(); });
+document.addEventListener('mousemove', function(e) {
+  if (!vpIsDragging) return;
+  var rect = vpProgressContainer.getBoundingClientRect();
+  var pct = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+  vpProgressBar.style.width = pct + '%';
+  vpProgressHandle.style.left = pct + '%';
+});
+document.addEventListener('mouseup', function(e) {
+  if (!vpIsDragging) return;
+  vpIsDragging = false;
+  var rect = vpProgressContainer.getBoundingClientRect();
+  var pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+  if (vpVideo.duration) vpVideo.currentTime = pct * vpVideo.duration;
+});
+vpScreen.addEventListener('dragover', function(e) { e.preventDefault(); vpDropOverlay.classList.add('active'); });
+vpScreen.addEventListener('dragleave', function(e) { e.preventDefault(); vpDropOverlay.classList.remove('active'); });
+vpScreen.addEventListener('drop', function(e) {
+  e.preventDefault(); vpDropOverlay.classList.remove('active');
+  var files = e.dataTransfer.files;
+  for (var i = 0; i < files.length; i++) {
+    if (files[i].type.startsWith('video/')) {
+      (function(file) {
+        var reader = new FileReader();
+        reader.onload = function(ev) { vpLoadVideo(ev.target.result, file.name); };
+        reader.readAsDataURL(file);
+      })(files[i]);
+      break;
+    }
+  }
+  play8Bit(500, 0.1);
+});
+function vpFullscreen() {
+  var container = document.getElementById('vpContainer');
+  if (container.requestFullscreen) container.requestFullscreen();
+  else if (container.webkitRequestFullscreen) container.webkitRequestFullscreen();
+  else if (container.msRequestFullscreen) container.msRequestFullscreen();
+}
+
+// ===================== INIT =====================
+document.addEventListener('click', function() { initAudio(); }, { once: true });
+loadFromNetwork();
 </script>
 
 </body>
