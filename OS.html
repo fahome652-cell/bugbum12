@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>HONGRIY OS</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+html,body{width:100%;height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;}
+
+/* ===== BOOT ===== */
+#boot{position:fixed;inset:0;background:#000;z-index:99999;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+#boot .b1{position:absolute;font-size:46px;font-weight:200;color:#fff;letter-spacing:16px;opacity:1;animation:b1 2s ease forwards;}
+#boot .b2{position:absolute;font-size:30px;font-weight:300;color:#fff;letter-spacing:12px;opacity:0;animation:b2 2s ease 2s forwards;}
+@keyframes b1{0%{opacity:1;}70%{opacity:1;}100%{opacity:0;}}
+@keyframes b2{0%{opacity:1;}70%{opacity:1;}100%{opacity:0;}}
+
+/* ===== GLASSMORPHISM BASE ===== */
+:root{
+  --glass:rgba(255,255,255,0.08);
+  --glass-border:rgba(255,255,255,0.18);
+  --glass-text:#fff;
+  --glass-text2:rgba(255,255,255,0.7);
+  --accent:#00d4ff;
+}
+
+/* ===== DESKTOP ===== */
+#desk{position:fixed;inset:0;display:none;flex-direction:column;}
+#desk.on{display:flex;}
+#bg{position:absolute;inset:0;background:linear-gradient(135deg,#1a1a2e 0%,#16213e 50%,#0f3460 100%);z-index:0;}
+#bg::before{content:"";position:absolute;inset:0;background:url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200"><circle cx="50" cy="50" r="80" fill="%23e94560" opacity="0.15"/><circle cx="180" cy="150" r="60" fill="%2300d4ff" opacity="0.12"/><circle cx="100" cy="180" r="40" fill="%23f39c12" opacity="0.1"/></svg>');background-size:cover;}
+
+/* Status */
+#status{position:relative;z-index:10;display:flex;justify-content:space-between;align-items:center;padding:10px 24px;font-size:13px;color:var(--glass-text);}
+#status .t{font-weight:500;}
+
+/* Home Indicator */
+#home-bar:hover{background:rgba(255,255,255,0.8);}
+#home-bar:active{background:rgba(255,255,255,1);width:140px;}
+
+/* App Grid */
+#grid{position:relative;z-index:5;flex:1;display:grid;grid-template-columns:repeat(4,1fr);gap:24px;padding:30px 24px;align-content:start;overflow-y:auto;}
+.app{display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;}
+.app:active{transform:scale(0.92);}
+.app .ic{width:62px;height:62px;border-radius:18px;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);display:flex;align-items:center;justify-content:center;box-shadow:0 8px 32px rgba(0,0,0,0.2);transition:all 0.2s;}
+.app:hover .ic{background:rgba(255,255,255,0.15);transform:translateY(-2px);}
+.app .ic svg{width:26px;height:26px;stroke:var(--glass-text);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.app .lb{font-size:11px;color:var(--glass-text);font-weight:500;text-align:center;text-shadow:0 1px 4px rgba(0,0,0,0.3);}
+
+/* Dock */
+#dock{position:relative;z-index:10;display:flex;justify-content:center;gap:14px;padding:12px 24px;margin:0 20px 20px;border-radius:24px;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 8px 32px rgba(0,0,0,0.2);}
+#dock .dc{width:48px;height:48px;border-radius:14px;background:rgba(255,255,255,0.05);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.2s;}
+#dock .dc:active{transform:scale(0.9);background:rgba(255,255,255,0.12);}
+#dock .dc svg{width:20px;height:20px;stroke:var(--glass-text);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+
+/* ===== WINDOWS ===== */
+.win{position:fixed;inset:0;z-index:100;background:linear-gradient(135deg,#1a1a2e,#16213e);display:none;flex-direction:column;animation:winIn 0.35s cubic-bezier(0.16,1,0.3,1);}
+.swipe-bar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;background:rgba(255,255,255,0.85);border-radius:3px;z-index:200;cursor:pointer;transition:all 0.2s;box-shadow:0 0 8px rgba(255,255,255,0.3);}
+.swipe-bar:hover{background:#fff;width:150px;}
+.win.on{display:flex;}
+@keyframes winIn{from{transform:translateY(100%);}to{transform:translateY(0);}}
+
+.wh{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:rgba(0,0,0,0.2);border-bottom:1px solid var(--glass-border);}
+.wh .wt{font-size:16px;font-weight:600;color:var(--glass-text);}
+.wh .wa{display:flex;gap:10px;}
+.wh .wb{width:36px;height:36px;border-radius:12px;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(10px);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;}
+.wh .wb svg{width:16px;height:16px;stroke:var(--glass-text);fill:none;stroke-width:2;}
+
+.wc{flex:1;overflow:hidden;position:relative;}
+
+/* Browser iframe */
+#br iframe{width:100%;height:100%;border:none;background:#fff;}
+
+/* Store */
+.sg{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;padding:20px;overflow-y:auto;height:100%;}
+.si{display:flex;flex-direction:column;align-items:center;gap:8px;padding:16px;border-radius:16px;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(10px);cursor:pointer;transition:all 0.2s;}
+.si:active{transform:scale(0.95);}
+.si .si-ic{width:48px;height:48px;border-radius:14px;display:flex;align-items:center;justify-content:center;}
+.si .si-ic svg{width:22px;height:22px;stroke:#fff;fill:none;stroke-width:2;}
+.si .si-n{font-size:12px;font-weight:600;color:var(--glass-text);text-align:center;}
+
+/* Settings */
+.sl{padding:20px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;height:100%;}
+.sit{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-radius:14px;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(10px);cursor:pointer;}
+.sit .sil{display:flex;align-items:center;gap:14px;}
+.sit .sii{width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,0.08);display:flex;align-items:center;justify-content:center;}
+.sit .sii svg{width:18px;height:18px;stroke:var(--glass-text);fill:none;stroke-width:2;}
+.sit .sin{font-size:14px;font-weight:500;color:var(--glass-text);}
+.sit .sid{font-size:11px;color:var(--glass-text2);}
+
+/* Toggle */
+.tog{width:48px;height:26px;border-radius:13px;background:rgba(0,0,0,0.3);position:relative;cursor:pointer;transition:all 0.3s;border:1px solid var(--glass-border);}
+.tog::after{content:"";position:absolute;width:20px;height:20px;border-radius:50%;background:#fff;top:2px;left:2px;transition:all 0.3s;box-shadow:0 2px 4px rgba(0,0,0,0.2);}
+.tog.on{background:var(--accent);}
+.tog.on::after{left:24px;}
+
+/* Wallpaper selector */
+.wg{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;padding:20px;}
+.wi{aspect-ratio:9/16;border-radius:12px;background-size:cover;background-position:center;cursor:pointer;border:2px solid transparent;transition:all 0.2s;}
+.wi.sel{border-color:var(--accent);box-shadow:0 0 20px rgba(0,212,255,0.4);}
+
+/* Calculator */
+.cg{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:20px;}
+.cd{grid-column:1/-1;padding:20px;border-radius:14px;background:rgba(0,0,0,0.3);border:1px solid var(--glass-border);text-align:right;font-size:36px;font-weight:200;color:var(--glass-text);margin-bottom:8px;overflow:hidden;}
+.cb{padding:18px;border-radius:14px;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(10px);border:none;font-size:18px;font-weight:600;color:var(--glass-text);cursor:pointer;transition:all 0.15s;}
+.cb:active{background:rgba(255,255,255,0.15);}
+.cb.op{background:rgba(0,212,255,0.2);color:var(--accent);}
+.cb.eq{background:var(--accent);color:#000;}
+
+/* Notes */
+.nc{display:flex;flex-direction:column;height:100%;padding:20px;gap:12px;}
+.ni{width:100%;padding:16px;border-radius:14px;background:rgba(0,0,0,0.3);border:1px solid var(--glass-border);color:var(--glass-text);font-size:15px;resize:none;flex:1;font-family:inherit;}
+.ni:focus{outline:none;border-color:var(--accent);}
+.ns{padding:14px 32px;border-radius:14px;background:var(--accent);color:#000;border:none;font-size:15px;font-weight:600;cursor:pointer;transition:all 0.2s;}
+.ns:active{transform:scale(0.97);}
+.nl{display:flex;flex-direction:column;gap:8px;overflow-y:auto;max-height:200px;}
+.no{padding:12px 16px;border-radius:10px;background:var(--glass);border:1px solid var(--glass-border);font-size:13px;color:var(--glass-text);}
+
+/* Clock */
+.cf{width:200px;height:200px;border-radius:50%;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(10px);margin:40px auto;position:relative;box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+.cf::after{content:"";position:absolute;width:8px;height:8px;border-radius:50%;background:var(--accent);top:50%;left:50%;transform:translate(-50%,-50%);z-index:10;}
+.ch{position:absolute;bottom:50%;left:50%;transform-origin:bottom center;border-radius:4px;background:var(--glass-text);}
+.ch.h{width:4px;height:55px;margin-left:-2px;}
+.ch.m{width:3px;height:75px;margin-left:-1.5px;background:var(--accent);}
+.ch.s{width:2px;height:85px;margin-left:-1px;background:#e94560;}
+
+/* Weather */
+.wcrd{margin:20px;padding:30px;border-radius:20px;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(10px);text-align:center;}
+.wt{font-size:64px;font-weight:200;color:var(--glass-text);}
+.wd{font-size:16px;color:var(--glass-text2);margin-top:8px;}
+
+/* Gallery */
+.gg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:20px;overflow-y:auto;height:100%;}
+.gi{aspect-ratio:1;border-radius:12px;background:var(--glass);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;}
+.gi svg{width:28px;height:28px;stroke:var(--glass-text2);fill:none;stroke-width:1.5;}
+
+/* Keyboard */
+#kb{position:fixed;bottom:0;left:0;right:0;z-index:200;background:rgba(0,0,0,0.6);backdrop-filter:blur(30px);border-radius:24px 24px 0 0;border-top:1px solid var(--glass-border);padding:16px 12px 30px;display:none;flex-direction:column;gap:8px;animation:kbIn 0.3s ease;}
+#kb.on{display:flex;}
+@keyframes kbIn{from{transform:translateY(100%);}to{transform:translateY(0);}}
+.kr{display:flex;justify-content:center;gap:6px;}
+.kk{min-width:32px;height:46px;padding:0 10px;border-radius:10px;background:rgba(255,255,255,0.08);border:1px solid var(--glass-border);color:var(--glass-text);font-size:15px;font-weight:500;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all 0.1s;user-select:none;}
+.kk:active{background:rgba(255,255,255,0.2);}
+.kk.w{min-width:44px;}
+.kk.ww{min-width:100px;}
+.kk.sp{min-width:180px;}
+.kk.ac{background:var(--accent);color:#000;border-color:transparent;}
+
+#ep{display:none;grid-template-columns:repeat(8,1fr);gap:4px;padding:8px;max-height:150px;overflow-y:auto;}
+#ep.on{display:grid;}
+.eb{width:36px;height:36px;border-radius:8px;background:rgba(255,255,255,0.08);border:1px solid var(--glass-border);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.eb:active{background:rgba(255,255,255,0.2);}
+
+.kt{display:flex;justify-content:space-between;align-items:center;padding:0 8px 8px;}
+.kt span{font-size:12px;color:var(--glass-text2);}
+
+/* Notif */
+#notif{position:fixed;top:20px;left:50%;transform:translateX(-50%) translateY(-120px);z-index:300;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(20px);padding:12px 24px;border-radius:14px;font-size:13px;color:var(--glass-text);transition:transform 0.4s cubic-bezier(0.16,1,0.3,1);box-shadow:0 8px 32px rgba(0,0,0,0.3);}
+#notif.show{transform:translateX(-50%) translateY(0);}
+
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.2);border-radius:2px;}
+</style>
+<base target="_blank">
+</head>
+<body>
+
+<!-- BOOT -->
+<div id="boot">
+  <div class="b1">HONGRIY OS</div>
+  <div class="b2">HUAWEI</div>
+</div>
+
+<!-- DESKTOP -->
+<div id="desk">
+  <div id="bg"></div>
+
+  <div id="status">
+    <div class="t" id="st">12:00</div>
+    <div style="font-size:12px;font-weight:500;color:var(--glass-text);">HONGRIY OS</div>
+    <div style="display:flex;gap:10px;align-items:center;color:var(--glass-text);">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/></svg>
+      <span id="bat">100%</span>
+    </div>
+  </div>
+
+  <div id="grid">
+    <div class="app" onclick="openWin('browser')">
+      <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+      <div class="lb">Browser</div>
+    </div>
+    <div class="app" onclick="openWin('store')">
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+      <div class="lb">Store</div>
+    </div>
+    <div class="app" onclick="openWin('settings')">
+      <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+      <div class="lb">Settings</div>
+    </div>
+    <div class="app" onclick="openWin('keyboard')">
+      <div class="ic"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01"/><path d="M10 8h.01"/><path d="M14 8h.01"/><path d="M18 8h.01"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/><path d="M7 16h10"/></svg></div>
+      <div class="lb">Keyboard</div>
+    </div>
+    <div class="app" onclick="openWin('calc')">
+      <div class="ic"><svg viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="8" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="10" y2="14"/><line x1="14" y1="14" x2="16" y2="14"/><line x1="8" y1="18" x2="10" y2="18"/><line x1="14" y1="18" x2="16" y2="18"/></svg></div>
+      <div class="lb">Calculator</div>
+    </div>
+    <div class="app" onclick="openWin('notes')">
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+      <div class="lb">Notes</div>
+    </div>
+    <div class="app" onclick="openWin('clock')">
+      <div class="ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <div class="lb">Clock</div>
+    </div>
+    <div class="app" onclick="openWin('weather')">
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M17.5 19c0-3.037-2.463-5.5-5.5-5.5S6.5 15.963 6.5 19"/><circle cx="12" cy="10" r="4"/><path d="M8 10V8a4 4 0 0 1 8 0v2"/></svg></div>
+      <div class="lb">Weather</div>
+    </div>
+    <div class="app" onclick="openWin('gallery')">
+      <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+      <div class="lb">Gallery</div>
+    </div>
+    <div class="app" onclick="openWin('files')">
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div>
+      <div class="lb">Files</div>
+    </div>
+    <div class="app" onclick="openWin('music')">
+      <div class="ic"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+      <div class="lb">Music</div>
+    </div>
+    <div class="app" onclick="openWin('calendar')">
+      <div class="ic"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+      <div class="lb">Calendar</div>
+    </div>
+  </div>
+
+  <div id="dock">
+    <div class="dc" onclick="openWin('browser')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div>
+    <div class="dc" onclick="openWin('store')"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+    <div class="dc" onclick="openWin('settings')"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></div>
+    <div class="dc" onclick="openWin('keyboard')"><svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h.01"/><path d="M10 8h.01"/><path d="M14 8h.01"/><path d="M18 8h.01"/><path d="M8 12h.01"/><path d="M12 12h.01"/><path d="M16 12h.01"/><path d="M7 16h10"/></svg></div>
+  </div>
+
+  <!-- Home Indicator -->
+  <div id="home-bar" style="position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:134px;height:5px;background:rgba(255,255,255,0.85);border-radius:3px;z-index:20;cursor:pointer;transition:all 0.2s;box-shadow:0 0 8px rgba(255,255,255,0.3);"></div>
+</div>
+
+<!-- ===== WINDOWS ===== -->
+
+<!-- Browser -->
+<div class="win" id="win-browser">
+  
+  <div class="wc" id="br"><iframe src="https://www.google.com/webhp?igu=1" sandbox="allow-scripts allow-same-origin allow-forms allow-popups"></iframe></div>
+  <div class="swipe-bar" onclick="closeWin()"></div>
+</div>
+
+<!-- Store -->
+<div class="win" id="win-store">
+  
+  <div class="wc">
+    <div class="sg">
+      <div class="si" onclick="openLink('https://www.youtube.com')"><div class="si-ic" style="background:linear-gradient(135deg,#ff0000,#cc0000);"><svg viewBox="0 0 24 24"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19.1c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"/><polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"/></svg></div><div class="si-n">YouTube</div></div>
+      <div class="si" onclick="openLink('https://www.instagram.com')"><div class="si-ic" style="background:linear-gradient(135deg,#833ab4,#fd1d1d,#f77737);"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5"/></svg></div><div class="si-n">Instagram</div></div>
+      <div class="si" onclick="openLink('https://www.tiktok.com')"><div class="si-ic" style="background:linear-gradient(135deg,#000,#333);"><svg viewBox="0 0 24 24"><path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5"/></svg></div><div class="si-n">TikTok</div></div>
+      <div class="si" onclick="openLink('https://www.twitter.com')"><div class="si-ic" style="background:linear-gradient(135deg,#1da1f2,#0d8ecf);"><svg viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg></div><div class="si-n">Twitter</div></div>
+      <div class="si" onclick="openLink('https://www.github.com')"><div class="si-ic" style="background:linear-gradient(135deg,#24292e,#000);"><svg viewBox="0 0 24 24"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg></div><div class="si-n">GitHub</div></div>
+      <div class="si" onclick="openLink('https://www.wikipedia.org')"><div class="si-ic" style="background:linear-gradient(135deg,#636,#000);"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></div><div class="si-n">Wikipedia</div></div>
+      <div class="si" onclick="openLink('https://www.reddit.com')"><div class="si-ic" style="background:linear-gradient(135deg,#ff4500,#cc3700);"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16c-2.5 0-4.5-1.5-5-3"/><path d="M17 13c-.5 1.5-2.5 3-5 3"/><circle cx="9" cy="10" r="1"/><circle cx="15" cy="10" r="1"/></svg></div><div class="si-n">Reddit</div></div>
+      <div class="si" onclick="openLink('https://www.netflix.com')"><div class="si-ic" style="background:linear-gradient(135deg,#e50914,#b20710);"><svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/></svg></div><div class="si-n">Netflix</div></div>
+      <div class="si" onclick="openLink('https://www.spotify.com')"><div class="si-ic" style="background:linear-gradient(135deg,#1db954,#1ed760);"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12c2.5-1 5.5-1 8 0"/><path d="M7 15c3-1.5 7-1.5 10 0"/></svg></div><div class="si-n">Spotify</div></div>
+    </div>
+  </div>
+  <div class="swipe-bar" onclick="closeWin()"></div>
+</div>
+
+<!-- Settings -->
+<div class="win" id="win-settings">
+  
+  <div class="wc">
+    <div id="set-main">
+      <div class="sl">
+        <div class="sit" onclick="showWall()">
+          <div class="sil"><div class="sii"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div><div><div class="sin">Wallpaper</div><div class="sid">Change background</div></div></div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--glass-text2)" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+        </div>
+        <div class="sit"><div class="sil"><div class="sii"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 1v2"/><path d="M12 21v2"/><path d="M4.22 4.22l1.42 1.42"/><path d="M18.36 18.36l1.42 1.42"/><path d="M1 12h2"/><path d="M21 12h2"/><path d="M4.22 19.78l1.42-1.42"/><path d="M18.36 5.64l1.42-1.42"/></svg></div><div><div class="sin">Dark Mode</div><div class="sid">Always on</div></div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="sit"><div class="sil"><div class="sii"><svg viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg></div><div><div class="sin">Notifications</div><div class="sid">Manage alerts</div></div></div><div class="tog on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="sit"><div class="sil"><div class="sii"><svg viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg></div><div><div class="sin">About</div><div class="sid">HONGRIY OS v1.0.0 | Build 0000</div></div></div></div>
+      </div>
+    </div>
+    <div id="set-wall" style="display:none;">
+      <div style="display:flex;align-items:center;gap:12px;padding:16px 20px;">
+        <button class="wb" onclick="hideWall()" style="width:32px;height:32px;"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></button>
+        <span style="font-size:16px;font-weight:600;color:var(--glass-text);">Wallpaper</span>
+      </div>
+      <div class="wg">
+        <div class="wi sel" style="background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);" onclick="setWall(this,'linear-gradient(135deg,#1a1a2e,#16213e,#0f3460)')"></div>
+        <div class="wi" style="background:linear-gradient(135deg,#667eea,#764ba2);" onclick="setWall(this,'linear-gradient(135deg,#667eea,#764ba2)')"></div>
+        <div class="wi" style="background:linear-gradient(135deg,#f093fb,#f5576c);" onclick="setWall(this,'linear-gradient(135deg,#f093fb,#f5576c)')"></div>
+        <div class="wi" style="background:linear-gradient(135deg,#4facfe,#00f2fe);" onclick="setWall(this,'linear-gradient(135deg,#4facfe,#00f2fe)')"></div>
+        <div class="wi" style="background:linear-gradient(135deg,#43e97b,#38f9d7);" onclick="setWall(this,'linear-gradient(135deg,#43e97b,#38f9d7)')"></div>
+        <div class="wi" style="background:linear-gradient(135deg,#fa709a,#fee140);" onclick="setWall(this,'linear-gradient(135deg,#fa709a,#fee140)')"></div>
+        <div class="wi" style="background:linear-gradient(135deg,#30cfd0,#330867);" onclick="setWall(this,'linear-gradient(135deg,#30cfd0,#330867)')"></div>
+        <div class="wi" style="background:linear-gradient(135deg,#ffecd2,#fcb69f);" onclick="setWall(this,'linear-gradient(135deg,#ffecd2,#fcb69f)')"></div>
+      </div>
+    </div>
+  </div>
+  <div class="swipe-bar" onclick="closeWin()"></div>
+</div>
+
+<!-- Calculator -->
+<div class="win" id="win-calc">
+  
+  <div class="wc">
+    <div class="cg">
+      <div class="cd" id="cd">0</div>
+      <button class="cb" onclick="cc()">C</button>
+      <button class="cb" onclick="co('/')">/</button>
+      <button class="cb" onclick="co('*')">x</button>
+      <button class="cb" onclick="cdel()">DEL</button>
+      <button class="cb" onclick="cn('7')">7</button>
+      <button class="cb" onclick="cn('8')">8</button>
+      <button class="cb" onclick="cn('9')">9</button>
+      <button class="cb op" onclick="co('-')">-</button>
+      <button class="cb" onclick="cn('4')">4</button>
+      <button class="cb" onclick="cn('5')">5</button>
+      <button class="cb" onclick="cn('6')">6</button>
+      <button class="cb op" onclick="co('+')">+</button>
+      <button class="cb" onclick="cn('1')">1</button>
+      <button class="cb" onclick="cn('2')">2</button>
+      <button class="cb" onclick="cn('3')">3</button>
+      <button class="cb eq" onclick="ce()" style="grid-row:span 2;">=</button>
+      <button class="cb" onclick="cn('0')" style="grid-column:span 2;">0</button>
+      <button class="cb" onclick="cn('.')">.</button>
+    </div>
+  </div>
+  <div class="swipe-bar" onclick="closeWin()"></div>
+</div>
+
+<!-- Notes -->
+<div class="win" id="win-notes">
+  
+  <div class="wc">
+    <div class="nc">
+      <textarea class="ni" id="ni" placeholder="Type your note..."></textarea>
+      <button class="ns" onclick="saveNote()">Save Note</button>
+      <div class="nl" id="nl"></div>
+    </div>
+  </div>
+  <div class="swipe-bar" onclick="closeWin()"></div>
+</div>
+
+<!-- Clock -->
+<div class="win" id="win-clock">
+  
+  <div class="wc" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;">
+    <div class="cf">
+      <div class="ch h" id="chh"></div>
+      <div class="ch m" id="chm"></div>
+      <div class="ch s" id="chs"></div>
+    </div>
+    <div style="font-size:42px;font-weight:200;color:var(--glass-text);font-variant-numeric:tabular-nums;" id="dig">12:00:00</div>
+  </div>
+  <div class="swipe-bar" onclick="closeWin()"></div>
+</div>
+
+<!-- Weather -->
+<div class="win" id="win-weather">
+  
+  <div class="wc">
+    <div class="wcrd">
+      <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="1.5"><circle cx="12" cy="12" r="5"/><path d="M12 1v2"/><path d="M12 21v2"/><path d="M4.22 4.22l1.42 1.42"/><path d="M18.36 18.36l1.42 1.42"/><path d="M1 12h2"/><path d="M21 12h2"/><path d="M4.22 19.78l1.42-1.42"/><path d="M18.36 5.64l1.42-1.42"/></svg>
+      <div class="wt">32°</div>
+      <div class="wd">Sunny</div>
+      <div class="wd">Riyadh, Saudi Arabia</div>
+    </div>
+    <div style="display:flex;justify-content:center;gap:16px;padding:0 20px;">
+      <div style="text-align:center;padding:16px 24px;border-radius:14px;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(10px);"><div style="font-size:11px;color:var(--glass-text2);">Humidity</div><div style="font-size:18px;font-weight:600;color:var(--glass-text);margin-top:4px;">45%</div></div>
+      <div style="text-align:center;padding:16px 24px;border-radius:14px;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(10px);"><div style="font-size:11px;color:var(--glass-text2);">Wind</div><div style="font-size:18px;font-weight:600;color:var(--glass-text);margin-top:4px;">12 km/h</div></div>
+      <div style="text-align:center;padding:16px 24px;border-radius:14px;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(10px);"><div style="font-size:11px;color:var(--glass-text2);">UV</div><div style="font-size:18px;font-weight:600;color:var(--glass-text);margin-top:4px;">High</div></div>
+    </div>
+  </div>
+  <div class="swipe-bar" onclick="closeWin()"></div>
+</div>
+
+<!-- Gallery -->
+<div class="win" id="win-gallery">
+  
+  <div class="wc">
+    <div class="gg">
+      <div class="gi"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+      <div class="gi"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+      <div class="gi"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+      <div class="gi"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+      <div class="gi"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+      <div class="gi"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+    </div>
+  </div>
+  <div class="swipe-bar" onclick="closeWin()"></div>
+</div>
+
+<!-- Files -->
+<div class="win" id="win-files">
+  
+  <div class="wc">
+    <div class="sl">
+      <div class="sit"><div class="sil"><div class="sii"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg></div><div><div class="sin">Documents</div><div class="sid">12 items</div></div></div></div>
+      <div class="sit"><div class="sil"><div class="sii"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div><div><div class="sin">Images</div><div class="sid">48 items</div></div></div></div>
+      <div class="sit"><div class="sil"><div class="sii"><svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div><div><div class="sin">Music</div><div class="sid">156 items</div></div></div></div>
+      <div class="sit"><div class="sil"><div class="sii"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div><div><div class="sin">Downloads</div><div class="sid">8 items</div></div></div></div>
+    </div>
+  </div>
+  <div class="swipe-bar" onclick="closeWin()"></div>
+</div>
+
+<!-- Music -->
+<div class="win" id="win-music">
+  
+  <div class="wc" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;">
+    <div style="width:180px;height:180px;border-radius:20px;background:linear-gradient(135deg,var(--accent),#764ba2);box-shadow:0 8px 32px rgba(0,212,255,0.3);display:flex;align-items:center;justify-content:center;">
+      <svg width="70" height="70" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    </div>
+    <div style="text-align:center;"><div style="font-size:20px;font-weight:600;color:var(--glass-text);">Unknown Track</div><div style="font-size:14px;color:var(--glass-text2);margin-top:4px;">Unknown Artist</div></div>
+    <div style="display:flex;gap:20px;align-items:center;">
+      <button style="width:48px;height:48px;border-radius:50%;background:var(--glass);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--glass-text)" stroke-width="2"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg></button>
+      <button style="width:64px;height:64px;border-radius:50%;background:var(--accent);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 16px rgba(0,212,255,0.4);"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg></button>
+      <button style="width:48px;height:48px;border-radius:50%;background:var(--glass);border:1px solid var(--glass-border);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--glass-text)" stroke-width="2"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg></button>
+    </div>
+  </div>
+  <div class="swipe-bar" onclick="closeWin()"></div>
+</div>
+
+<!-- Calendar -->
+<div class="win" id="win-calendar">
+  
+  <div class="wc">
+    <div style="padding:20px;">
+      <div style="text-align:center;font-size:22px;font-weight:600;color:var(--glass-text);margin-bottom:20px;" id="cm">July 2026</div>
+      <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;text-align:center;margin-bottom:8px;">
+        <div style="font-size:11px;color:var(--glass-text2);font-weight:600;">Su</div>
+        <div style="font-size:11px;color:var(--glass-text2);font-weight:600;">Mo</div>
+        <div style="font-size:11px;color:var(--glass-text2);font-weight:600;">Tu</div>
+        <div style="font-size:11px;color:var(--glass-text2);font-weight:600;">We</div>
+        <div style="font-size:11px;color:var(--glass-text2);font-weight:600;">Th</div>
+        <div style="font-size:11px;color:var(--glass-text2);font-weight:600;">Fr</div>
+        <div style="font-size:11px;color:var(--glass-text2);font-weight:600;">Sa</div>
+      </div>
+      <div id="cdays" style="display:grid;grid-template-columns:repeat(7,1fr);gap:8px;text-align:center;"></div>
+    </div>
+  </div>
+  <div class="swipe-bar" onclick="closeWin()"></div>
+</div>
+
+<!-- Keyboard -->
+<div class="win" id="win-keyboard">
+  
+  <div class="wc" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:40px;">
+    <div style="width:100%;padding:20px;border-radius:16px;background:var(--glass);border:1px solid var(--glass-border);backdrop-filter:blur(10px);min-height:100px;color:var(--glass-text);font-size:16px;" id="kb-out">Tap keys to type...</div>
+    <button style="padding:12px 32px;border-radius:14px;background:var(--accent);color:#000;border:none;font-size:15px;font-weight:600;cursor:pointer;" onclick="toggleKb()">Open Keyboard</button>
+  </div>
+  <div class="swipe-bar" onclick="closeWin()"></div>
+</div>
+
+<!-- Keyboard Overlay -->
+<div id="kb">
+  <div class="kt"><span>HONGRIY Keyboard</span><button class="wb" onclick="toggleKb()" style="width:32px;height:32px;"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+  <div id="ep"></div>
+  <div id="km">
+    <div class="kr">
+      <button class="kk" onclick="kt('q')">q</button>
+      <button class="kk" onclick="kt('w')">w</button>
+      <button class="kk" onclick="kt('e')">e</button>
+      <button class="kk" onclick="kt('r')">r</button>
+      <button class="kk" onclick="kt('t')">t</button>
+      <button class="kk" onclick="kt('y')">y</button>
+      <button class="kk" onclick="kt('u')">u</button>
+      <button class="kk" onclick="kt('i')">i</button>
+      <button class="kk" onclick="kt('o')">o</button>
+      <button class="kk" onclick="kt('p')">p</button>
+    </div>
+    <div class="kr">
+      <button class="kk" onclick="kt('a')">a</button>
+      <button class="kk" onclick="kt('s')">s</button>
+      <button class="kk" onclick="kt('d')">d</button>
+      <button class="kk" onclick="kt('f')">f</button>
+      <button class="kk" onclick="kt('g')">g</button>
+      <button class="kk" onclick="kt('h')">h</button>
+      <button class="kk" onclick="kt('j')">j</button>
+      <button class="kk" onclick="kt('k')">k</button>
+      <button class="kk" onclick="kt('l')">l</button>
+    </div>
+    <div class="kr">
+      <button class="kk w ac" onclick="ksh()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l-10 10h6v10h8v-10h6z"/></svg>
+      </button>
+      <button class="kk" onclick="kt('z')">z</button>
+      <button class="kk" onclick="kt('x')">x</button>
+      <button class="kk" onclick="kt('c')">c</button>
+      <button class="kk" onclick="kt('v')">v</button>
+      <button class="kk" onclick="kt('b')">b</button>
+      <button class="kk" onclick="kt('n')">n</button>
+      <button class="kk" onclick="kt('m')">m</button>
+      <button class="kk w ac" onclick="kbk()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"/><line x1="18" y1="9" x2="12" y2="15"/><line x1="12" y1="9" x2="18" y2="15"/></svg>
+      </button>
+    </div>
+    <div class="kr">
+      <button class="kk w ac" onclick="te()">123</button>
+      <button class="kk" onclick="kt(',')">,</button>
+      <button class="kk sp" onclick="kt(' ')">space</button>
+      <button class="kk" onclick="kt('.')">.</button>
+      <button class="kk w ac" onclick="ken()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Notification -->
+<div id="notif">Welcome to HONGRIY OS</div>
+
+<script>
+// ===== BOOT =====
+(function(){
+  var boot = document.getElementById('boot');
+  var done = false;
+  function enter(){
+    if(done) return;
+    done = true;
+    boot.style.transition = 'opacity 0.5s ease';
+    boot.style.opacity = '0';
+    setTimeout(function(){
+      boot.style.display = 'none';
+      document.getElementById('desk').classList.add('on');
+      showNotif('Welcome to HONGRIY OS');
+    }, 500);
+  }
+  boot.onclick = enter;
+  document.onkeydown = enter;
+  document.ontouchstart = enter;
+  setTimeout(enter, 4000);
+})();
+
+// ===== TIME =====
+function updateTime(){
+  var now = new Date();
+  var h = String(now.getHours()).padStart(2,'0');
+  var m = String(now.getMinutes()).padStart(2,'0');
+  document.getElementById('st').textContent = h + ':' + m;
+}
+setInterval(updateTime, 1000);
+updateTime();
+
+// ===== WINDOW MANAGEMENT =====
+var curWin = null;
+function openWin(name){
+  curWin = name;
+  var wins = document.querySelectorAll('.win');
+  for(var i=0;i<wins.length;i++){
+    wins[i].classList.remove('on');
+    wins[i].style.transform = '';
+    wins[i].style.opacity = '';
+    wins[i].style.transition = '';
+  }
+  var w = document.getElementById('win-' + name);
+  if(w){
+    w.classList.add('on');
+    w.style.animation = 'none';
+    setTimeout(function(){ w.style.animation = ''; }, 10);
+  }
+  if(name === 'clock') startClock();
+  if(name === 'calendar') renderCal();
+  if(name === 'notes') loadNotes();
+}
+function closeWin(){
+  if(curWin){
+    var w = document.getElementById('win-' + curWin);
+    if(w){
+      w.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+      w.style.transform = 'translateY(100%)';
+      w.style.opacity = '0';
+      setTimeout(function(){
+        w.classList.remove('on');
+        w.style.transform = '';
+        w.style.opacity = '';
+        w.style.transition = '';
+      }, 300);
+    }
+    curWin = null;
+  }
+}
+
+// Swipe up to close - on home bar and window bottom area
+(function(){
+  var hb = document.getElementById('home-bar');
+  if(!hb) return;
+  var sy = 0;
+  hb.addEventListener('touchstart', function(e){ sy = e.touches[0].clientY; });
+  hb.addEventListener('touchmove', function(e){
+    var dy = sy - e.touches[0].clientY;
+    if(dy > 30) closeWin();
+  });
+  hb.addEventListener('click', function(){ closeWin(); });
+
+  // Also allow swipe from bottom of any window
+  var wins = document.querySelectorAll('.win');
+  for(var i=0;i<wins.length;i++){
+    (function(win){
+      var startY = 0;
+      win.addEventListener('touchstart', function(e){
+        if(e.touches[0].clientY > window.innerHeight - 80) startY = e.touches[0].clientY;
+        else startY = 0;
+      });
+      win.addEventListener('touchmove', function(e){
+        if(startY && e.touches[0].clientY < startY - 60){
+          startY = 0;
+          closeWin();
+        }
+      });
+    })(wins[i]);
+  }
+})();
+function openLink(url){
+  document.querySelector('#br iframe').src = url;
+  openWin('browser');
+}
+
+// ===== CALCULATOR =====
+var cv = '0', co = null, cp = null;
+function cn(n){ if(cv === '0') cv = n; else cv += n; document.getElementById('cd').textContent = cv; }
+function co(op){ cp = parseFloat(cv); co = op; cv = '0'; }
+function ce(){
+  if(co && cp !== null){
+    var c = parseFloat(cv), r = 0;
+    if(co === '+') r = cp + c;
+    if(co === '-') r = cp - c;
+    if(co === '*') r = cp * c;
+    if(co === '/') r = cp / c;
+    cv = String(r); document.getElementById('cd').textContent = cv;
+    co = null; cp = null;
+  }
+}
+function cc(){ cv = '0'; co = null; cp = null; document.getElementById('cd').textContent = '0'; }
+function cdel(){ cv = cv.slice(0,-1) || '0'; document.getElementById('cd').textContent = cv; }
+
+// ===== NOTES =====
+function saveNote(){
+  var t = document.getElementById('ni').value.trim();
+  if(!t) return;
+  var notes = JSON.parse(localStorage.getItem('hos_notes') || '[]');
+  notes.unshift({text:t,date:new Date().toISOString()});
+  localStorage.setItem('hos_notes', JSON.stringify(notes));
+  document.getElementById('ni').value = '';
+  loadNotes();
+  showNotif('Note saved');
+}
+function loadNotes(){
+  var notes = JSON.parse(localStorage.getItem('hos_notes') || '[]');
+  var list = document.getElementById('nl');
+  list.innerHTML = '';
+  for(var i=0;i<notes.length;i++){
+    var d = document.createElement('div');
+    d.className = 'no';
+    d.textContent = notes[i].text;
+    list.appendChild(d);
+  }
+}
+
+// ===== CLOCK =====
+var ci;
+function startClock(){
+  if(ci) clearInterval(ci);
+  function tick(){
+    var now = new Date();
+    var h = now.getHours() % 12;
+    var m = now.getMinutes();
+    var s = now.getSeconds();
+    document.getElementById('chh').style.transform = 'rotate(' + (h*30 + m*0.5) + 'deg)';
+    document.getElementById('chm').style.transform = 'rotate(' + (m*6) + 'deg)';
+    document.getElementById('chs').style.transform = 'rotate(' + (s*6) + 'deg)';
+    document.getElementById('dig').textContent = now.toLocaleTimeString();
+  }
+  tick();
+  ci = setInterval(tick, 1000);
+}
+
+// ===== CALENDAR =====
+function renderCal(){
+  var now = new Date();
+  var y = now.getFullYear(), m = now.getMonth(), d = now.getDate();
+  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cm').textContent = months[m] + ' ' + y;
+  var fd = new Date(y, m, 1).getDay();
+  var dim = new Date(y, m+1, 0).getDate();
+  var c = document.getElementById('cdays');
+  c.innerHTML = '';
+  for(var i=0;i<fd;i++) c.appendChild(document.createElement('div'));
+  for(var i=1;i<=dim;i++){
+    var div = document.createElement('div');
+    div.textContent = i;
+    div.style.padding = '8px';
+    div.style.borderRadius = '8px';
+    div.style.fontSize = '14px';
+    div.style.color = 'var(--glass-text)';
+    if(i === d){
+      div.style.background = 'var(--accent)';
+      div.style.color = '#000';
+      div.style.fontWeight = '600';
+    }
+    c.appendChild(div);
+  }
+}
+
+// ===== SETTINGS / WALLPAPER =====
+function showWall(){
+  document.getElementById('set-main').style.display = 'none';
+  document.getElementById('set-wall').style.display = 'block';
+}
+function hideWall(){
+  document.getElementById('set-main').style.display = 'block';
+  document.getElementById('set-wall').style.display = 'none';
+}
+function setWall(el, bg){
+  var items = document.querySelectorAll('.wi');
+  for(var i=0;i<items.length;i++) items[i].classList.remove('sel');
+  el.classList.add('sel');
+  document.getElementById('bg').style.background = bg;
+  localStorage.setItem('hos_wall', bg);
+  showNotif('Wallpaper changed');
+}
+
+// ===== KEYBOARD =====
+var kshOn = false;
+var kbt = document.getElementById('kb-out');
+function toggleKb(){
+  document.getElementById('kb').classList.toggle('on');
+}
+function kt(ch){
+  if(kshOn) ch = ch.toUpperCase();
+  if(kbt.textContent === 'Tap keys to type...') kbt.textContent = '';
+  kbt.textContent += ch;
+}
+function ksh(){ kshOn = !kshOn; }
+function kbk(){ kbt.textContent = kbt.textContent.slice(0,-1) || 'Tap keys to type...'; }
+function ken(){ kbt.textContent += '\n'; }
+
+// Emoji panel
+var em = ['😀','😂','😍','😎','😭','😡','👍','👎','❤️','🔥','🎉','✨','🌟','💯','🙏','👏','🤔','😴','🥳','🤯','😱','🤡','💀','👻','🤖','👽','🎃','🦄','🌈','☀️','🌙','⭐','⚡','💧','❄️','🍎','🍕','🍔','🍟','🌮','🍦','🍩','🍪','🎂','🍫','☕','🍵','🥤','🍺','🍷','⚽','🏀','🎮','🎲','🎸','🎹','🎤','🎧','📱','💻','⌨️','🖱️','🖨️','💡','🔋','🔌','⏰','📅','📷','🎥','📺','🔍','🔒','🔓','🔑','🛡️','⚙️','🔧','🔨','🧲','🧪','🌡️','💊','💉','🩹','🚑','🚒','🚓','🚕','🚌','🚲','✈️','🚀','🛸','🚁','🛳️','⚓','🗺️','🏠','🏢','🏰','🗽','🗼','🌉','🌋','🏝️','🏜️'];
+var ep = document.getElementById('ep');
+for(var i=0;i<em.length;i++){
+  var b = document.createElement('button');
+  b.className = 'eb';
+  b.textContent = em[i];
+  b.onclick = function(e){ kt(e.target.textContent); };
+  ep.appendChild(b);
+}
+function te(){
+  document.getElementById('ep').classList.toggle('on');
+  document.getElementById('km').style.display = document.getElementById('ep').classList.contains('on') ? 'none' : 'flex';
+}
+
+// ===== NOTIFICATION =====
+var nt;
+function showNotif(msg){
+  var n = document.getElementById('notif');
+  n.textContent = msg;
+  n.classList.add('show');
+  clearTimeout(nt);
+  nt = setTimeout(function(){ n.classList.remove('show'); }, 2500);
+}
+
+// ===== LOAD SAVED DATA =====
+var savedWall = localStorage.getItem('hos_wall');
+if(savedWall) document.getElementById('bg').style.background = savedWall;
+</script>
+</body>
+</html>
