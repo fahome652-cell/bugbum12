@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>شات الـ USB الأسطوري</title>
+    <style>
+        body { font-family: sans-serif; background: #e5ddd5; padding: 20px; }
+        .box { max-width: 500px; margin: 20px auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input, button { width: 100%; padding: 12px; margin-top: 10px; box-sizing: border-box; border-radius: 5px; border: 1px solid #ccc; font-size: 16px; }
+        button { background: #128c7e; color: white; border: none; cursor: pointer; font-weight: bold; }
+        .chat-area { height: 300px; border: 1px solid #ddd; overflow-y: auto; margin-top: 15px; padding: 15px; background: #fff; border-radius: 5px; }
+        .msg { margin-bottom: 10px; padding: 8px 12px; border-radius: 8px; width: fit-content; max-width: 80%; }
+        .me { background: #dcf8c6; margin-left: auto; text-align: left; }
+        .friend { background: #f0f0f0; margin-right: auto; text-align: right; }
+        .img-chat { max-width: 100%; border-radius: 5px; margin-top: 5px; }
+    </style>
+</head>
+<body>
+
+    <!-- شاشة الحساب (LocalStorage) -->
+    <div id="authBox" class="box">
+        <h2>📱 حساب الـ USB المحلي</h2>
+        <input type="text" id="usernameInput" placeholder="اكتب اسمك هنا...">
+        <button id="btnRegister">تفعيل الحساب والدخول</button>
+    </div>
+
+    <!-- شاشة الشات وإرسال الصور -->
+    <div id="chatBox" class="box" style="display: none;">
+        <h3 id="welcomeMsg"></h3>
+        
+        <div class="chat-area" id="chatArea"></div>
+        
+        <!-- خانة النص -->
+        <input type="text" id="msgInput" placeholder="اكتب رسالتك هنا...">
+        
+        <!-- خانة إرسال الصور المباشرة -->
+        <label style="margin-top: 10px; display: block; font-weight: bold;">📸 مشاركة صورة عبر السلك:</label>
+        <input type="file" id="imageInput" accept="image/*">
+        
+        <button id="btnSend" style="margin-top: 15px;">إرسال الآن</button>
+    </div>
+
+<script>
+    let myName = localStorage.getItem('usb_chat_user');
+
+    if (myName) { showChatPage(myName); }
+
+    document.getElementById('btnRegister').onclick = () => {
+        const name = document.getElementById('usernameInput').value.trim();
+        if (!name) return alert("الرجاء كتابة الاسم!");
+        localStorage.setItem('usb_chat_user', name); // حفظ محلي في المتصفح
+        showChatPage(name);
+    };
+
+    function showChatPage(name) {
+        myName = name;
+        document.getElementById('authBox').style.display = 'none';
+        document.getElementById('chatBox').style.display = 'block';
+        document.getElementById('welcomeMsg').innerText = `المستخدِم: ${name} (متصل عبر الـ USB)`;
+    }
+
+    // الضغط على زر الإرسال (نص أو صورة)
+    document.getElementById('btnSend').onclick = () => {
+        const txtInput = document.getElementById('msgInput');
+        const imgInput = document.getElementById('imageInput');
+        
+        // 1️⃣ معالجة النص
+        if (txtInput.value.trim()) {
+            showNewMessage('me', myName, txtInput.value.trim(), null);
+            txtInput.value = '';
+        }
+
+        // 2️⃣ معالجة الصورة وتحويلها لبيانات خفيفة تنقل عبر السلك
+        if (imgInput.files && imgInput.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                showNewMessage('me', myName, '', e.target.result);
+            };
+            reader.readAsDataURL(imgInput.files[0]);
+            imgInput.value = ''; // تفريغ الخانة
+        }
+    };
+
+    function showNewMessage(type, sender, text, imgData) {
+        const chatArea = document.getElementById('chatArea');
+        const div = document.createElement('div');
+        div.className = `msg ${type}`;
+        
+        let content = `<b>${sender}:</b> `;
+        if (text) content += `<div>${text}</div>`;
+        if (imgData) content += `<img src="${imgData}" class="img-chat">`;
+        
+        div.innerHTML = content;
+        chatArea.appendChild(div);
+        chatArea.scrollTop = chatArea.scrollHeight;
+    }
+</script>
+</body>
+</html>
