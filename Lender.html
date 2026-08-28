@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>Lander v2.2</title>
+    <style>
+        * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
+        body { overflow: hidden; background-color: #181818; font-family: "Segoe UI", Tahoma, sans-serif; color: #cfcfcf; font-size: 12px; }
+
+        #top-bar {
+            height: 32px; background-color: #111111; border-bottom: 1px solid #222;
+            display: flex; align-items: center; justify-content: space-between; padding: 0 12px;
+        }
+        .app-title { font-weight: bold; color: #e67e22; font-size: 14px; }
+        .gpu-badge { background: #27ae60; color: #fff; padding: 2px 8px; border-radius: 3px; font-size: 10px; font-weight: bold; }
+
+        #lander-panel {
+            position: absolute; top: 42px; right: 10px; width: 280px; max-height: calc(100vh - 50px);
+            overflow-y: auto; background-color: #1d1d1d; border: 1px solid #282828;
+            border-radius: 4px; box-shadow: 0 6px 16px rgba(0,0,0,0.6); display: flex; flex-direction: column; gap: 6px; padding: 8px; z-index: 10;
+        }
+
+        .blender-group { background-color: #242424; border: 1px solid #2e2e2e; border-radius: 3px; padding: 8px; }
+        .group-header { font-size: 11px; font-weight: bold; color: #a5a5a5; margin-bottom: 6px; text-transform: uppercase; border-bottom: 1px solid #2e2e2e; padding-bottom: 3px; }
+
+        .blender-btn {
+            background-color: #383838; color: #e1e1e1; border: 1px solid #222; padding: 6px 8px; margin-bottom: 4px;
+            cursor: pointer; width: 100%; border-radius: 2px; font-size: 11px; text-align: right; display: flex; align-items: center; justify-content: space-between;
+        }
+        .blender-btn:hover { background-color: #474747; color: #fff; }
+        .blender-btn.active { background-color: #e67e22; color: #fff; border-color: #b35400; }
+        .blender-btn.active-mode { background-color: #2d7d46; color: #fff; border-color: #1e5c30; }
+        .blender-btn.danger { background-color: #c0392b; color: #fff; border-color: #922b21; }
+        .blender-btn.danger:hover { background-color: #e74c3c; }
+
+        .engine-selector { display: flex; gap: 4px; margin-bottom: 6px; }
+        .engine-btn { flex: 1; text-align: center; justify-content: center; font-weight: bold; }
+        .engine-btn.cycles-active { background-color: #d35400; color: #fff; border-color: #e67e22; }
+        .engine-btn.normal-active { background-color: #2980b9; color: #fff; border-color: #3498db; }
+
+        .control-row { display: flex; align-items: center; justify-content: space-between; background-color: #2b2b2b; padding: 4px 6px; border-radius: 2px; border: 1px solid #1a1a1a; margin-bottom: 4px; }
+        input[type="color"] { -webkit-appearance: none; border: none; width: 24px; height: 18px; cursor: pointer; background: none; }
+        input[type="file"] { display: none; }
+        .file-label { font-size: 10px; background: #3a3a3a; padding: 2px 6px; border-radius: 2px; cursor: pointer; border: 1px solid #222; }
+        #render-status { font-size: 10px; color: #e67e22; text-align: center; margin-top: 4px; font-weight: bold; }
+
+        #mode-indicator {
+            position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.7); padding: 6px 20px; border-radius: 4px;
+            font-size: 13px; font-weight: bold; color: #fff; z-index: 20;
+            border: 1px solid #333;
+        }
+        #mode-indicator.object-mode { color: #e67e22; }
+        #mode-indicator.edit-mode { color: #2d7d46; }
+
+        #edit-tools { display: none; }
+
+        #lander-panel::-webkit-scrollbar { width: 6px; }
+        #lander-panel::-webkit-scrollbar-track { background: #1d1d1d; }
+        #lander-panel::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+        #lander-panel::-webkit-scrollbar-thumb:hover { background: #555; }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/TransformControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/exporters/GLTFExporter.js"></script>
+<base target="_blank">
+</head>
+<body>
+
+    <div id="top-bar">
+        <div class="app-title">Lander v2.2</div>
+        <div class="gpu-badge">WebGPU Engine Active</div>
+    </div>
+
+    <div id="lander-panel">
+        <div class="blender-group">
+            <div class="group-header">محرك الرندر (Render Engine)</div>
+            <div class="engine-selector">
+                <button id="btn-eevee" class="blender-btn engine-btn active" onclick="setEngine('eevee')">Eevee</button>
+                <button id="btn-cycles" class="blender-btn engine-btn" onclick="setEngine('cycles')">Cycles</button>
+                <button id="btn-normal" class="blender-btn engine-btn" onclick="setEngine('normal')">Normal</button>
+            </div>
+            <div id="render-status">نمط العرض: Eevee Studio</div>
+        </div>
+
+        <div class="blender-group">
+            <div class="group-header">نمط العمل (Mode)</div>
+            <div class="engine-selector">
+                <button id="btn-object-mode" class="blender-btn engine-btn active-mode" onclick="setWorkMode('object')">Object Mode</button>
+                <button id="btn-edit-mode" class="blender-btn engine-btn" onclick="setWorkMode('edit')">Edit Mode</button>
+            </div>
+        </div>
+
+        <div id="edit-tools" class="blender-group">
+            <div class="group-header">أدوات التعديل (Edit Tools)</div>
+            <div class="engine-selector">
+                <button id="btn-vertex" class="blender-btn engine-btn active" onclick="setEditElement('vertex')">Vertex</button>
+                <button id="btn-edge" class="blender-btn engine-btn" onclick="setEditElement('edge')">Edge</button>
+                <button id="btn-face" class="blender-btn engine-btn" onclick="setEditElement('face')">Face</button>
+            </div>
+            <button class="blender-btn" onclick="extrudeSelected()"><span>بروز (Extrude)</span> <span>E</span></button>
+            <button class="blender-btn danger" onclick="deleteSelectedElements()"><span>حذف المحدد</span> <span>X</span></button>
+            <button class="blender-btn" onclick="subdivideSelected()"><span>تقسيم (Subdivide)</span> <span>Ctrl+R</span></button>
+            <div style="font-size: 10px; color: #888; margin-top: 4px; text-align: center;">
+                انقر على النقاط/الخطوط للتحديد والسحب
+            </div>
+        </div>
+
+        <div class="blender-group" id="object-tools">
+            <div class="group-header">إضافة وتكرار (Add)</div>
+            <button class="blender-btn" onclick="addCube()"><span>مكعب</span> <span>Mesh Box</span></button>
+            <button class="blender-btn" onclick="addSphere()"><span>كرة</span> <span>Mesh Sphere</span></button>
+            <button class="blender-btn" onclick="addCylinder()"><span>أسطوانة</span> <span>Mesh Cylinder</span></button>
+            <button class="blender-btn" onclick="duplicateSelected()"><span>نسخ المحدد</span> <span>Shift+D</span></button>
+        </div>
+
+        <div class="blender-group" id="transform-tools">
+            <div class="group-header">التحويل (Transform)</div>
+            <button id="btn-translate" class="blender-btn active" onclick="setMode('translate')"><span>تحريك</span> <span>G</span></button>
+            <button id="btn-rotate" class="blender-btn" onclick="setMode('rotate')"><span>تدوير</span> <span>R</span></button>
+            <button id="btn-scale" class="blender-btn" onclick="setMode('scale')"><span>تكبير / تصغير</span> <span>S</span></button>
+            <button class="blender-btn danger" onclick="deleteSelectedObject()"><span>حذف المجسم</span> <span>Del</span></button>
+            <button class="blender-btn" onclick="deselectObject()"><span>إلغاء التحديد</span> <span>حرف O</span></button>
+        </div>
+
+        <div class="blender-group">
+            <div class="group-header">الخامة واللون (Material)</div>
+            <div class="control-row">
+                <span>تاكستشر الخامة</span>
+                <label for="textureInput" class="file-label">فتح صورة</label>
+                <input type="file" id="textureInput" accept="image/*" onchange="applyTexture(event)">
+            </div>
+            <div class="control-row">
+                <span>لون المجسم</span>
+                <input type="color" id="objectColor" value="#3498db" onchange="updateObjectColor(this.value)">
+            </div>
+            <button id="btn-light-mode" class="blender-btn" style="margin-top: 4px;" onclick="toggleLightMaterial()">
+                <span>تحويل لمجسم مشع (لمبة)</span> 💡
+            </button>
+        </div>
+
+        <div class="blender-group">
+            <div class="group-header">التصدير (Export)</div>
+            <button class="blender-btn" style="background:#2d7d46;" onclick="exportScene()"><span>تصدير (GLTF/GLB)</span> <span>Export</span></button>
+        </div>
+    </div>
+
+    <div id="mode-indicator" class="object-mode">Object Mode</div>
+
+    <script>
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x1c1c1c);
+
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / (window.innerHeight - 32), 0.1, 1000);
+        camera.position.set(3, 3, 5);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight - 32);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        renderer.toneMapping = THREE.ACESFilmicToneMapping;
+        document.body.appendChild(renderer.domElement);
+
+        const orbit = new THREE.OrbitControls(camera, renderer.domElement);
+        const transformControl = new THREE.TransformControls(camera, renderer.domElement);
+        scene.add(transformControl);
+
+        const raycaster = new THREE.Raycaster();
+        const mouse = new THREE.Vector2();
+
+        transformControl.addEventListener('dragging-changed', (e) => {
+            orbit.enabled = !e.value;
+        });
+
+        // Floor
+        const floorGeo = new THREE.PlaneGeometry(30, 30);
+        const floorMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.5, metalness: 0.1 });
+        const floor = new THREE.Mesh(floorGeo, floorMat);
+        floor.rotation.x = -Math.PI / 2;
+        floor.receiveShadow = true;
+        scene.add(floor);
+
+        const grid = new THREE.GridHelper(30, 30, 0xe67e22, 0x333333);
+        grid.position.y = 0.005;
+        scene.add(grid);
+
+        // Lights
+        const eeveeAmbientLight = new THREE.AmbientLight(0xffffff, 0.9);
+        scene.add(eeveeAmbientLight);
+
+        const cyclesSpotLight = new THREE.SpotLight(0xffffff, 0);
+        cyclesSpotLight.position.set(5, 8, 5);
+        cyclesSpotLight.angle = Math.PI / 6;
+        cyclesSpotLight.penumbra = 0.5;
+        cyclesSpotLight.castShadow = true;
+        scene.add(cyclesSpotLight);
+
+        const normalAmbientLight = new THREE.AmbientLight(0xffffff, 0.6);
+        normalAmbientLight.visible = false;
+        scene.add(normalAmbientLight);
+
+        const normalKeyLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        normalKeyLight.position.set(5, 10, 5);
+        normalKeyLight.castShadow = true;
+        normalKeyLight.visible = false;
+        scene.add(normalKeyLight);
+
+        const normalFillLight = new THREE.DirectionalLight(0x88ccff, 0.3);
+        normalFillLight.position.set(-5, 5, -5);
+        normalFillLight.visible = false;
+        scene.add(normalFillLight);
+
+        const normalRimLight = new THREE.DirectionalLight(0xffaa88, 0.4);
+        normalRimLight.position.set(0, 5, -8);
+        normalRimLight.visible = false;
+        scene.add(normalRimLight);
+
+        const objects = [];
+        let currentEngine = 'eevee';
+        let currentWorkMode = 'object';
+        let currentEditElement = 'vertex';
+
+        // Edit mode state
+        let editModeObject = null;
+        let editModeVertices = [];
+        let editModeEdges = [];
+        let selectedEditElements = [];
+        let editModeGroup = new THREE.Group();
+        scene.add(editModeGroup);
+
+        // Vertex dragging
+        let isDraggingVertex = false;
+        let draggedVertexIndex = -1;
+        let dragPlane = null;
+        let dragStartWorldPos = new THREE.Vector3();
+        let dragStartLocalPos = new THREE.Vector3();
+
+        // Object selection
+        window.addEventListener('pointerdown', (e) => {
+            if (e.target.tagName !== 'CANVAS') return;
+
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -((e.clientY - 32) / (window.innerHeight - 32)) * 2 + 1;
+
+            if (currentWorkMode === 'object') {
+                if (transformControl.dragging) return;
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObjects(objects, true);
+                if (intersects.length > 0) {
+                    transformControl.attach(intersects[0].object);
+                }
+            } else if (currentWorkMode === 'edit' && editModeObject) {
+                handleEditModePointerDown(e);
+            }
+        });
+
+        window.addEventListener('pointermove', (e) => {
+            if (currentWorkMode === 'edit' && isDraggingVertex && editModeObject && draggedVertexIndex >= 0) {
+                mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -((e.clientY - 32) / (window.innerHeight - 32)) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+                const intersects = raycaster.intersectObject(dragPlane);
+
+                if (intersects.length > 0) {
+                    const hitPoint = intersects[0].point;
+
+                    // Convert world hit point to local space of the object
+                    const localHit = editModeObject.worldToLocal(hitPoint.clone());
+
+                    // Update the vertex position in local space
+                    const positions = editModeObject.geometry.attributes.position;
+                    positions.setXYZ(draggedVertexIndex, localHit.x, localHit.y, localHit.z);
+                    positions.needsUpdate = true;
+                    editModeObject.geometry.computeVertexNormals();
+
+                    // Update visual helpers
+                    updateEditModeVisuals();
+                }
+            }
+        });
+
+        window.addEventListener('pointerup', () => {
+            isDraggingVertex = false;
+            draggedVertexIndex = -1;
+            if (dragPlane) {
+                scene.remove(dragPlane);
+                dragPlane = null;
+            }
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'o' || e.key === 'O' || e.key === 'Esc' || e.key === 'Escape') {
+                if (currentWorkMode === 'edit') {
+                    selectedEditElements = [];
+                    updateEditModeVisuals();
+                } else {
+                    deselectObject();
+                }
+            }
+            if (e.key === 'Delete' || e.key === 'Del') {
+                if (currentWorkMode === 'object') {
+                    deleteSelectedObject();
+                } else if (currentWorkMode === 'edit') {
+                    deleteSelectedElements();
+                }
+            }
+            if (currentWorkMode === 'edit') {
+                if (e.key === '1') setEditElement('vertex');
+                if (e.key === '2') setEditElement('edge');
+                if (e.key === '3') setEditElement('face');
+                if (e.key === 'e' || e.key === 'E') extrudeSelected();
+                if (e.key === 'x' || e.key === 'X') deleteSelectedElements();
+            }
+        });
+
+        function deselectObject() {
+            transformControl.detach();
+        }
+
+        function deleteSelectedObject() {
+            const selected = transformControl.object;
+            if (!selected) return;
+
+            // Remove from scene
+            scene.remove(selected);
+
+            // Remove from objects array
+            const index = objects.indexOf(selected);
+            if (index > -1) {
+                objects.splice(index, 1);
+            }
+
+            // Dispose geometry and material
+            if (selected.geometry) selected.geometry.dispose();
+            if (selected.material) selected.material.dispose();
+
+            // Remove light if emissive
+            if (selected.lightRef) {
+                scene.remove(selected.lightRef);
+            }
+
+            transformControl.detach();
+        }
+
+        // ==================== EDIT MODE ====================
+
+        function enterEditMode() {
+            const selected = transformControl.object;
+            if (!selected) {
+                alert('اختر مجسم أولاً!');
+                setWorkMode('object');
+                return;
+            }
+
+            editModeObject = selected;
+            transformControl.detach();
+            transformControl.visible = false;
+
+            // Save original material
+            if (!editModeObject.originalMaterial) {
+                editModeObject.originalMaterial = editModeObject.material.clone();
+            }
+
+            // Show wireframe overlay
+            editModeObject.material = editModeObject.material.clone();
+            editModeObject.material.wireframe = true;
+            editModeObject.material.color.setHex(0x666666);
+            editModeObject.material.opacity = 0.4;
+            editModeObject.material.transparent = true;
+
+            createEditModeVisuals();
+
+            document.getElementById('edit-tools').style.display = 'block';
+            document.getElementById('object-tools').style.display = 'none';
+            document.getElementById('transform-tools').style.display = 'none';
+        }
+
+        function exitEditMode() {
+            if (editModeObject) {
+                // Restore original material
+                if (editModeObject.originalMaterial) {
+                    const wasWireframe = editModeObject.material.wireframe;
+                    editModeObject.material = editModeObject.originalMaterial.clone();
+
+                    // If in normal mode, keep wireframe
+                    if (currentEngine === 'normal') {
+                        editModeObject.material.wireframe = true;
+                        editModeObject.material.color.setHex(0xffffff);
+                    }
+                }
+            }
+
+            // Clear edit mode visuals
+            while(editModeGroup.children.length > 0) {
+                const child = editModeGroup.children[0];
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) child.material.dispose();
+                editModeGroup.remove(child);
+            }
+
+            editModeVertices = [];
+            editModeEdges = [];
+            selectedEditElements = [];
+            editModeObject = null;
+            isDraggingVertex = false;
+            draggedVertexIndex = -1;
+
+            if (dragPlane) {
+                scene.remove(dragPlane);
+                dragPlane = null;
+            }
+
+            transformControl.visible = true;
+
+            document.getElementById('edit-tools').style.display = 'none';
+            document.getElementById('object-tools').style.display = 'block';
+            document.getElementById('transform-tools').style.display = 'block';
+        }
+
+        function createEditModeVisuals() {
+            // Clear existing
+            while(editModeGroup.children.length > 0) {
+                const child = editModeGroup.children[0];
+                if (child.geometry) child.geometry.dispose();
+                if (child.material) child.material.dispose();
+                editModeGroup.remove(child);
+            }
+
+            const geo = editModeObject.geometry;
+            const positions = geo.attributes.position;
+
+            // Create vertex spheres in WORLD space
+            editModeVertices = [];
+            const vertexWorldPositions = [];
+
+            for (let i = 0; i < positions.count; i++) {
+                const localPos = new THREE.Vector3(
+                    positions.getX(i),
+                    positions.getY(i),
+                    positions.getZ(i)
+                );
+                const worldPos = localPos.clone().applyMatrix4(editModeObject.matrixWorld);
+                vertexWorldPositions.push(worldPos);
+
+                const sphereGeo = new THREE.SphereGeometry(0.04, 8, 8);
+                const sphereMat = new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false });
+                const sphere = new THREE.Mesh(sphereGeo, sphereMat);
+                sphere.position.copy(worldPos);
+                sphere.renderOrder = 999;
+
+                sphere.userData = { type: 'vertex', index: i };
+                editModeGroup.add(sphere);
+                editModeVertices.push({ mesh: sphere, index: i, localPos: localPos.clone() });
+            }
+
+            // Create edge lines in WORLD space
+            editModeEdges = [];
+            if (geo.index) {
+                const indices = geo.index.array;
+                const edgeSet = new Set();
+
+                for (let i = 0; i < indices.length; i += 3) {
+                    const edges = [
+                        [indices[i], indices[i+1]],
+                        [indices[i+1], indices[i+2]],
+                        [indices[i+2], indices[i]]
+                    ];
+
+                    edges.forEach(edge => {
+                        const key = edge[0] < edge[1] ? `${edge[0]}-${edge[1]}` : `${edge[1]}-${edge[0]}`;
+                        if (!edgeSet.has(key)) {
+                            edgeSet.add(key);
+
+                            const p1 = vertexWorldPositions[edge[0]].clone();
+                            const p2 = vertexWorldPositions[edge[1]].clone();
+
+                            const lineGeo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+                            const lineMat = new THREE.LineBasicMaterial({ color: 0x444444, depthTest: false });
+                            const line = new THREE.Line(lineGeo, lineMat);
+                            line.renderOrder = 998;
+
+                            line.userData = { type: 'edge', indices: edge };
+                            editModeGroup.add(line);
+                            editModeEdges.push({ mesh: line, indices: edge });
+                        }
+                    });
+                }
+            }
+
+            updateEditModeVisuals();
+        }
+
+        function updateEditModeVisuals() {
+            if (!editModeObject) return;
+
+            const positions = editModeObject.geometry.attributes.position;
+
+            // Update vertex positions (world space)
+            editModeVertices.forEach(v => {
+                const localPos = new THREE.Vector3(
+                    positions.getX(v.index),
+                    positions.getY(v.index),
+                    positions.getZ(v.index)
+                );
+                const worldPos = localPos.applyMatrix4(editModeObject.matrixWorld);
+                v.mesh.position.copy(worldPos);
+
+                const isSelected = selectedEditElements.some(sel => sel.type === 'vertex' && sel.index === v.index);
+                v.mesh.material.color.setHex(isSelected ? 0x00ff00 : 0xffffff);
+                v.mesh.scale.setScalar(isSelected ? 2.0 : 1.0);
+            });
+
+            // Update edge positions (world space)
+            editModeEdges.forEach(e => {
+                const p1 = new THREE.Vector3(
+                    positions.getX(e.indices[0]),
+                    positions.getY(e.indices[0]),
+                    positions.getZ(e.indices[0])
+                ).applyMatrix4(editModeObject.matrixWorld);
+
+                const p2 = new THREE.Vector3(
+                    positions.getX(e.indices[1]),
+                    positions.getY(e.indices[1]),
+                    positions.getZ(e.indices[1])
+                ).applyMatrix4(editModeObject.matrixWorld);
+
+                e.mesh.geometry.setFromPoints([p1, p2]);
+                e.mesh.geometry.attributes.position.needsUpdate = true;
+
+                const isSelected = selectedEditElements.some(sel => 
+                    sel.type === 'edge' && 
+                    sel.indices[0] === e.indices[0] && 
+                    sel.indices[1] === e.indices[1]
+                );
+                e.mesh.material.color.setHex(isSelected ? 0x00ff00 : 0x444444);
+            });
+        }
+
+        function handleEditModePointerDown(e) {
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -((e.clientY - 32) / (window.innerHeight - 32)) * 2 + 1;
+
+            raycaster.setFromCamera(mouse, camera);
+
+            if (currentEditElement === 'vertex') {
+                // Check vertex spheres first
+                const vertexMeshes = editModeVertices.map(v => v.mesh);
+                const intersects = raycaster.intersectObjects(vertexMeshes);
+
+                if (intersects.length > 0) {
+                    const hit = intersects[0].object;
+                    const index = hit.userData.index;
+
+                    if (e.shiftKey) {
+                        const existing = selectedEditElements.findIndex(sel => sel.type === 'vertex' && sel.index === index);
+                        if (existing >= 0) {
+                            selectedEditElements.splice(existing, 1);
+                        } else {
+                            selectedEditElements.push({ type: 'vertex', index: index });
+                        }
+                    } else {
+                        selectedEditElements = [{ type: 'vertex', index: index }];
+                    }
+
+                    // Start dragging
+                    isDraggingVertex = true;
+                    draggedVertexIndex = index;
+
+                    // Create drag plane facing camera at vertex position
+                    const vertexPos = hit.position.clone();
+                    const planeGeo = new THREE.PlaneGeometry(100, 100);
+                    const planeMat = new THREE.MeshBasicMaterial({ visible: false });
+                    dragPlane = new THREE.Mesh(planeGeo, planeMat);
+                    dragPlane.position.copy(vertexPos);
+                    dragPlane.lookAt(camera.position);
+                    scene.add(dragPlane);
+
+                    updateEditModeVisuals();
+                    e.stopPropagation();
+                }
+            } else if (currentEditElement === 'edge') {
+                const edgeMeshes = editModeEdges.map(e => e.mesh);
+                const intersects = raycaster.intersectObjects(edgeMeshes);
+
+                if (intersects.length > 0) {
+                    const hit = intersects[0].object;
+                    const indices = hit.userData.indices;
+
+                    if (e.shiftKey) {
+                        const existing = selectedEditElements.findIndex(sel => 
+                            sel.type === 'edge' && 
+                            sel.indices[0] === indices[0] && 
+                            sel.indices[1] === indices[1]
+                        );
+                        if (existing >= 0) {
+                            selectedEditElements.splice(existing, 1);
+                        } else {
+                            selectedEditElements.push({ type: 'edge', indices: indices });
+                        }
+                    } else {
+                        selectedEditElements = [{ type: 'edge', indices: indices }];
+                    }
+                    updateEditModeVisuals();
+                }
+            }
+        }
+
+        function setEditElement(type) {
+            currentEditElement = type;
+            document.querySelectorAll('#btn-vertex, #btn-edge, #btn-face').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + type).classList.add('active');
+            selectedEditElements = [];
+            updateEditModeVisuals();
+
+            const indicator = document.getElementById('mode-indicator');
+            indicator.innerText = 'Edit Mode | ' + type.charAt(0).toUpperCase() + type.slice(1) + ' Select';
+        }
+
+        function extrudeSelected() {
+            if (!editModeObject || selectedEditElements.length === 0) return;
+
+            const geo = editModeObject.geometry;
+            const positions = geo.attributes.position;
+            const indices = geo.index ? Array.from(geo.index.array) : [];
+
+            const newPositions = [];
+            for (let i = 0; i < positions.count; i++) {
+                newPositions.push(positions.getX(i), positions.getY(i), positions.getZ(i));
+            }
+
+            const offset = new THREE.Vector3(0, 0.3, 0);
+            const vertexMap = {};
+
+            selectedEditElements.forEach(sel => {
+                if (sel.type === 'vertex') {
+                    const oldIndex = sel.index;
+                    const newIndex = newPositions.length / 3;
+                    vertexMap[oldIndex] = newIndex;
+
+                    newPositions.push(
+                        positions.getX(oldIndex) + offset.x,
+                        positions.getY(oldIndex) + offset.y,
+                        positions.getZ(oldIndex) + offset.z
+                    );
+                }
+            });
+
+            if (indices.length > 0) {
+                for (let i = 0; i < indices.length; i += 3) {
+                    const a = indices[i], b = indices[i+1], c = indices[i+2];
+                    if (vertexMap[a] !== undefined && vertexMap[b] !== undefined) {
+                        indices.push(a, b, vertexMap[b], vertexMap[b], vertexMap[a], a);
+                    }
+                    if (vertexMap[b] !== undefined && vertexMap[c] !== undefined) {
+                        indices.push(b, c, vertexMap[c], vertexMap[c], vertexMap[b], b);
+                    }
+                    if (vertexMap[c] !== undefined && vertexMap[a] !== undefined) {
+                        indices.push(c, a, vertexMap[a], vertexMap[a], vertexMap[c], c);
+                    }
+                }
+
+                // Add top face
+                selectedEditElements.forEach(sel => {
+                    if (sel.type === 'vertex' && vertexMap[sel.index] !== undefined) {
+                        // Find connected vertices
+                    }
+                });
+            }
+
+            const newGeo = new THREE.BufferGeometry();
+            newGeo.setAttribute('position', new THREE.Float32BufferAttribute(newPositions, 3));
+            if (indices.length > 0) {
+                newGeo.setIndex(indices);
+            }
+            newGeo.computeVertexNormals();
+
+            geo.dispose();
+            editModeObject.geometry = newGeo;
+
+            selectedEditElements = [];
+            createEditModeVisuals();
+        }
+
+        function deleteSelectedElements() {
+            if (!editModeObject || selectedEditElements.length === 0) return;
+
+            const geo = editModeObject.geometry;
+            const positions = geo.attributes.position;
+            const indices = geo.index ? Array.from(geo.index.array) : [];
+
+            const toDelete = new Set();
+            selectedEditElements.forEach(sel => {
+                if (sel.type === 'vertex') {
+                    toDelete.add(sel.index);
+                } else if (sel.type === 'edge') {
+                    toDelete.add(sel.indices[0]);
+                    toDelete.add(sel.indices[1]);
+                }
+            });
+
+            if (toDelete.size === 0) return;
+
+            const newPositions = [];
+            const indexMap = {};
+            let newIndex = 0;
+
+            for (let i = 0; i < positions.count; i++) {
+                if (!toDelete.has(i)) {
+                    newPositions.push(positions.getX(i), positions.getY(i), positions.getZ(i));
+                    indexMap[i] = newIndex++;
+                }
+            }
+
+            const newIndices = [];
+            if (indices.length > 0) {
+                for (let i = 0; i < indices.length; i += 3) {
+                    const a = indices[i], b = indices[i+1], c = indices[i+2];
+                    if (!toDelete.has(a) && !toDelete.has(b) && !toDelete.has(c)) {
+                        newIndices.push(indexMap[a], indexMap[b], indexMap[c]);
+                    }
+                }
+            }
+
+            const newGeo = new THREE.BufferGeometry();
+            newGeo.setAttribute('position', new THREE.Float32BufferAttribute(newPositions, 3));
+            if (newIndices.length > 0) {
+                newGeo.setIndex(newIndices);
+            }
+            newGeo.computeVertexNormals();
+
+            geo.dispose();
+            editModeObject.geometry = newGeo;
+
+            selectedEditElements = [];
+            createEditModeVisuals();
+        }
+
+        function subdivideSelected() {
+            if (!editModeObject) return;
+
+            const geo = editModeObject.geometry;
+            const positions = geo.attributes.position;
+            const indices = geo.index ? Array.from(geo.index.array) : [];
+
+            if (indices.length === 0) return;
+
+            const newPositions = [];
+            for (let i = 0; i < positions.count; i++) {
+                newPositions.push(positions.getX(i), positions.getY(i), positions.getZ(i));
+            }
+
+            const edgeMidpoints = {};
+            const getMidpoint = (a, b) => {
+                const key = a < b ? `${a}-${b}` : `${b}-${a}`;
+                if (edgeMidpoints[key] !== undefined) return edgeMidpoints[key];
+
+                const midIndex = newPositions.length / 3;
+                newPositions.push(
+                    (positions.getX(a) + positions.getX(b)) / 2,
+                    (positions.getY(a) + positions.getY(b)) / 2,
+                    (positions.getZ(a) + positions.getZ(b)) / 2
+                );
+                edgeMidpoints[key] = midIndex;
+                return midIndex;
+            };
+
+            const newIndices = [];
+            for (let i = 0; i < indices.length; i += 3) {
+                const a = indices[i], b = indices[i+1], c = indices[i+2];
+                const ab = getMidpoint(a, b);
+                const bc = getMidpoint(b, c);
+                const ca = getMidpoint(c, a);
+
+                newIndices.push(a, ab, ca);
+                newIndices.push(ab, b, bc);
+                newIndices.push(ca, bc, c);
+                newIndices.push(ab, bc, ca);
+            }
+
+            const newGeo = new THREE.BufferGeometry();
+            newGeo.setAttribute('position', new THREE.Float32BufferAttribute(newPositions, 3));
+            newGeo.setIndex(newIndices);
+            newGeo.computeVertexNormals();
+
+            geo.dispose();
+            editModeObject.geometry = newGeo;
+
+            selectedEditElements = [];
+            createEditModeVisuals();
+        }
+
+        // ==================== ENGINE & MODE ====================
+
+        function setEngine(engine) {
+            currentEngine = engine;
+            const statusLabel = document.getElementById('render-status');
+
+            document.getElementById('btn-eevee').classList.remove('active');
+            document.getElementById('btn-cycles').classList.remove('cycles-active');
+            document.getElementById('btn-normal').classList.remove('normal-active');
+
+            eeveeAmbientLight.visible = false;
+            cyclesSpotLight.visible = false;
+            normalAmbientLight.visible = false;
+            normalKeyLight.visible = false;
+            normalFillLight.visible = false;
+            normalRimLight.visible = false;
+
+            if (engine === 'cycles') {
+                document.getElementById('btn-cycles').classList.add('cycles-active');
+                statusLabel.innerText = "نمط العرض: Cycles Ultra-Real";
+                scene.background = new THREE.Color(0x0a0a0c);
+                eeveeAmbientLight.intensity = 0.15; eeveeAmbientLight.visible = true;
+                cyclesSpotLight.intensity = 1.2; cyclesSpotLight.visible = true;
+                objects.forEach(obj => { if (!obj.isEmissive && obj !== editModeObject) { obj.material.wireframe = false; } });
+                floorMat.wireframe = false; grid.visible = false;
+            } else if (engine === 'normal') {
+                document.getElementById('btn-normal').classList.add('normal-active');
+                statusLabel.innerText = "نمط العرض: Normal Wireframe";
+                scene.background = new THREE.Color(0x111111);
+                normalAmbientLight.visible = true; normalKeyLight.visible = true;
+                normalFillLight.visible = true; normalRimLight.visible = true;
+                objects.forEach(obj => { if (!obj.isEmissive && obj !== editModeObject) { obj.material.wireframe = true; obj.material.color.setHex(0xffffff); } });
+                floorMat.wireframe = true; floorMat.color.setHex(0x333333); grid.visible = true;
+            } else {
+                document.getElementById('btn-eevee').classList.add('active');
+                statusLabel.innerText = "نمط العرض: Eevee Studio";
+                scene.background = new THREE.Color(0x1c1c1c);
+                eeveeAmbientLight.intensity = 0.9; eeveeAmbientLight.visible = true;
+                cyclesSpotLight.intensity = 0; cyclesSpotLight.visible = false;
+                objects.forEach(obj => { 
+                    if (!obj.isEmissive && obj !== editModeObject) { 
+                        obj.material.wireframe = false; 
+                        if (obj.originalColor) obj.material.color.copy(obj.originalColor); 
+                    } 
+                });
+                floorMat.wireframe = false; floorMat.roughness = 0.5; floorMat.metalness = 0.1; floorMat.color.setHex(0x222222); grid.visible = true;
+            }
+        }
+
+        function setWorkMode(mode) {
+            if (mode === currentWorkMode) return;
+
+            currentWorkMode = mode;
+            const indicator = document.getElementById('mode-indicator');
+
+            if (mode === 'edit') {
+                document.getElementById('btn-edit-mode').classList.add('active-mode');
+                document.getElementById('btn-object-mode').classList.remove('active-mode');
+                indicator.innerText = 'Edit Mode | Vertex Select';
+                indicator.className = 'edit-mode';
+                enterEditMode();
+            } else {
+                document.getElementById('btn-object-mode').classList.add('active-mode');
+                document.getElementById('btn-edit-mode').classList.remove('active-mode');
+                indicator.innerText = 'Object Mode';
+                indicator.className = 'object-mode';
+                exitEditMode();
+            }
+        }
+
+        function addCube() {
+            const geometry = new THREE.BoxGeometry(1, 1, 1);
+            const mat = new THREE.MeshStandardMaterial({ color: document.getElementById('objectColor').value, roughness: 0.4, metalness: 0.05 });
+            const cube = new THREE.Mesh(geometry, mat);
+            cube.position.y = 0.5;
+            cube.castShadow = true; cube.receiveShadow = true;
+            cube.originalColor = new THREE.Color(document.getElementById('objectColor').value);
+            scene.add(cube); objects.push(cube);
+            transformControl.attach(cube);
+            if (currentEngine === 'normal') { mat.wireframe = true; mat.color.setHex(0xffffff); }
+        }
+
+        function addSphere() {
+            const geometry = new THREE.SphereGeometry(0.6, 16, 16);
+            const mat = new THREE.MeshStandardMaterial({ color: document.getElementById('objectColor').value, roughness: 0.4, metalness: 0.05 });
+            const sphere = new THREE.Mesh(geometry, mat);
+            sphere.position.y = 0.6;
+            sphere.castShadow = true; sphere.receiveShadow = true;
+            sphere.originalColor = new THREE.Color(document.getElementById('objectColor').value);
+            scene.add(sphere); objects.push(sphere);
+            transformControl.attach(sphere);
+            if (currentEngine === 'normal') { mat.wireframe = true; mat.color.setHex(0xffffff); }
+        }
+
+        function addCylinder() {
+            const geometry = new THREE.CylinderGeometry(0.5, 0.5, 1, 16);
+            const mat = new THREE.MeshStandardMaterial({ color: document.getElementById('objectColor').value, roughness: 0.4, metalness: 0.05 });
+            const cylinder = new THREE.Mesh(geometry, mat);
+            cylinder.position.y = 0.5;
+            cylinder.castShadow = true; cylinder.receiveShadow = true;
+            cylinder.originalColor = new THREE.Color(document.getElementById('objectColor').value);
+            scene.add(cylinder); objects.push(cylinder);
+            transformControl.attach(cylinder);
+            if (currentEngine === 'normal') { mat.wireframe = true; mat.color.setHex(0xffffff); }
+        }
+
+        function duplicateSelected() {
+            const selected = transformControl.object;
+            if (!selected) return;
+            const clone = selected.clone();
+            clone.material = selected.material.clone();
+            clone.geometry = selected.geometry.clone();
+            clone.position.x += 0.5;
+            clone.originalColor = selected.originalColor ? selected.originalColor.clone() : new THREE.Color(selected.material.color);
+            clone.originalMaterial = null;
+            clone.lightRef = null;
+            clone.isEmissive = false;
+            scene.add(clone); objects.push(clone);
+            transformControl.attach(clone);
+        }
+
+        function toggleLightMaterial() {
+            const selected = transformControl.object;
+            if (!selected) return;
+            const selectedColor = new THREE.Color(document.getElementById('objectColor').value);
+
+            if (!selected.isEmissive) {
+                selected.originalMaterial = selected.material.clone();
+                selected.originalMaterial.color.copy(selected.material.color);
+                selected.material = new THREE.MeshStandardMaterial({ 
+                    color: selectedColor, emissive: selectedColor, emissiveIntensity: 2.0,
+                    roughness: 0.1, metalness: 0.0
+                });
+                const pointLight = new THREE.PointLight(selectedColor, 2.0, 10);
+                pointLight.name = "lightChild";
+                pointLight.position.copy(selected.position);
+                scene.add(pointLight);
+                selected.lightRef = pointLight;
+                selected.isEmissive = true;
+            } else {
+                if (selected.originalMaterial) {
+                    selected.material = selected.originalMaterial.clone();
+                } else {
+                    selected.material = new THREE.MeshStandardMaterial({ color: selectedColor, roughness: 0.4, metalness: 0.05 });
+                }
+                if (selected.lightRef) { scene.remove(selected.lightRef); selected.lightRef = null; }
+                selected.isEmissive = false;
+            }
+        }
+
+        function setMode(mode) {
+            transformControl.setMode(mode);
+            document.querySelectorAll('#btn-translate, #btn-rotate, #btn-scale').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-' + mode).classList.add('active');
+        }
+
+        function updateObjectColor(colorHex) {
+            if (transformControl.object) {
+                const newColor = new THREE.Color(colorHex);
+                const obj = transformControl.object;
+                obj.material.color.set(newColor);
+                if (obj.isEmissive) obj.material.emissive.set(newColor);
+                if (obj.lightRef) obj.lightRef.color.set(newColor);
+                if (obj.originalColor) obj.originalColor.set(newColor);
+            }
+        }
+
+        function applyTexture(event) {
+            const file = event.target.files[0];
+            if (!file || !transformControl.object) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const texture = new THREE.TextureLoader().load(e.target.result);
+                transformControl.object.material.map = texture;
+                transformControl.object.material.needsUpdate = true;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function exportScene() {
+            if (objects.length === 0) return;
+            transformControl.detach();
+            const exporter = new THREE.GLTFExporter();
+            exporter.parse(scene, (gltf) => {
+                const blob = new Blob([JSON.stringify(gltf, null, 2)], { type: 'application/json' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'Lander_Scene.gltf';
+                link.click();
+            });
+        }
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / (window.innerHeight - 32);
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight - 32);
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Update edit mode visuals every frame (in case object moves)
+            if (currentWorkMode === 'edit' && editModeObject) {
+                updateEditModeVisuals();
+            }
+
+            objects.forEach(obj => {
+                if (obj.isEmissive && obj.lightRef) {
+                    obj.lightRef.position.copy(obj.position);
+                }
+            });
+            orbit.update();
+            renderer.render(scene, camera);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
