@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تطبيق تقويم سمنوسي الكوني المطور 🪐</title>
+    <style>
+        :root {
+            --bg-color: #0b0e14;
+            --card-bg: #161b26;
+            --accent-color: #4f46e5;
+            --accent-glow: rgba(79, 70, 229, 0.4);
+            --text-color: #f3f4f6;
+            --text-muted: #9ca3af;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px var(--accent-glow);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            color: #fff;
+            font-size: 24px;
+            margin-bottom: 5px;
+            text-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: right;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+
+        input[type="date"] {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #374151;
+            background: #1f2937;
+            color: #fff;
+            font-size: 16px;
+            box-sizing: border-box;
+            outline: none;
+            text-align: center;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: var(--accent-color);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px var(--accent-glow);
+        }
+
+        button:hover {
+            background: #4338ca;
+            transform: translateY(-2px);
+        }
+
+        .result-box, .timer-box {
+            margin-top: 25px;
+            padding: 20px;
+            background: #1f2937;
+            border-radius: 15px;
+            border-right: 5px solid var(--accent-color);
+            text-align: right;
+            display: none;
+        }
+
+        .timer-box {
+            text-align: center;
+            border-right: none;
+            border-bottom: 4px solid #10b981;
+            display: block;
+        }
+
+        .timer-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .timer-item {
+            background: #111827;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #374151;
+        }
+
+        .timer-num {
+            font-size: 20px;
+            font-weight: bold;
+            color: #10b981;
+        }
+
+        .timer-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .highlight {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🪐 بوابة تقويم سمنوسي الكوني</h1>
+    <div class="subtitle">النظام الزمني المعتمد لكوكب عطارد (السنة = 87.96926 يوماً أرضياً)</div>
+    
+    <div class="form-group">
+        <label for="birthdate">أدخل تاريخ ميلادك (الميلادي):</label>
+        <input type="date" id="birthdate" value="2014-12-24">
+    </div>
+    <button onclick="calculateSamnusi()">احسب هويتك السمنوسية</button>
+
+    <div class="result-box" id="resultBox">
+        <h3 style="margin-top:0; color:#fff;">📊 نتيجتك الفلكية الحقيقية:</h3>
+        <p>• أنت مواليد شهر: <span id="birthMonth" class="highlight"></span></p>
+        <p>• تاريخ ميلادك السمنوسي الكامل: <span id="fullSamnusiDate" class="highlight"></span></p>
+        <p>• عمرك الحالي بالسمنوسي: <span id="samnusiAge" class="highlight"></span></p>
+    </div>
+
+    <div class="timer-box" id="birthdayTimerBox" style="display:none; border-bottom-color: #f59e0b; margin-top:20px;">
+        <h3 style="margin-top:0; color:#fff; font-size:16px;">🎂 المتبقي على عيد ميلادك السمنوسي القادم:</h3>
+        <div class="timer-grid">
+            <div class="timer-item"><div class="timer-num" id="b-days" style="color:#f59e0b;">00</div><div class="timer-label">يوم</div></div>
+            <div class="timer-item"><div class="timer-num" id="b-hours" style="color:#f59e0b;">00</div><div class="timer-label">ساعة</div></div>
+            <div class="timer-item"><div class="timer-num" id="b-mins" style="color:#f59e0b;">00</div><div class="timer-label">دقيقة</div></div>
+            <div class="timer-item"><div class="timer-num" id="b-secs" style="color:#f59e0b;">00</div><div class="timer-label">ثانية</div></div>
+        </div>
+    </div>
+</div>
+
+<div class="container" style="margin-bottom: 50px;">
+    <div class="timer-box">
+        <h3 style="margin-top:0; color:#fff; font-size:16px;">🚀 العداد التنازلي لدخول السنة السمنوسية الجديدة:</h3>
+        <div id="nextSamnusiYearHeading" style="font-weight:bold; color:var(--text-muted); margin-bottom:5px;">العام السمنوسي القادم</div>
+        <div class="timer-grid">
+            <div class="timer-item"><div class="timer-num" id="year-days">00</div><div class="timer-label">يوم أرضي</div></div>
+            <div class="timer-item"><div class="timer-num" id="year-hours">00</div><div class="timer-label">ساعة</div></div>
+            <div class="timer-item"><div class="timer-num" id="year-mins">00</div><div class="timer-label">دقيقة</div></div>
+            <div class="timer-item"><div class="timer-num" id="year-secs">00</div><div class="timer-label">ثانية</div></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const SAMNUSI_MONTHS = [
+        "غريبين", "عبيين", "سبيين", "اغموطس", "خمسين", "سمدس", 
+        "ميدون", "مرسال", "رامين", "كربيس", "كبلوس", "تطويل"
+    ];
+    
+    const MERCURY_YEAR_DAYS = 87.96926; 
+    const MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+    function getAbsoluteDaysSinceEpoch(dateObj) {
+        const anchorDate = new Date(Date.UTC(2000, 0, 1));
+        const diffMs = dateObj.getTime() - anchorDate.getTime();
+        return (diffMs / MS_PER_DAY) + 730119;
+    }
+
+    function getSamnusiDetails(dateObj) {
+        const absoluteDays = getAbsoluteDaysSinceEpoch(dateObj);
+        const rawYear = Math.floor(absoluteDays / MERCURY_YEAR_DAYS);
+        const absoluteYear = rawYear + 1;
+        
+        const daysInCurrentYearRaw = absoluteDays - (rawYear * MERCURY_YEAR_DAYS);
+        let dayInYear = Math.floor(daysInCurrentYearRaw) + 1;
+        
+        if (dayInYear > 88) dayInYear = 88;
+
+        let monthIndex = 0;
+        let dayInMonth = dayInYear;
+
+        for (let i = 0; i < 11; i++) {
+            if (dayInMonth > 7) {
+                dayInMonth -= 7;
+                monthIndex++;
+            } else {
+                break;
+            }
+        }
+        
+        return {
+            year: absoluteYear,
+            monthName: SAMNUSI_MONTHS[monthIndex],
+            day: dayInMonth,
+            dayInYear: dayInYear
+        };
+    }
+
+    let userBirthDayInYear = null;
+    let originalBirthDate = null;
+
+    function calculateSamnusi() {
+        const input = document.getElementById('birthdate').value;
+        if (!input) return;
+
+        originalBirthDate = new Date(input);
+        const now = new Date();
+
+        const birthSamnusi = getSamnusiDetails(originalBirthDate);
+        userBirthDayInYear = birthSamnusi.dayInYear;
+
+        const diffAbsoluteDays = getAbsoluteDaysSinceEpoch(now) - getAbsoluteDaysSinceEpoch(originalBirthDate);
+        let ageYears = Math.floor(diffAbsoluteDays / MERCURY_YEAR_DAYS);
+        
+        let remainingDays = Math.floor(diffAbsoluteDays - (ageYears * MERCURY_YEAR_DAYS));
+        
+        let ageMonths = 0;
+        let ageDays = remainingDays;
+        
+        for (let i = 0; i < 11; i++) {
+            if (ageDays >= 7) {
+                ageDays -= 7;
+                ageMonths++;
+            } else {
+                break;
+            }
+        }
+
+        document.getElementById('birthMonth').innerText = birthSamnusi.monthName;
+        document.getElementById('fullSamnusiDate').innerText = `${birthSamnusi.day} ${birthSamnusi.monthName} لعام ${birthSamnusi.year} سمنوسي`;
+        document.getElementById('samnusiAge').innerText = `${ageYears} سنة، و ${ageMonths} أشهر، و ${ageDays} أيام`;
+        
+        document.getElementById('resultBox').style.display = 'block';
+        document.getElementById('birthdayTimerBox').style.display = 'block';
+    }
+
+    window.onload = function() {
+        calculateSamnusi();
+    };
+
+    setInterval(function() {
+        const now = new Date();
+        const absoluteDaysNow = getAbsoluteDaysSinceEpoch(now);
+        
+        const currentYearNum = Math.floor(absoluteDaysNow / MERCURY_YEAR_DAYS) + 1;
+        const nextYearNum = currentYearNum + 1;
+        
+        // تصحيح برمي صارم لضمان عدم تخطي العام 8411 قبل أوانه
+        if (nextYearNum > 8411) {
+            document.getElementById('nextSamnusiYearHeading').innerText = `بانتظار عام 8411 سمنوسي الكوني`;
+            const nextYearStartAbsoluteDays = 8410 * MERCURY_YEAR_DAYS;
+            const anchorDate = new Date(Date.UTC(2000, 0, 1));
+            const nextYearTargetTimeMs = anchorDate.getTime() + ((nextYearStartAbsoluteDays - 730119) * MS_PER_DAY);
+            let timeLeftYear = nextYearTargetTimeMs - now.getTime();
+            if (timeLeftYear > 0) {
+                let d = Math.floor(timeLeftYear / MS_PER_DAY);
+                let h = Math.floor((timeLeftYear % MS_PER_DAY) / (1000 * 60 * 60));
+                let m = Math.floor((timeLeftYear % (1000 * 60 * 60)) / (1000 * 60));
+                let s = Math.floor((timeLeftYear % (1000 * 60)) / 1000);
+                document.getElementById('year-days').innerText = String(d).padStart(2, '0');
+                document.getElementById('year-hours').innerText = String(h).padStart(2, '0');
+                document.getElementById('year-mins').innerText = String(m).padStart(2, '0');
+                document.getElementById('year-secs').innerText = String(s).padStart(2, '0');
+            }
+        } else {
+            document.getElementById('nextSamnusiYearHeading').innerText = `بانتظار عام ${nextYearNum} سمنوسي الكوني`;
+            const nextYearStartAbsoluteDays = (nextYearNum - 1) * MERCURY_YEAR_DAYS;
+            const anchorDate = new Date(Date.UTC(2000, 0, 1));
+            const nextYearTargetTimeMs = anchorDate.getTime() + ((nextYearStartAbsoluteDays - 730119) * MS_PER_DAY);
+            let timeLeftYear = nextYearTargetTimeMs - now.getTime();
+            if (timeLeftYear > 0) {
+                let d = Math.floor(timeLeftYear / MS_PER_DAY);
+                let h = Math.floor((timeLeftYear % MS_PER_DAY) / (1000 * 60 * 60));
+                let m = Math.floor((timeLeftYear % (1000 * 60 * 60)) / (1000 * 60));
+                let s = Math.floor((timeLeftYear % (1000 * 60)) / 1000);
+                document.getElementById('year-days').innerText = String(d).padStart(2, '0');
+                document.getElementById('year-hours').innerText = String(h).padStart(2, '0');
+                document.getElementById('year-mins').innerText = String(m).padStart(2, '0');
+                document.getElementById('year-secs').innerText = String(s).padStart(2, '0');
+            }
+        }
+
+        if (userBirthDayInYear !== null && originalBirthDate !== null) {
+            const currentSamnusi = getSamnusiDetails(now);
+            let targetSamnusiYear = currentSamnusi.year;
+            if (currentSamnusi.dayInYear > userBirthDayInYear) {
+                targetSamnusiYear++;
+            }
+            const targetAbsoluteDays = ((targetSamnusiYear - 1) * MERCURY_YEAR_DAYS) + (userBirthDayInYear - 1);
+            const anchorDate = new Date(Date.UTC(2000, 0, 1));
+            const targetDateTimeMs = anchorDate.getTime() + ((targetAbsoluteDays - 730119) * MS_PER_DAY);
+            let timeLeftBirth = targetDateTimeMs - now.getTime();
+            if (timeLeftBirth > 0) {
+                let d = Math.floor(timeLeftBirth / MS_PER_DAY);
+                let h = Math.floor((timeLeftBirth % MS_PER_DAY) / (1000 * 60 * 60));
+                let m = Math.floor((timeLeftBirth % (1000 * 60 * 60)) / (1000 * 60));
+                let s = Math.floor((timeLeftBirth % (1000 * 60)) / 1000);
+                document.getElementById('b-days').innerText = String(d).padStart(2, '0');
+                document.getElementById('b-hours').innerText = String(h).padStart(2, '0');
+                document.getElementById('b-mins').innerText = String(m).padStart(2, '0');
+                document.getElementById('b-secs').innerText = String(s).padStart(2, '0');
+            }
+        }
+    }, 1000);
+</script>
+</body>
+</html>
